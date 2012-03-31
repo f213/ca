@@ -1,0 +1,26 @@
+<div align=center><h2>Результаты СУ-Площадь</h2></div>
+<br><br>
+<div align=center>
+<table width=80% border=1 cellspacing=0>
+<tr>
+<td width=1%><b>#</b></td>
+<td width=1% align=center><b>Борт</b></td>
+<td><b>Экипаж</b></td>
+<td><b>Штраф</b></td>
+<?if($bonus_is_calced){?>
+	<td><b>Бонус время в Игре</b></td>
+<?}?>
+</tr>
+<?foreach($item_output as $key=>$value){?>
+	<tr>
+	<td><?=$value['place']?></td>
+	<td><?=$key?></td>
+	<td><?=$value['pilot_name']?>/<?=$value['navigator_name']?></td>
+	<td><?=$value['points']?></td>
+	<?if($bonus_is_calced){?>
+		<td><?=$value['bon_str']?></td>
+	<?}?>
+	</tr>
+<?}?>
+</table>
+

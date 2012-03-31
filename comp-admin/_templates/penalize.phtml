@@ -1,0 +1,134 @@
+<br><br>
+<script type="text/javascript" src="js/misc.js"></script>
+<script language=JavaScript src="js/jquery.min.js"></script>
+<script language=JavaScript src="js/jquery.autocomplete.js"></script>
+<script language=JavaScript src="js/jquery.hotkeys.min.js"></script>
+<script language=JavaScript src="js/jquery.quicksearch.js"></script>
+<script language=JavaScript src="js/jquery.scrollTo-min.js"></script>
+<script language=JavaScript>
+var validNumbers=new Array(<?=$valid_numbers_str?>);
+var penalizedNumbers=new Array(<?=$penalized_numbers_str?>);
+var just_edited=<?=$just_edited?>; 
+
+function check_start_number(){
+	var field=$('#start_number');
+	if(!field.val()){
+		alert('Не указан номер!');
+		field.select();
+		field.focus();
+		return false;
+	}	
+	if(!in_array(field.val(),validNumbers)){
+		alert('Этот номер отсутсвует в стартовой ведомости!');
+		field.select();
+		field.focus();
+		return false;
+	}
+	if(in_array(field.val(),penalizedNumbers)){
+		return confirm('Этот экипаж уже имеет пенализацию. Изменить?');
+	}
+	return true;
+}
+function check_pen_add_form(){
+	var min=$('#min');
+	if(!min.val()){
+		alert('Не указано время');
+		min.select();
+		min.focus();
+		return false;
+	}
+	var reason=$('#reason');
+	if(reason.val().length<=3){
+		alert('Не указана причина');
+		reason.select();
+		reason.focus();
+		return false;
+	}
+	return check_start_number();
+}	
+$(document).ready(function(){
+	$('#start_number').focus();
+	$('#reason').autocompleteArray([<?=$reasons_str?>],{delay:10,matchSubset:1,autoFill:true,maxItemsToShow:10} );
+	//быстрый поиск
+	$(document).bind('keydown','<?=CA_SEARCH_HOTKEY?>',function(){
+		$('#qs').focus();
+	});
+	$('#qs').quicksearch('table#main_table tr.row',{
+		selector:'td.st',
+		bind:'keydown keyup',
+	});
+	$('#qs').keydown(function(e){
+		var keynum;
+		var keychar;
+		var numcheck;
+		if(window.event){ // IE
+			keynum = e.keyCode;
+		}else if(e.which){ // Netscape/Firefox/Opera
+			keynum = e.which;       
+		}
+		if(keynum==27){ //ESC отменяет поиск
+			setTimeout(function(){
+				$('#qs').val('');
+				$('#qs').keyup();
+			},100);
+		}
+		return true;
+	});
+	$('#qs').blur(function(){
+		$('#qs').val('');
+	});
+	//фокусировка только что измененной строки
+	if(just_edited){
+		$.scrollTo('#data'+just_edited);
+		$('#data'+just_edited).children().each(function(){ //неохота с css разбираться, поэтому сделано через перебор всех TD. Надо бы один раз на TR назначать, до хер с ним.
+			$(this).removeClass('body')
+				.addClass('datahl');
+		});
+	}
+
+
+});
+</script>
+<table border=0 width=40% class=filter><tr><td style="white-space: nowrap;">
+<form name = pen_add_form method = get action = penalize.php OnSubmit="return check_pen_add_form();">
+<input type = hidden name = comp_id value = <?=$comp_id?>>
+<input type = hidden name = flag value = 1>
+<fieldset style="border:1px solid #333333;">
+<legend><b>Добавление пенализации</b></legend>
+Номер:<input type = text name = start_number id = start_number size=3 maxlength=3 OnKeyPress="return only_numbers(event);">
+Минуты:<input type = text name = min id = min size=3 maxlength=3 OnKeyPress="return only_numbers(event);">
+Причина: <input type = text name = reason id = reason size=20 maxlength=40>
+<input type = submit value = Добавить!>
+</fieldset>
+</form>
+</td></tr></table>
+<br><br>
+<b>Искать по номеру(<?=CA_SEARCH_HOTKEY?>):</b> <input type = text name = qs id = qs class=quicksearch size=20>
+<?if($item_output){?>
+<table id=main_table class=body width=90%>
+<tr class=head>
+<td width=1%>#</td>
+<td width=2%>Категория</td>
+<td>Экипаж</td>
+<td>Машина</td>
+<td>Автор</td>
+<td>Время</td>
+<td>Причина</td>
+<td width=1%>уд.</td>
+</tr>
+<?foreach($item_output as $key=>$value){?>
+<tr class=row id="data<?=$value['start_number']?>">
+<td class=st><b><?=$value['start_number']?></b></td>
+<td><?=$cat_name[$value['cat_id']]?></td>
+<td><?=$value['crew']?></td>
+<td><?=$value['auto_brand']?>/<?=$value['auto_number']?></td>
+<td><?=$value['author']?></td>
+<td><b><?=$value['min']?></b></td>
+<td><?=$value['reason']?></td>
+<td><input type = button OnClick="if(confirm('совсем?')){window.location.href='<?=$value['del_url']?>';}" value = X title="удалить"></td>
+</tr>
+<?}?>
+</table>
+<?}?>
+
+,

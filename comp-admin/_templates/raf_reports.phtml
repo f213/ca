@@ -1,0 +1,33 @@
+<br /><br />
+<h1>Отчеты для РАФ:</h1>
+
+
+<table class=filter width=400>
+<tr>
+	<td align=right>Руководитель гонки:</td>
+	<td align=left><b><?=_NAME_RUKOGON?></b></td>
+</tr>
+<tr>
+	<td align=right>Секретарь гонки:</td>
+	<td align=left><b><?=_NAME_GENSEK?></b></td>
+</tr>
+<tr>
+	<td align=right>Дата проведения:</td>
+	<td align=left><b><?=COMP_DATE?></b></td>
+</tr>
+<tr>
+	<td align=right>Город:</td>
+	<td align=left><b><?=COMP_CITY?></b></td>
+</tr>
+</table>
+
+<p>Вышеуказаные настройки задаются в файле <b>_includes/comp_data.php</b></p>
+
+<ul><?if ($rep) foreach($rep as $key=>$value)
+	print "	<li><a href = '$key'>$value</a></li>\r\n";
+?></ul>
+
+<br /><br />
+<?if(in_array('legend',$comp_types)){
+	?><b>Внимание!</b> Печать ведомости взятых точек по линейной гонке возможна только если производился подробный ввод результатов (detailed_legend в файле <b>categories.ini</b>).<?
+}

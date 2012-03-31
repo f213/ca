@@ -1,0 +1,460 @@
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/jquery.hotkeys.min.js"></script>
+<script type="text/javascript" src="js/jquery.quicksearch.js"></script>
+<script type="text/javascript" src="js/jquery.scrollTo-min.js"></script>
+<script type="text/javascript" src="js/misc.js"></script>
+
+<script type="text/javascript">
+var just_edited=<?=$just_edited?>;
+var highlighted_pos;
+var reg_url='json.php?reg';
+var unreg_url='json.php?unreg';
+$(document).ready(function(){
+
+	//быстрый поезг
+	$(document).bind('keydown','<?=CA_SEARCH_HOTKEY?>',function(){
+		$('#qs_name').focus();
+	});
+	$(document).bind('keydown','ctrl+a',function(){
+		$('#qs_num').focus();
+	});
+	$(document).bind('keydown','ctrl+x',function(){
+		$('#qs_reqnum').focus();
+	});
+	$('#qs_name').quicksearch('table#main_table tr.data',{
+		selector:'td.ekipaj',
+		bind:'keydown keyup'
+	});
+	$('#qs_num').quicksearch('table#main_table tr.data',{
+		selector:'td.start_number',
+		bind:'keydown keyup'
+	});
+	$('#qs_reqnum').quicksearch('table#main_table tr.data',{
+		selector:'td.request_start_number',
+		bind:'keydown keyup'
+	});
+
+	$('.quicksearch').keydown(function(e){
+		if(_keynum(e) == 27){ //ESC отменяет поиск
+			setTimeout(function(){
+				$('.quicksearch').val('');
+				$('.quicksearch').keyup();
+			},100);
+		}
+		return true;
+	});
+	$('.quicksearch').blur(function(){
+		$(this).val('');
+	});
+
+	$('input[maxlength=3]').keypress(function(e){ //тока цифирки
+		return only_numbers(e);
+	});
+	//автоматическое обновления текста "следующий выдаваемый номер"
+	if($('#next_start_number').length){
+		window.setInterval(function(){
+			update_next_start_number();
+		},15000);
+	}
+
+
+	//фокусировка строки только что измененного участнега
+	if(just_edited){
+		hl_just_edited(1);
+	}else{
+		<? //если мы в данный момент работаем с таблицой забракованных номеров - перематываем на нее.
+		if($_GET['bad_number_edited']){?>
+			$.scrollTo('#block_num_table');
+		<?}else
+			print "	$('#qs_name').focus();\n";
+		?>
+	}
+	//для копирования
+	$('#from_comp_id').change(function(){
+		if($(this).val()>0){
+			$('#copy_submit').attr('disabled',0);
+		}else{
+			$('#copy_submit').attr('disabled',1);
+		}
+	});
+	//удаление номеров, удалить можно только выбрав номер
+	$('#del_num_button').click(function(){
+		if($('#del_num').val()>0){
+			$('#bad_form_flag').val(8); //в форме нужно выставить другой флаг, по умолчанию она добавляет номер к блокированным, а нам надо удалить
+			$('#bad_form').submit();
+			return false;
+		}else{
+			return false;
+		}
+	});	
+});
+function unhl_edit(item_id){
+	var td=$('#registered_'+item_id);
+	if(td.hasClass('is_edited')){
+		td.removeClass('is_edited');
+	}
+}
+function print_request(item_id,url){
+	if($('#req'+item_id).children('.start_number').children('a').text()=='-'){
+		if(!confirm('Печатаем незарегистрированную заявку?')){
+			return;
+		}
+	}
+	window.open(url,'print-req');
+}
+function register(comp_id,item_id){
+	$.getJSON(reg_url+'&comp_id='+comp_id+'&item_id='+item_id,
+		function(data){
+			if(data['err']){
+				alert(data['err']);
+			}
+			else{
+				var start_number=data['start_number'];
+				$('#reg_'+item_id).addClass('invisible');
+				$('#unreg_'+item_id).removeClass('invisible')
+					.find('.start_number').html('<b>('+start_number+')</b>');
+				print_number_to_sn_td(item_id,start_number);
+				update_next_start_number();
+				just_edited=item_id;
+				hl_just_edited(0);
+			}
+		}
+	);
+	
+}
+function unregister(comp_id,item_id){
+	$.getJSON(unreg_url+'&comp_id='+comp_id+'&item_id='+item_id,
+		function(data){
+			if(data['err']){
+				alert(data['err']);
+			}else{
+				$('#reg_'+item_id).removeClass('invisible');
+				$('#unreg_'+item_id).addClass('invisible');
+				print_number_to_sn_td(item_id,'-');
+				update_next_start_number();
+				just_edited=item_id;
+				hl_just_edited(0);
+			}
+		}
+	);
+}
+function print_number_to_sn_td(item_id,start_number){
+	var sn_td=$('#req'+item_id).children('.start_number');
+	var edit_link=sn_td.children('a').attr('href');
+	sn_td.html('<a href = "'+edit_link+'">'+start_number+'</a>');
+}
+function hl_just_edited(doScroll){
+	if(doScroll==1){
+		$.scrollTo('#req'+just_edited);
+	}
+	//убираем подсветку со с уже подсвеченного
+	if(parseInt(highlighted_pos)){
+		$('#req'+highlighted_pos).children().each(function(){ 
+			$(this).removeClass('datahl')
+			.addClass('body');
+		});
+	}
+	highlighted_pos=just_edited;
+	$('#req'+just_edited).children().each(function(){ 
+		$(this).removeClass('body')
+			.addClass('datahl');
+	});
+
+	window.setTimeout(function(){ //а через две минуты эта подсветка снимается
+		$('#req'+just_edited).children().each(function(){ 
+			$(this).removeClass('datahl')
+			.addClass('body');
+		});
+		highlighted_pos=0;
+	},120000);
+}
+function update_next_start_number(){
+	$.getJSON('json.php?next_start_number',function(data){
+		$('#next_start_number').html('<b>'+data+'</b>');
+	});
+}
+</script>
+<br><br>
+<form name = filter_form id = filter_form method = get action = online_requests.php>
+<input type = hidden name = comp_id value = "<?=$comp_id?>">
+<table cellpadding="5" cellspacing="0" border="0" width="100%" class="filter">
+<tr align=left>
+<td><b>Категория:</b>&nbsp;&nbsp;
+<select name = f_category id = f_category OnChange="this.form.submit();" title="Категории участников. В скобках - количество зарегистрированных">
+	<option value = 0>Все(<?=tpl_total_register_count()?>)</option>
+<?
+for($i=1;$i<=_CATEGORIES;$i++)
+	if($i==$f_category)
+		print "<option value = $i selected>".tpl_append_registered_count($cat_name[$i],$i)."</option>\r\n";
+	else
+		print "<option value = $i>".tpl_append_registered_count($cat_name[$i],$i)."</option>\r\n";
+?>
+</select>
+<?if(defined('CA_REQUESTS_SHOW_SITE_FILTERS') and CA_REQUESTS_SHOW_SITE_FILTERS){?>
+&nbsp;&nbsp;&nbsp;
+<b>Подтвержденные:</b>&nbsp;&nbsp;
+<select name = f_approved id = f_approved OnChange="this.form.submit();">
+<?
+foreach($approve_types as $key=>$value)
+	if($key==$f_approved)
+		print "<option value = $key selected>$value</option>\r\n";
+	else
+		print "<option value = $key>$value</option>\r\n";
+?></select>
+&nbsp;&nbsp;&nbsp;
+<b>Оплаченные:</b>&nbsp;&nbsp;
+<select name = f_payed id = f_payd OnChange="this.form.submit();">
+<?
+foreach($pay_types as $key=>$value)
+	if($key==$f_payed)
+		print "<option value = $key selected>$value</option>\r\n";
+	else
+		print "<option value = $key>$value</option>\r\n";
+?></select>
+&nbsp;&nbsp;&nbsp;
+<?}?>
+<b>Зарегистрированные:</b>&nbsp;&nbsp;
+<select name = f_registered id = f_registered OnChange="this.form.submit();">
+<?foreach($register_types as $key=>$value)
+	if($key==$f_registered)
+		print "<option value = $key selected>$value</option>\r\n";
+	else
+		print "<option value = $key>$value</option>\r\n";
+?></select>
+&nbsp;&nbsp;&nbsp;
+<?if(isset($tpl_tkproto_link))
+	print "<input type = button onclick=\"window.location.href='$tpl_tkproto_link';\" value = 'Протокол техкомиссии'>&nbsp;";
+?>
+</td>
+</tr></table>
+</form>
+<?if($_GET['sl_generated'])
+	print "<h1>Успешно сгенерирована стартовая ведомость в категории ".$cat_name[(int)$_GET['sl_generated']]."!</h1>";
+if($_GET['imported_count'])
+	print "<h1>Импортировано заявок: {$_GET['imported_count']}</h1>";
+?>
+<?if(sizeof($item_output)){?>
+Следущий выдаваемый бортовой номер: <label id = next_start_number><b><?=$next_start_number?></b></label><br />
+<b>Искать по имени(<?=CA_SEARCH_HOTKEY?>):</b> <input type = text name = qs_name id = qs_name size=20 class=quicksearch> <b>|</b>
+<b>По бортовому номеру(ctrl+a):</b> <input type = text name = qs_num id=qs_num class=quicksearch size=3 maxlength=3> <b>|</b>
+<b>По заказанному номеру(ctrl+x):</b> <input type = text name = qs_reqnum id=qs_reqnum class=quicksearch size=3 maxlength=3>
+<?}?>
+<table width="100%">
+<tr><td align=right>
+<input type = button value = "Добавить заявку" OnClick="window.location.href='<?=$add_url?>';">
+</td></tr>
+</table>
+<?if(sizeof($item_output)){?>
+<table class="body" id="main_table" width="100%" cellspacing=1 cellpadding=3>
+<tr class=head>
+<td>Категория</td>
+<td>Дата подачи</td>
+<td>#B</td>
+<td>#</td>
+<td>Экипаж</td>
+<td>Машина</td>
+<td>Резина</td>
+<?if(defined('CA_REQUESTS_SHOW_SITE_FILTERS') and  CA_REQUESTS_SHOW_SITE_FILTERS){?>
+<td>Подтверждение</td>
+<?}?>
+<td>Оплата</td>
+<td>Регистрация</td>
+<td>Печ.</td>
+<td>Ред.</td>
+<td>Уд.</td>
+</tr>
+<?
+if($item_output) foreach($item_output as $key=>$value){
+?><tr class=data id=req<?=$key?>>
+	<td nowrap><?=$value['category_name']?></td>
+	<td><?=$value['register_date']?></td>
+	<td class=start_number><a href = "<?=$value['edit_link']?>"><?=$value['start_number']?></a> <?if($value['start_number_with_zeros']) print "<div class='invisible'>".$value['start_number_with_zeros']."</div>";?></td>
+	<td class=request_start_number><a href = "<?=$value['edit_link']?>"><?=$value['cabine_number']?></a></td>
+	<td class=ekipaj id=ekipaj<?=$key?>><a href = "<?=$value['edit_link']?>"><?
+		if($value['disq'])
+			print "<b>[СНЯТ]</b> ";
+		print $value['crew'];
+?></a></td>
+	<td><?=$value['auto_brand']?></td>
+	<td><?=$value['wheel_size']?></td>	
+<?if(defined('CA_REQUESTS_SHOW_SITE_FILTERS') and  CA_REQUESTS_SHOW_SITE_FILTERS){?>
+	<td><?
+		if($value['approved'])
+			print "Подтверждено <b>{$value['approved_author']}</b>";
+		else
+			print "<a href = \"{$value['approve_link']}\">Подтвердить</a>";
+?></td>
+<?}?>
+	<td><?
+		if($value['payd'])
+			print "Оплачено <b>{$value['payd_author']}</b>";
+		else
+			print "<a href = \"{$value['pay_link']}\">Выставить \"оплачено\"</a>";
+?></td>
+	<td id = registered_<?=$key?> <?=tpl_is_edited($value)?>><?
+		if($value['registered']){
+			if($value['can_do_something']){?>
+				<div id="unreg_<?=$key?>"><a href = '#' onclick="if(confirm('Вы действительно хотите отменить регистрацию??')){unregister(<?=$comp_id?>,<?=$key?>);} return false;">Принято&nbsp;<span class="start_number"><b>(<?=$value['start_number']?>)</b></span></div>
+			<?}else{?>
+			Принято <b>(<?=$value['start_number']?>)</b>
+			<?}?>
+			<div id="reg_<?=$key?>" class="invisible"><a href = '#' onclick="register(<?=$comp_id?>,<?=$key?>); return false;">Зарегистрировать</a></div>
+<?
+		}else{
+			if($value['can_do_something']){?>
+				<div id="reg_<?=$key?>"><a href = '#' onclick="register(<?=$comp_id?>,<?=$key?>); return false;">Зарегистрировать</a></div>
+				<div class="invisible" id="unreg_<?=$key?>"><a href = '#' onclick="if(confirm('Вы действительно хотите отменить регистрацию??')){unregister(<?=$comp_id?>,<?=$key?>);} return false;">Принято<span class="start_number"></span></div>
+			<?}
+		}
+?>
+<?if($value['is_edited']){
+	print " <a href = \"{$value['un_hl_link']}\" title='Убрать подсветку'>(x)</a>";
+}?>
+</td>
+	<!--<td><input type = button value = Печать title="Распечатать заявку!" OnClick="window.open('<?=$value['print_url']?>','print-req','status=no,toolbar=no,location=no');"></td> -->
+	<td><input type = button value = "Печать" title="Распечатать заявку!" OnClick="unhl_edit(<?=$key?>);print_request(<?=$key?>,'<?=$value['print_url']?>');"></td> 
+	<td><input type = button value = ">>" title="Редактировать" OnClick="window.location.href='<?=$value['edit_link']?>';"></td>
+	<td><input type = button value = "X" title="Удалить" OnClick="if(confirm('Совсем?')){window.location.href='<?=$value['delete_link']?>';}" <?if($value['registered']) print " disabled ";?>></td>
+	</tr>
+	<?
+}	
+?>
+</table>
+<br>
+<table width="100%">
+<tr><td align=right>
+<input type = button value = "Добавить заявку" OnClick="window.location.href='<?=$add_url?>';">
+</td></tr>
+</table>
+<?}else {
+if(!$f_category and $item_comp_list){ //копирование пока работает тока по всему списку участников, поэтому нефига юзера соблазнять?>
+<table width=400 class=filter id = copy_table>
+<tr><td>
+<fieldset style="border:1px solid #333333;">
+<legend><b>Копировать список участников</b></legend>
+<form name = copy_form id = copy_form method = get action = online_requests.php>
+<input type = hidden name = comp_id value = <?=$comp_id?>>
+<input type = hidden name = flag value = 9>
+из: <select name = from_comp_id id = from_comp_id>
+<option value = 0>(Выберите соревнование)</option>
+<?foreach($item_comp_list as $key=>$value)
+	print "<option value = $key>$value</option>\r\n";
+?>
+</select>
+<input type = submit id=copy_submit disabled value = ПОЕХАЛИ!>
+</form>
+</fieldset>
+</td></tr>
+</table>
+<br /><br /><br />
+<?}?>
+<?if(!$f_category){?>
+<table width=400 class=filter id = import_table>
+<tr><td>
+<fieldset style="border:1px solid #333333;">
+<legend><b>Импорт списка участников</b></legend>
+<form name = copy_form id = copy_form method = post enctype="multipart/form-data" action = online_requests.php>
+<input type = hidden name = comp_id value = <?=$comp_id?>>
+<input type = hidden name = flag value = 13>
+<input type = file name = import_file>
+<input type = submit id=import_submit value = ПОЕХАЛИ!>
+</form>
+</fieldset>
+</td></tr>
+</table>
+<br /><br /><br />
+<?}?>
+<?}?>
+<table width=220 class=filter id = block_num_table>
+<tr><td>
+<fieldset style="border:1px solid #333333;">
+<legend><b>Блокировка номеров</b></legend>
+<form name = bad_form id=bad_form method = get action = online_requests.php>
+<input type = hidden name = comp_id value = <?=$comp_id?>>
+<input type = hidden name = filters_str value = <?=$filters_str?>>
+<input type = hidden name = flag id=bad_form_flag value = 7>
+<?
+//для удаления flag выставить в 8
+?>
+
+<select name = del_num id = del_num>
+<option value = -1>номера</option>
+<?foreach($bad_numbers as $num)
+	print "<option value = $num>$num</option>";
+?></select>
+<a id=del_num_button href = #>Удалить</a>
+<br>
+Блокировка: <input type = text name = bad_num size=3 maxlength=4 OnKeyPress="return only_numbers(event);">
+<input type = submit value = "Заблокировать">
+</form>
+</fieldset>
+</td></tr>
+</table>
+
+<?
+if(sizeof($item_output) and !$f_category){?>
+	<br />
+	<form name = remove_unnecessary_form method = get action = online_requests.php onsubmit="return confirm('Точно? Аккуратнее с этим...');">
+	<input type = hidden name = comp_id value = <?=$comp_id?>>
+	<input type = hidden name =filter_str value = <?=$filters_str?>>
+	<input type = hidden name = flag value = 10>
+	<input type = submit value = "Удалить лишних (<?=$unnec_count?>)">
+	</form>
+	<?if($tpl_unregistered_with_request_cabine_numbers){?>
+		<form name = remove_unregistered_with_request_cabine_numbers_form method = get action = online_requests.php onsubmit="return confirm('Точно?');";>
+		<input type = hidden name = comp_id value = <?=$comp_id?>>
+		<input type = hidden name =filter_str value = <?=$filters_str?>>
+		<input type = hidden name = flag value = 11>
+		<input type = submit value = "Очистить бронь незарегистрированных (<?=$tpl_unregistered_with_request_cabine_numbers?>)">
+		</form>
+	<?}?>
+	<form name = export_form method = get action = online_requests.php>
+	<input type = hidden name = comp_id value = <?=$comp_id?>>
+	<input type = hidden name =filter_str value = <?=$filters_str?>>
+	<input type = hidden name = flag value = 12>
+	<input type = submit value = "Экспорт списка участников">
+	</form>
+
+
+<?}?>
+
+<p> Колонка <b>#B</b> - бортовой номер (наклейка), появляется после регистрации в лагере, <b>#</b> - желаемый номер.<br>
+<b>Внимание!</b> Удаленные заявки восстановить невозможно!
+<br>
+При <b>Отмене регистрации</b>, дабы не пропадал стартовый номер, необходимо его назначить как "желаемый" любому экипажу, в противном случае автоматическая выдача номеров продолжиться с максимального выданного.
+<br>
+Бронирование бортового номера, подтверждение и "оплату" можно осуществить через редактирование заявки, регистрацию в лагере - только с этой страницы. 
+</p> 
+<p>
+<b>Потдверждение</b> заявок служит для защиты от спама. Потдверждения требуют заявки, пришедшие через форму онлайн-заяки. Заявка считается принятой и отображается в списке на сайте только после подтверждения.
+</p>
+<p>
+<b>Оплата.</b> Флаг оплаты служит только для уведомления участнегов. Заявки с выставленным флагом "оплачено" помечаются в списке принятых заявок зеленым цветом.
+</p>
+<p>
+<b>Регистрация</b> используется уже в лагере. Подтверждение регистрации автоматически назначает участнику стартовый номер(если нет забронированного), и вносит в стартовую ведомость.
+</p>
+<?
+
+function tpl_is_edited($row){
+	if(defined('ADM_TRACK_EDITS') and ADM_TRACK_EDITS){
+		if($row['is_edited'])
+			return " class='is_edited' ";
+	}
+	return;
+}	
+function tpl_append_registered_count($str,$cat_id){
+	global $reg_cnt;
+	if($reg_cnt[$cat_id])
+		return "$str ({$reg_cnt[$cat_id]})";
+	else
+		return $str;
+}
+function tpl_total_register_count(){
+	global $reg_cnt;
+	$res=0;
+	foreach($reg_cnt as $q)
+		$res+=$q;
+	return $res;
+}
+?>

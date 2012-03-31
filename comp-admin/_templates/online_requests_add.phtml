@@ -1,0 +1,489 @@
+<br><br><br><br>
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/jquery.hotkeys.min.js"></script>
+<script type="text/javascript" src="js/misc.js"></script>
+<script type="text/javascript">
+var usedNumbers=new Array(<?
+$z="";
+foreach($used_numbers as $number)
+	 $z.="'$number',";
+print trim($z,',');
+?>);
+var blockedNumbers=new Array(<?
+$z="";
+foreach($bad_numbers as $number)
+	$z.="'$number',";
+print trim($z,',');
+?>);
+var defaultFormFlag;
+var ATV=<?=$tpl_atv_num?>; //номер категории ATV
+var item_id=<?
+if($item_id)
+	print $item_id;
+else
+	print '0';
+?>; //id редактируемой записи, если есть
+var is_in_start_list=<?
+if($item['is_in_start_list'])
+	print '1';
+else
+	print '0';
+?>; //находится ли участник в стартовой ведомости
+var start_number=<?
+if($item_output['start_number'])
+	print $item_output['start_number'];
+else
+	print "-1";
+?>;
+
+
+function check_number(){
+	var numtext=$('#numtext');
+	var num=$('#cabine_number');
+	if(!num.val() || !num.val().match(/^\d+$/)){
+		numtext.html('');
+		return;
+	}
+	if(in_array(num.val(),usedNumbers)){
+		numtext.html('Номер уже занят:(');
+	}else{
+		if(in_array(num.val(),blockedNumbers)){
+			numtext.html('Номер находится в списке забракованных. Обратите внимание!');
+		}else{
+			numtext.html('Номер свободен.');
+		}	
+	}
+}	
+function check_or_form(){
+	var error='';
+	if($('#category').val()<=0){
+		error=error+'Не выбрана категория участника!\n';
+	}	
+	if($('#pilot_name').val().length<5){
+		error=error+'Не указано имя пилота!\n';
+		$('#pilot_name').select(); $('#pilot_name').focus();
+	}
+<?if($_people_names['shturman']['ca'] and strlen($_people_names['shturman']['ca'])){?>
+	if($('#navigator_name').val().length<5){
+		error=error+'Не указано имя штурмана!\n';
+		$('#navigator_name').select(); $('#navigator_name').focus();
+	}
+<?}?>
+	if($('#auto_brand').val().length<3){
+		error=error+'Не указано название машины!\n';
+		$('#auto_brand').select(); $('#auto_brand').focus();
+	}
+	if($('#auto_number').val().length<3){
+		error=error+'Не указан госномер!\n';
+		$('#auto_number').select(); $('#auto_number').focus();
+	}	
+<?if(defined('CA_REQUIRE_WHEEL_SIZE') and CA_REQUIRE_WHEEL_SIZE){?>
+	if($('#wheel_size').val().length<2){
+		error=error+'Не указан размер колес!\n';
+		$('#wheel_size').select(); $('#wheel_size').focus();
+	}<?
+}?>
+	if($('#phone').val().length<3){
+		error=error+'Не указан номер телефона!\n';
+		$('#phone').select(); $('#phone').focus();
+	}
+	if(error){
+		alert(error);
+		return false;
+	}
+	return true;
+}	
+
+function check_wheel_size(){
+	if($('#category').val()==ATV){
+		$('#ws_err').addClass('invisible');	
+		$('#wheel_size').removeClass('red_color');
+		return true;
+	}
+	var size=$('#wheel_size').val();
+	var err=false;
+	if(!size.length){
+		err=true;
+	}
+	if(!size.match(/^\d+$/)){
+		err=true;
+	}else if(parseInt(size)<=25 || parseInt(size)>=49){
+		err=true;
+	}	
+	if(err){
+		$('#ws_err').removeClass('invisible');
+		$('#wheel_size').addClass('red_color');
+	}else{
+		$('#ws_err').addClass('invisible');	
+		$('#wheel_size').removeClass('red_color');
+	}
+	
+}	
+function check_gosnomer(){
+	if($('#category').val()==ATV){
+		$('#an_err').addClass('invisible');	
+		$('#auto_number').removeClass('red_color');
+		return true;
+	}
+	var err=false;
+	var num=$('#auto_number').val();
+	if(!num || !num.length){
+		err=true;
+	}else if(!num.match(/^[^\d]{0,2}\ *[\d]{3,4}\ *[^\d]{0,2}[\ ]*(|\d{2,3})(|[^\d\ ]{3})$/)){
+			err=true;
+	}	
+	if(err){
+		$('#an_err').removeClass('invisible');
+		$('#auto_number').addClass('red_color');
+	}else{
+		$('#an_err').addClass('invisible');	
+		$('#auto_number').removeClass('red_color');
+	}
+}
+function check_name(name){
+	var field=$('#'+name+'_name');
+	if(!field.val() || field.val().length<5){
+		field.addClass('red_color');
+	}else{
+		field.removeClass('red_color');
+	}
+}	
+function check_length(obj,length){
+	if(!obj.val() || obj.val().length<length){
+		obj.addClass('red_color');
+	}else{
+		obj.removeClass('red_color');
+	}
+}
+$(document).ready(function(){
+	if(item_id){
+		recheck_all();
+	}	
+	defaultFormFlag=$('#flag').val(); //сохраняем на всякий случай дефолтное значеение флага
+	$('#category').change(function(){
+		recheck_all();
+		if($(this).val()!=0){
+			$('#cat_err').addClass('invisible');
+		}else{
+			$('#cat_err').removeClass('invisible');	
+		}	
+	});	
+	if($('#category').val()){
+		$('#cat_err').addClass('invisible');
+	}
+
+	$('#cabine_number').keyup(function(){check_number();});
+	$('#pilot_name').keyup(function(){check_length($(this),5);});
+	$('#navigator_name').keyup(function(){check_length($(this),5);});
+	$('#phone').keyup(function(){check_length($(this),3);});
+	$('#auto_brand').keyup(function(){check_length($(this),3);});
+	$('#auto_number').keyup(function(){check_gosnomer();});
+<?if(defined('CA_REQUIRE_WHEEL_SIZE') and CA_REQUIRE_WHEEL_SIZE){?>
+	$('#wheel_size').keyup(function(){check_wheel_size();});
+<?}?>	
+	if(item_id && start_number!=-1){//если есть борт номер, то просто так категорию уже не сменишь
+		$('#category').addClass('invisible');
+		$('#cabine_number').attr('disabled',1); //отключаем возможность изменить номер
+		$('#cat_name').removeClass('invisible');
+	}
+<?if(sizeof($tpl_categories_to_change)){?>
+		$('#cat_change').removeClass('invisible')
+		.click(function(){
+			$('#cat_change_div').removeClass('invisible');
+			$(document).bind('keyup','esc',function(){
+				$('#cat_change_div').addClass('invisible');
+				$('#cat_change').removeClass('invisible');
+			});
+			$(this).addClass('invisible');
+			$('#cat_change_flag').val(change_flag);
+			return false;
+		});
+<?}?>
+
+	//снятие с соревнований
+	$('.disq_widgets').addClass('invisible');
+	$('#take_off').val(0); //в селекторе причин снятия всегда должно быть ничего не выбрано при загрузке.
+	$('#take_off').change(function(){
+		if($(this).val().length){
+			$('.disq_widgets').removeClass('invisible');
+			$('#take_off_reason').select()
+				.focus();
+
+		}else{
+			$('.disq_widgets').addClass('invisible');
+		}
+	});
+	$('#take_off_button').click(function(){
+		$('#flag').val(4);
+		$('#orform').submit();
+	});
+	//дублируем простановку флага на событии фокуса формы ввода причины дисквалификации - чтобы enter при активном поле сабмитил куда надо
+	$('#take_off_reason').focus(function(){ $('#flag').val(4) })
+			     .blur(function(){ $('#flag').val(defaultFormFlag) });
+	//escape склдывает портянку снятия обратно
+	$('#take_off_reason').keyup(function(e){
+		if(_keynum(e) == 27){
+			$('#take_off_reason').val('');
+			$('#take_off').val(0);
+			$('.disq_widgets').addClass('invisible');
+		}
+
+	});
+
+<?if(!$item_output['start_number']){?>
+	//участник еще не зарегистрирован, можно модифицировать логику виджета с подбором желаемого номера, юзабилити, епты!
+	$('#cabine_number').keyup(function(e){
+		if(_keynum(e) == 27){ //escape очищает поле
+			$('#cabine_number').val('');
+			$('#numtext').html('');
+		}
+
+	});
+<?}?>	
+
+});	
+
+function recheck_all(){
+<?if(defined('CA_REQUIRE_WHEEL_SIZE') and CA_REQUIRE_WHEEL_SIZE){?>
+	check_wheel_size();
+<?}?>	
+	check_gosnomer();
+	check_length($('#pilot_name'),5);
+	check_length($('#navigator_name'),5);
+}	
+</script>
+<form method = post id = orform OnSubmit="return check_or_form();" action = <?=$form_submit_url?> autocomplete="off" >
+<input type = hidden name = flag id=flag value = 3>
+<input type = hidden name = comp_id value = <?=$comp_id?>>
+<input type = hidden name = item_id value = <?=$item_id?>>
+<input type = hidden name = filters_str value = "<?=addslashes($filters_str)?>">
+<input type = hidden name = back id = back value = "add">
+<table cellpadding="0" cellspacing="0" border="0" width="100%">
+<tr>
+	<td>&nbsp;</td>
+	<td align=right>
+		<input type = submit value = "Применить">
+		<img src='i/sp.gif' width=10>
+		<input type = submit value = "Сохранить>>" OnCLick="document.getElementById('back').value='list';">
+		<img src='i/sp.gif' width=10>
+		<?if($item_id){?><input type = button value = Распечатать OnClick="window.open('<?=$item_output['print_link']?>',null,'status=no,toolbar=no,location=no');">
+		<img src='i/sp.gif' width=10>
+		<?}?>
+		<input type = button value = "Вернуться к списку заявок" OnClick="window.location.href='<?=$form_return_url?>';">
+	</td>
+	<td width=1%>&nbsp;</td>
+</tr>
+<tr><td><img src='i/sp.gif' height=5></td></tr>
+</table>
+
+
+
+
+<table class=body width=100%  cellpadding=4 cellspacing=1>
+<tr class=head>
+	<td width=15%>Параметр</td>
+	<td>Значение</td>
+</tr>
+<?if(defined('CA_REQUESTS_SHOW_SITE_FILTERS') and CA_REQUESTS_SHOW_SITE_FILTERS){ //в поле следующие данные нахуй не нужны?>
+	<?if($item_output['ip']){
+	?>
+		<tr>
+			<td align=left nowrap >IP, с которого подана заявка:</td>
+			<td><b><?=$item_output['ip']?></b></td>
+		</tr>
+	<?}?>
+	<?if($item_output['from']){?>
+		<tr>
+		<td align=left>Источник заявки:</td>
+		<td><b><?=$item_output['from']?></b></td>
+		</tr>
+	<?}?>
+	<?if((int)$item_id){?>
+		<tr>
+		<td align=left>Подтверждение:</td>
+		<td><?if($item_output['approved'])
+			print "<b>Подтверждена {$item_output['approved_author']}</b>";
+		else
+			print "<a href = \"{$item_output['approve_link']}\">Подтвердить</a>";
+		?></td>
+	</tr>
+	<?}
+	if((int)$item_id){?>
+		<tr>	
+		<td align=left>Оплата:</td>
+		<td><?if($item_output['payd'])
+			print "<b>Установлена оплаченой {$item_output['payd_author']}</b>";
+		else
+			print "<a href = \"{$item_output['pay_link']}\">Установить \"оплачено\"</a>";
+		?></td>
+	</tr>
+	<?}?>
+	<tr>
+	<td align=left>Дата подачи:</td>
+	<td><input type = text name = "register_date" id = "register_date" size = 10 maxlength = 10 value = "<?=$item_output['register_date']?>"> <a name = "register_date_link" id = "register_date_link" href = # OnCLick="cal.select(document.getElementById('register_date'),'register_date_link','dd.MM.yyyy'); return false;">#</a></td>
+	</tr>
+<?}?>
+<?if($item_output['start_number']){?>
+	<tr>
+	<td align=center colspan=2>Участник №<b><?=$item_output['start_number']?></b><?
+	if($item_output['disq'])
+		print "<b>(СНЯТ)</b>";
+	?>
+	</td>
+	</tr>
+<?}?>
+<tr>
+	<td align=left>Категория:</td>
+	<td><select name = category id = category><?
+	if(!$item_output['category'])
+		print "<option value = -1>(выберите категорию)</option>\r\n";
+	for($i=1;$i<=_CATEGORIES;$i++){
+		if($i==$item_output['category'])
+			print "<option value = $i selected>{$cat_name[$i]}</option>\r\n";
+		else
+			print "<option value = $i>{$cat_name[$i]}</option>\r\n";
+	}?>
+		</select>  <span id=cat_name class="invisible"><b><?=$cat_name[$item_output['category']]?></b></span> <a id=cat_change href = "#" class="invisible">Измеинть</a> <span id=cat_change_div class="invisible">
+	<select name = new_cat_id id=new_cat_id onchange="if(confirm('Точно изменить категорию?')){$('#flag').val(7); this.form.submit();}">
+		<option>(выберите новую категорию)</option>
+<?
+		foreach($tpl_categories_to_change as $i=>$q)
+			if($i!=$item_output['category'])
+				print "<option value = $i>{$cat_name[$i]}</option>\r\n";
+	?></select>
+
+</form><img id=cat_err src=i/err.gif>
+</tr>
+<tr>
+	<td align=left><b><?=$_people_names['pilot']['ca']?>:</b></td>
+	<td><input type = text name = pilot_name id = pilot_name size = 40 maxlength = 50 value = "<?=$item_output['pilot_name']?>">&nbsp;Ник (не обязательно): <input type = text name = pilot_nik id = pilot_nik size = 40 maxlength = 50  value = "<?=$item_output['pilot_nik']?>">	
+</td>
+</tr>
+<?if($_people_names['shturman']['ca']){?>
+<tr>
+	<td align=left><b><?=$_people_names['shturman']['ca']?>:</b></td>
+	<td><input type = text name = navigator_name id = navigator_name size = 40 maxlength = 50 value = "<?=$item_output['navigator_name']?>">&nbsp;Ник (не обязательно): <input type = text name = navigator_nik id = navigator_nik size = 40 maxlength = 50 value = "<?=$item_output['navigator_nik']?>">
+</td>
+</tr>
+<?}?>
+<?if($item_output['start_number']){?>
+<tr>
+	<td align=left>Снятие с соревнований:</td>
+	<?if(!$item_output['disq']){?>
+		<td nowrap><select name = take_off id = take_off>
+		<option value = ''>Выберите</option>
+		<?foreach($disq_types as $key=>$value)
+			print "<option value = $key>$value</option>\r\n";
+		?></select> <span id = take_off_reason_label class=disq_widgets>Причина:</span> <input type = text name = take_off_reason id = take_off_reason size=20 maxlength=50 class=disq_widgets> <input type = button id = take_off_button class=disq_widgets value = "Снять">
+		</td>
+	<?}else{?>
+		<td nowrap>Участник снят с текущего соревнования, тип: <b><?=$disq_types[$item_output['disq']]?></b><?if(strlen($item_output['disq_comment'])){ print "({$item_output['disq_comment']})";}?>, <a href = "<?=$item_output['dedisq_link']?>">Отменить</a></td>
+	<?}?>
+</tr>
+<?if($tpl_need_tk){?>
+<tr>
+	<td align=left>Тех. комиссия:</td>
+	<td><?if(!$item_output['tk_is_passed']){
+		print "<b>НЕ</b> пройдена";
+	}else{
+		print "<a href='{$item_output['tk_link']}' target=_blank>Пройдена</a>";
+		if($item_output['tk_is_relative']){
+			print "&nbsp;&nbsp;<b>УСЛОВНЫЙ ДОПУСК!</b>";
+			if(strlen($item_output['tk_is_relative']))
+				print " Причина: {$item_output['tk_is_relative']}";
+		}
+	}	
+	?></td>
+</tr>
+<?}?>
+<?if(defined('CA_TRACK_PORTAL') and CA_TRACK_PORTAL){?>
+<tr>
+	<td align=left>Портальные мосты:</td>
+	<td><?if($item_output['have_portal'])
+		print "<b>Установлены</b>";
+	else
+		print "Не установлены";
+	?></td>
+</tr>
+<?}?>
+
+<?}?>
+<tr>
+	<td align=left>Желаемый борт. номер:</td>
+	<td><input type = text name = cabine_number id = cabine_number OnKeyPress="return only_numbers(event);" size=3 maxlength=3 value = "<?=$item_output['cabine_number']?>">&nbsp;<span id = numtext></span><?if($item_output['remove_request_cabine_number_link']){?><a href = "<?=$item_output['remove_request_cabine_number_link']?>">снять бронь</a><?}?></td>
+</tr>
+<tr>
+	<td align=left>Город:</td>
+	<td><input type = text name = city id = city size = 15 maxlength = 20 value = "<?=$item_output['city']?>"></td>
+</tr>
+<tr>
+	<td align=left><b>Телефон:</b></td>
+	<td><input type = text name = phone id = phone OnKeyPress="return only_numbers(event);" size = 40 maxlength = 50 value = "<?=$item_output['phone']?>"></td>
+</tr>
+<tr>
+	<td align=left><b>Пепелац:</b></td>
+	<td><input type = text name = auto_brand id = auto_brand size=20 maxlength = 30 value = "<?=$item_output['auto_brand']?>"></td>
+</tr>
+<?if(defined('CA_WHEEL_SIZE') and CA_WHEEL_SIZE){?>
+<tr>
+	<td align=left><b>Размер колес:</b></td>
+	<td><input type = text name = wheel_size id = wheel_size  OnKeyPress="return only_numbers(event);" size=3 maxlength = 3 value =  "<?=$item_output['wheel_size']?>"> <span id=ws_err class=invisible>Возможна ошибка!</span></td>
+</tr>
+<?}?>
+<tr>
+	<td align=left>Гос. номер:</td>
+	<td><input type = text name = auto_number id = auto_number size = 15 maxlength = 15 value = "<?=$item_output['auto_number']?>"> <span id = an_err class=invisible>Возможна ошибка!</span></td>
+</tr>
+<?if(defined('USE_SIZE') and USE_SIZE){?>
+<tr>
+	<td align=left>Размер пилота:</td>
+	<td><select name = pilot_size id = pilot_size>
+	<?foreach($sizes as $size)
+		if($size==$item_output['pilot_size'])
+			print "<option value = \"$size\" selected>$size</option>";
+		else
+			print "<option value = \"$size\">$size</option>";
+	?>
+	</select>
+	</td>
+</tr>
+<tr>
+	<td align=left>Размер штурмана:</td>
+	<td><select name = navigator_size id = navigator_size>
+	<?foreach($sizes as $size)
+		if($size==$item_output['navigator_size'])
+			print "<option value = \"$size\" selected>$size</option>";
+		else
+			print "<option value = \"$size\">$size</option>";
+	?>
+	</select>
+	</td>
+	</tr><?}?>
+<tr>
+	<td align=left>E-Mail:</td>
+	<td><input type = text name = email id = email size = 20 maxlength = 40 value = "<?=$item_output['email']?>"></td>
+
+</tr>
+<tr>
+	<td align=left>Клуб:</td>
+	<td><input type = text name = club id = club size = 20 maxlength = 40 value = "<?=$item_output['club']?>"></td>
+
+</tr>
+</table>
+<table cellpadding="0" cellspacing="0" border="0" width="100%">
+<tr><td><img src='i/sp.gif' height=5></td></tr>
+<tr>
+	<td>&nbsp;</td>
+	<td align=right>
+		<input type = submit value = "Применить">
+		<img src='i/sp.gif' width=10>
+		<input type = submit value = "Сохранить>>" OnCLick="document.getElementById('back').value='list';">
+		<img src='i/sp.gif' width=10>
+		<?if($item_id){?><input type = button value = Распечатать OnClick="window.open('<?=$item_output['print_link']?>',null,'status=no,toolbar=no,location=no');">
+		<img src='i/sp.gif' width=10>
+		<?}?>
+		<input type = button value = "Вернуться к списку заявок" OnClick="window.location.href='<?=$form_return_url?>';">
+	</td>
+	<td width=1%>&nbsp;</td>
+</tr>
+</table>

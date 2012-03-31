@@ -1,0 +1,156 @@
+<br><br>
+<script type="text/javascript" src="js/misc.js"></script>
+<script language=JavaScript src="js/jquery.min.js"></script>
+<script language=JavaScript src="js/jquery.autocomplete.js"></script>
+<script language=JavaScript>
+var validNumbers=new Array(<?=$valid_numbers_str?>);
+var PvalidNumbers=new Array(<?=$p_valid_numbers_str?>);
+var TbonusedNumbers=new Array(<?=$t_bonused_numbers_str?>);
+var PbonusedNumbers=new Array(<?=$p_bonused_numbers_str?>);
+
+function check_start_number(par){
+	if(par=='t'){
+		var field=$('#t-start_number');
+		if(!field.val().length){
+			alert('Не указан номер!');
+			field.select();
+			field.focus();
+			return false;
+		}
+		if(!in_array(field.val(),validNumbers)){
+			alert('Этот номер отсутсвует в стартовой ведомости!');
+			field.select();
+			field.focus();
+			return false;
+		}
+		if(in_array(field.val(),TbonusedNumbers)){
+			return confirm('Этот экипаж уже имеет временной. Изменить?');
+		}
+	}
+	if(par=='p'){
+		var field=$('#p-start_number');
+		if(!field.val().length){
+			alert('Не указан номер!');
+			field.select();
+			field.focus();
+			return false;
+		}	
+		if(!in_array(field.val(),PvalidNumbers)){
+			alert('Этот номер не стартовал по GPS, по этому бонусы возможны только по времени!');
+			field.select();
+			field.focus();
+			return false;
+		}
+		if(in_array(field.val().PbonusedNumbers)){
+			return confirm('Этот экипаж уже имеет бонус по баллам. Изменить?');
+		}
+	}	
+	return true;
+}
+function check_t_add_form(){
+	var min=$('#t-min');
+	if(!min.val()){
+		alert('Не указано время');
+		min.select();
+		min.focus();
+		return false;
+	}
+	var reason=$('#t-reason');
+	if(reason.val().length<=3){
+		alert('Не указана причина');
+		reason.select();
+		reason.focus();
+		return false;
+	}
+	return check_start_number('t');
+}	
+function check_p_add_form(){
+	var p=$('#p-points');
+	if(!p.val()){
+		alert('Не указано количество баллов!');
+		p.select();
+		p.focus();
+		return false;
+	}
+	var reason=$('#p-reason');
+	if(reason.val().length<=3){
+		alert('Не указана причина');
+		reason.select();
+		reason.focus();
+		return false;
+	}
+	return check_start_number('p');
+}
+
+
+$(document).ready(function(){
+	<?if($_GET['added']=='t') print "$('#t-start_number').focus();\n";?>
+	<?if($_GET['added']=='p') print "$('#p-start_number').focus();\n";?>
+	$('#t-reason').autocompleteArray([<?=$reasons_str?>],{delay:10,matchSubset:1,autoFill:true,maxItemsToShow:10} );
+	$('#p-reason').autocompleteArray([<?=$reasons_str?>],{delay:10,matchSubset:1,autoFill:true,maxItemsToShow:10} );
+
+});
+</script>
+<table width=100% border=0>
+<tr><td align=left>
+<table border=0 width=40% class=filter><tr><td style="white-space: nowrap;">
+<form name = t_add_form method = get action = bonus.php OnSubmit="return check_t_add_form();">
+<input type = hidden name = comp_id value = <?=$comp_id?>>
+<input type = hidden name = flag value = 1>
+<fieldset style="border:1px solid #333333;">
+<legend><b>Временной бонус</b></legend>
+Номер:<input type = text name = start_number id = t-start_number size=3 maxlength=3 OnKeyPress="return only_numbers(event);">
+Минуты:<input type = text name = min id = t-min size=3 maxlength=3 OnKeyPress="return only_numbers(event);">
+Причина: <input type = text name = reason id = t-reason size=20 maxlength=40>
+<input type = submit value = Добавить!>
+</fieldset>
+</form>
+</td></tr></table>
+</td><td><img src=i/sp.gif width=15></td>
+<td align=left>
+<table border=0 width=40% class=filter><tr><td style="white-space: nowrap;">
+<form name = p_add_form method = get action = bonus.php OnSubmit="return check_p_add_form();">
+<input type = hidden name = comp_id value = <?=$comp_id?>>
+<input type = hidden name = flag value = 2>
+<fieldset style="border:1px solid #333333;">
+<legend><b>Бонус по баллам(только GPS)</b></legend>
+Номер:<input type = text name = start_number id = p-start_number size=3 maxlength=3 OnKeyPress="return only_numbers(event);">
+Баллы:<input type = text name = points id = p-points size=3 maxlength=3 OnKeyPress="return only_numbers(event);">
+Причина: <input type = text name = reason id = p-reason size=20 maxlength=40>
+<input type = submit value = Добавить!>
+</fieldset>
+</form>
+</td></tr></table>
+</td>
+<td width=50%>&nbsp;
+</td></tr></table>
+<br><br>
+<?if($item_output){?>
+<table class=body width=80%>
+<tr class=head>
+<td width=1%>#</td>
+<td width=2%>Категория</td>
+<td>Экипаж</td>
+<td>Машина</td>
+<td>Автор</td>
+<td>Время</td>
+<td>Баллы/м.</td>
+<td>Причина</td>
+<td width=1%>уд.</td>
+</tr>
+<?foreach($item_output as $key=>$value){?>
+<tr>
+<td><b><?=$value['start_number']?></b></td>
+<td><?=$cat_name[$value['cat_id']]?></td>
+<td><?=$value['crew']?></td>
+<td><?=$value['auto_brand']?>/<?=$value['auto_number']?></td>
+<td><?=$value['author']?></td>
+<td><b><?=$value['min']?></b></td>
+<td align=center><b><?=$value['points']?></b></td>
+<td><?=$value['reason']?></td>
+<td><input type = button OnClick="if(confirm('совсем?')){window.location.href='<?=$value['del_url']?>';}" value = X title="удалить"></td>
+</tr>
+<?}?>
+</table>
+<?}?>
+

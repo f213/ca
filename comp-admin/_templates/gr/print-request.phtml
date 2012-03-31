@@ -1,0 +1,102 @@
+<html><head>
+<title>Заявка - <?=$comp_title?></title>
+		<style type="text/css">
+			td.brd {
+				border: 1px solid black;
+				vertical-align: bottom
+			}
+			td.brd1 {
+				border-bottom: 2px solid black;
+			}
+			p {
+				font-size: 12px;
+			}
+			strong {
+				font-size: 12px;
+				font-weight: bold;
+			}
+			li {
+				font-size 12px;
+			}
+
+				
+		</style>
+	</head>
+	<body <? if(defined('AUTO_PRINT') and AUTO_PRINT){print "onLoad=\"window.print();\"";}?>>
+		<div align=center>
+		<table width=100% style="border: 1px solid black;" cellspacing=0>
+			<tr><td colspan=2>
+					<table width=100% border=0>
+						<tr>
+							<td>
+								<img src=i/gr.gif height=71 width=84>
+							</td>
+							<td align=center>
+							<h5><?=$comp_title?></h5>
+								<h5>ЗАЯВКА НА УЧАСТИЕ</h5>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+
+			<tr><td colspan=2 align=center><b>Экипаж<?
+			if($output['start_number'])
+				print " № <b>{$output['start_number']}</b>";
+?></b></td></tr>
+
+			<tr><td colspan=2 align=left><b><?=$_people_names['pilot']['request']?></b></td></tr>
+			<tr><td class=brd align=right width=30%><p>ФИО, Ник:</p></td><td class=brd>&nbsp;<strong><?=$output['pilot_name']?></strong></td></tr>
+			<tr><td class=brd align=right width=30%><p>Документ, дата рождения:</p></td><td class=brd>&nbsp;</td></tr>
+			<?if(defined('USE_SIZE') and USE_SIZE){?>
+				<tr><td class=brd align=right width=30%><p>Размер одежды:</p></td><td class=brd><strong>&nbsp;&nbsp;S / M / L / XL / XXL (подчеркнуть)</strong></td></tr>
+			<?}?>
+			<?if(check_name('shturman','request')){?>
+				<tr><td colspan=2 align=left><b><?=$_people_names['shturman']['ca']?></b></td></tr>
+				<tr><td class=brd align=right width=30%><p>ФИО, Ник:</p></td><td class=brd>&nbsp;<strong><?=$output['navigator_name']?></strong></td></tr>
+				<tr><td class=brd align=right width=30%><p>Документ, дата рождения:</p></td><td class=brd>&nbsp;</td></tr>
+				<?if(defined('USE_SIZE') and USE_SIZE){?>
+					<tr><td class=brd align=right width=30%><p>Размер одежды:</p></td><td class=brd><strong>&nbsp;&nbsp;S / M / L / XL / XXL (подчеркнуть)</strong></td></tr>
+				<?}?>
+			<?}?>
+			<tr><td colspan=2><img src=i/sp.gif height=10></td></tr>
+			<tr><td colspan=2 align=left><b>Контактные данные</b></td></tr>
+			<tr><td class=brd align=right width=30%><p>Телефон(ы):</p></td><td class=brd>&nbsp;<strong><?=$output['phone']?></strong></td></tr>
+			<tr><td class=brd align=right width=30%><p>E-Mail:</p></td><td class=brd>&nbsp;<strong><?=$output['email']?></strong></td></tr>
+
+			<tr><td colspan=2><img src=i/sp.gif height=10></td></tr>
+			<tr><td colspan=2 align=center><b>Автомобиль</b></td></tr>
+			<tr><td class=brd align=right width=30%><p>Марка и модель:</p></td><td class=brd>&nbsp;<strong><?=$output['auto_brand']?></strong></td></tr>
+			<tr><td class=brd align=right width=30%><p>Гос. номер:</p></td><td class=brd>&nbsp;<strong><?=$output['auto_number']?></strong></td></tr>
+<?if(defined('CA_WHEEL_SIZE') and CA_WHEEL_SIZE){?>
+			<tr><td class=brd align=right width=30%><p>Размер резины:</p></td><td class=brd>&nbsp;<strong><?=$output['wheel_size']?></strong></td></tr>
+<?}?>
+			<tr><td class=brd align=right width=30%><p>Класс (тех. ком.):</p></td><td class=brd>&nbsp;<strong><?=$output['class']?></strong></td></tr>
+
+			<tr><td colspan=2><img src=i/sp.gif height=10></td></tr>
+			<tr><td colspan=2>
+			<ul>
+			<li><strong>Водители принимают на себя ВСЕ РИСКИ И ВСЮ ОТВЕТСТВЕННОСТЬ за возможные последствия своего участия в соревновании</strong></li>
+			<li><strong>Водители ознакомлены и согласны с частным регламентом соревнования, признают и обязуются выполнять все требования СК РАФ и регламентирующей документации РАФ</strong></li>
+			<li><strong>Водители признают за организатором права на использование всех фото-, видео- материалов соревнования для пропаганды автомобильного спорта.</strong></li>
+			<li><strong>Водители подтверждают, что информация, содержащаяся в заявке верна, и заявленный автомобиль соответствует требованиям безопасности для трофи-рейдов.</strong></li>
+			</ul>
+			</td>
+			</tr>
+			<tr><td colspan=2 align=left><p>Ознакомлены и согласны</p></td></tr>
+			<tr><td colspan=2 align=right>
+					<p>1-й водитель:_____________________________ Дата:_______</p>
+			</td></tr>
+			<tr><td colspan=2 align=right>
+					<p>2-й водитель:_____________________________ Дата:_______</p>
+			</td></tr>
+
+			
+
+
+
+		</table>
+	</div>
+	</body>
+</head>
+</html>

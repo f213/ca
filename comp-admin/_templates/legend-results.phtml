@@ -1,0 +1,182 @@
+<br><br>
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/jquery.hotkeys.min.js"></script>
+<script type="text/javascript" src="js/jquery.dimensions.js"></script>
+<script type="text/javascript" src="js/jquery.tooltip.js"></script>
+<script type="text/javascript" src="js/misc.js"></script>
+<script type="text/javascript" src="js/results.js"></script>
+
+<script type="text/javascript">
+var validNumbers=new Array(<?=$valid_numbers_str?>);
+var validNames=new Array(<?=$valid_names_str?>);
+var takenNames=new Array(<?=$taken_names_str?>);
+var max_kp=<?=$tpl_max_kp?>;
+function check_start_number(){
+	var el=$('#start_number');
+	if(!in_array(el.val(),validNumbers)){
+		alert('Этот номер не стартовал по Легенде!');
+		el.select();
+		el.focus();
+		return false;
+	}
+	return true;
+}
+
+function check_kp(){
+	var el=$('#kp');
+	if(el.val().length<1){
+		alert('Вы ввели некорреткное количество КП!');
+		el.select() .focus();
+		return false;
+	}
+	if(parseInt(el.val())>max_kp && max_kp>0){
+		alert('Вы указали КП больше чем есть!');
+		el.select() .focus();
+		return false;
+	}
+	return true;
+}
+function check_name(){
+	var el=$('#num_single');
+	if(!in_array(el.val(),validNames)){
+		alert('Указана несуществующая точка!');
+		el.select();
+		el.focus();
+		return false;
+	}
+	if(in_array(el.val(),takenNames)){
+		alert('Эта точка уже взята!');
+		el.select();
+		el.focus();
+		return false;
+	}
+	return true;
+}
+
+function doc_focus(){
+	$(document).bind('keyup','esc',function(){
+<?if(!$start_number)
+	print "		$('#start_number').val('') .focus();\n";
+if($start_number and !$tpl_have_finish)
+	print "		$('#finish_time').val('') .focus();\n";
+
+if($start_number and $tpl_have_finish){
+	if($kp_detailed)
+		print "		$('#kp').val('') .focus();\n";
+	else
+		print "		$('#num_single').val('') .focus();\n";
+}
+?>
+	});
+	
+<?if(!$start_number)
+	print "		$('#start_number').focus();\n";
+if($start_number and !$tpl_have_finish)
+	print "		$('#finish_time').focus();\n";
+if(!$kp_detailed){
+if($start_number and $tpl_have_finish and !$item['legend_kps'])
+	print "	$('#kp').focus();\n";
+if($start_number and $tpl_have_finish and $item['legend_kps'])
+	print " $('#finish_legend').focus();\n";
+}elseif($start_number and $tpl_have_finish)
+	print "	$('#num_single').focus();\n";
+
+?>
+}
+
+</script>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('#finish_form').submit(function(){
+			if(!check_time($('#finish_time').val())){
+				alert('Неправильно указано время!');
+				return false;
+			}
+			return true;
+		});
+<?if(defined('USE_TIME_INPUT_HELPER') and USE_TIME_INPUT_HELPER){?>
+		$('#finish_time').keyup(function(e){
+			time_input_helper($(this),e);
+		});
+<?}?>
+		doc_focus();
+	});
+</script>
+<?if(!$start_number)
+	print tpl_check_max_kp($comp_id); //сама функция в legend-results.php
+?>
+<table width=30% class=filter border=0>
+<tr align=left>
+<td align=left>
+<form name = start_form method = get action = legend-results.php OnSubmit="return check_start_number();">
+<input type = hidden name = comp_id value = <?=$comp_id?>>
+<p>Введите бортовой номер экипажа: <input type = text name = start_number id = start_number size=3 maxlength=3 OnKeyPress="return only_numbers(event);" value = "<?=$start_number?>">&nbsp;&nbsp;
+<input type = submit value = OK>
+</form>
+</td></tr>
+</table>
+<?if($start_number){
+
+?>
+<table width=30% class=filter border=0>
+<tr align=left>
+<td align=left>
+<form name = finish_form id=finish_form method = get action = legend-results.php >
+<input type = hidden name = comp_id value = <?=$comp_id?>>
+<input type = hidden name = start_number value = <?=$start_number?>>
+<input type = hidden name = flag value = 1>
+<p>Введите время финиша: <input type = text name = finish_time id = finish_time size=8 maxlength=8 onkeypress="return only_numbers_time(event);" value = <?=$item['finish_time']?>>
+<input type = submit value = OK>
+</form>
+</td></tr></table>
+
+
+<h1>Данные экипажа:</h1>
+<?require('_templates/blocks/vehicle_data_results.phtml')?>
+<br><br>
+<?if($tpl_have_finish){
+	if($kp_detailed){ //если у заданного участника в категории мы подробно обрабатываем легенду, по точкам
+	?>
+		<table width=30% class=filter border=0>
+		<tr><td>
+		<fieldset style="border:1px solid #333333;">
+		<legend><b>Добавить точку:</b></legend>
+		<form name = single_add_form method = get action = legend-results.php OnSubmit="return check_name();">
+		<input type = hidden name = comp_id value = <?=$comp_id?>>
+		<input type = hidden name = start_number value = <?=$start_number?>>
+		<input type = hidden name = flag value = 5>
+		<p>Номер точки: <input type = text name = num id = num_single size=3 maxlength=3 OnKeyPress="return only_numbers(event);" >&nbsp;&nbsp;&nbsp;
+		<input type = submit value = Добавить>
+		</form>
+		</fieldset>
+		</td></tr>
+		</table>
+		<br>
+		<input type = button value = "Закончить ввод" OnClick="window.location.href='legend-results.php?comp_id=<?=$comp_id?>';">
+		<br>
+		<h1 id=list>Список точек</h1>
+		<br>
+		<?if($kp_output)
+			require('_templates/blocks/kp_results.phtml');
+	}else{?>
+
+		<table width=30% class=filter border=0>
+		<tr align=left>
+		<td align=left>
+		<form name = start_form method = get action = legend-results.php OnSubmit="return check_kp();">
+		<input type = hidden name = comp_id value = <?=$comp_id?>>
+		<input type = hidden name = start_number value = <?=$start_number?>>
+		<input type = hidden name = flag value = 2>
+		<p>Количество взятых КП: <input type = text name = kp id = kp size=3 maxlength=3 OnKeyPress="return only_numbers(event);" value = "<?=$item['legend_kps']?>">&nbsp;&nbsp;
+		<input type = submit value = OK>
+		</form>
+		</td></tr>
+		</table>
+		<?if(strlen($item['legend_kps'])){?>
+			<input type = button id = "finish_legend" value="Перейти к следующему" OnClick="window.location.href='legend-results.php?comp_id=<?=$comp_id?>';">
+		<?}
+	}
+
+}
+}
+?>

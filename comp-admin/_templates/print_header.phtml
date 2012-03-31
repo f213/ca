@@ -1,0 +1,30 @@
+<?
+require('_includes/nocache.php');
+?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="i/print.css" rel="stylesheet" type="text/css">
+<title><?=$title?></title>
+</head>
+<body>
+<table width=100% border=0>
+<tr><td width=100>
+<?if(defined('CA_LOGO_NAME'))
+	print '<img src="i/logo/'.CA_LOGO_NAME.'.gif">';
+?>
+</td>
+
+<?if($page_title){
+	$n='';
+	foreach(explode("\n",$page_title) as $str){
+		$str="<center><h1>$str<h1></center>";
+		$n.="$str\n";
+	}	
+	?><td><?=$n?></td>
+<?}else{?>
+	<td><img src=i/sp.gif height=100></td>
+<?}?>
+</table>

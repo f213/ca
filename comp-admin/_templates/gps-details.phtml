@@ -1,0 +1,107 @@
+<div align=left>
+<table width=100% border=0>
+<tr><td width=45% valign=top>
+	<table width=100% border=1>
+	<tr>
+		<td colspan=2 align=center><b>Данные участника</b></td>
+	</tr>
+
+	<tr>
+		<td align=right>Категория:</td>
+		<td><b><?=$item_output['req_data']['cat_name']?></b></td>
+	</tr>
+	<tr>
+		<td align=right><?=$_people_names['pilot']['print']?>:</td>
+		<td><b><?=$item_output['req_data']['pilot_name']?></b></td>
+	</tr>
+	<?if(check_name('shturman','print')){?>
+		<tr>
+			<td align=right><?=$_people_names['shturman']['print']?>:</td>
+			<td><b><?=$item_output['req_data']['navigator_name']?></b></td>
+		</tr>
+	<?}?>
+	<tr>
+		<td align=right>Машина:</td>
+		<td><b><?=$item_output['req_data']['auto_brand']?></b></td>
+	</tr>
+	<tr>
+		<td align=right>Колеса:</td>
+		<td><b><?=$item_output['req_data']['wheel_size']?></b></td>
+	</tr>
+<?if($item_output['need_tk']){?>
+	<tr>
+		<td align=right>Тех. ком.</td>
+		<td><b><?if($item_output['req_data']['tk_is_passed'])
+				print "пройдена";
+			else
+				print "НЕ пройдена";
+		?></b></td>
+	</tr>
+<?}?>
+	</table>
+</td>
+<td width=10%>&nbsp;</td>
+<td width=45% valign=top>
+	<table width=100% border=1>
+	<tr>
+		<td colspan=2 align=center><b>Данные категории</b></td>
+	</tr>
+	<tr>
+		<td align=right>Название:</td>
+		<td><b><?=$item_output['cat_name']?></b></td>
+	</tr>
+	<tr>
+		<td align=right>Участников:</td>
+		<td><b><?=$item_output['total_cat_uch']?></b></td>
+	</tr>
+	<tr>
+		<td align=right>Макс. время на трассе:</td>
+		<td><b><?=$item_output['max_time']?></b></td>
+	</tr>
+	<tr>
+		<td align=right>Всего точек:</td>
+		<td><b><?=$item_output['points']['total']?></b></td>
+	</tr>
+	<tr>
+		<td align=right>Общая стоимость:</td>
+		<td><b><?=$item_output['points']['total_cost']?></b></td>
+	</tr>
+	<?if($comp_type=='gr-gps'){?>
+	<tr>
+		<td align=right>Множитель баллов:</td>
+		<td><b><?=$item_output['points_mult']?></b> мин.</td>
+	</tr>
+	<?}?>
+	</table>
+</td></tr>
+<tr><td colspan=3>
+Старт: <b><?=$item_output['time']['start']?></b>, Финиш: <b><?=$item_output['time']['finish']?></b>, Время: <b><?=$item_output['time']['final']?></b><?if($item_output['has_bonus'])print ", бонус: <b>{$item_output['time']['bonus']}</b>";?><?if($comp_type=='gr-gps') print ", итоговое время с учетом штрафов за невзятые точки <b>{$item_output['time']['realy']}</b>";?>
+</td>
+</tr>
+<tr><td colspan=3>
+Взято точек: <b><?=$item_output['points']['taken']?></b> общей стоимостью <b><?=$item_output['points']['taken_cost']?></b><?if($item_output['points']['taken_cost']!=$item_output['points']['final_cost']) print ", с учетом бонусов: <b>{$item_output['points']['final_cost']}</b>";
+
+if($comp_type=='gr-gps'){
+	?>; Не взято точек: <b><?=$item_output['points']['untaken']?></b> общей стоимостью <b><?=$item_output['points']['untaken_cost']?></b>;
+<?}?>
+</td></tr>
+
+<tr><td colspan=3>Взятые точки: <?
+	$points_str='';
+	foreach($item_output['points_data'] as $key=>$value)
+		if($value['taken'])
+			$points_str.=" <b>{$value['name']}</b>,";
+	print trim($points_str,',');
+?></td></tr>
+<tr><td colspan=3>Невзятые точки: <?
+	$points_str='';
+	foreach($item_output['points_data'] as $key=>$value)
+		if(!$value['taken'])
+			$points_str.=" <b>{$value['name']}</b>({$value['other_taked']}),";
+	print trim($points_str,',');
+?></td></tr>
+<tr><td colspan=3><font size=1>В скобках указано количество участников, взявших конкретную точку<br />
+<b>Множитель баллов</b> - сумма времеменного штрафа за один невзятый балл <br />
+Итоговое время может отличаться от ('время старта'-'время финиша') если у участника были отсечки, пенализации, или бонусы по времени.
+</td></tr>
+</table>

@@ -1,0 +1,176 @@
+<br><br>
+<form name = filter_form id = filter_form method = get action = legend-kp.php>
+<input type = hidden name = comp_id value = "<?=$comp_id?>">
+<table cellpadding="5" cellspacing="0" border="0" width="100%" class="filter">
+<tr align=left>
+<td><b>Категория:</b>&nbsp;&nbsp;
+<select name = f_category id = f_category OnChange="this.form.submit();">
+<option value = (-1)>(Выберите категорию)</option>
+<?foreach($my_categories as $category){
+	if($category==$f_category)
+		print "<option value = $category selected>{$cat_name[$category]}</option>\r\n";
+	else
+		print "<option value = $category>{$cat_name[$category]}</option>\r\n";
+}?></select>
+&nbsp;&nbsp;&nbsp;
+</td>
+</tr></table>
+</form>
+<?if($f_category){ //дальше идем тока если задана категория
+
+
+?>
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/misc.js"></script>
+<script type="text/javascript">
+var usedNumbers=new Array(<?=$used_nums_str?>);
+function check_mass_form(){
+	if($('#num_begin').val().length<1){
+		alert('Вы не ввели начало диапазона!');
+		$('#num_begin').select()
+			.focus();
+		return false;
+	}
+	if($('#num_end').val().length<1){
+		alert('Вы не ввели конец диапазона!');
+		$('#num_end').select()
+			.focus();
+		return false;
+	}
+	return true;
+}
+function check_add_form(){
+	var num_val=$('#num').val();
+	if(num_val.length<1){
+		alert('Вы не ввели название точки!');
+		$('#num').select()
+			focus();
+		return false;
+	}
+	if(in_array(num_val,usedNumbers)){
+		alert('Такая точка уже есть!');
+		$('#num').select()
+			focus();
+		return false;
+	}
+	return true;
+}	
+function doc_focus(){
+<?
+	if($_GET['one_added'])
+		print "	$('#num').focus();\n";
+	if($_GET['multiple_added'])
+		print "	$('#num_begin').focus();\n";
+?>
+}
+</script>
+<script type = "text/javascript">
+	$(document).ready(function(){
+		doc_focus();
+		$('.num_input').keyup(function(e){
+			if(window.event){ // IE
+				keynum = e.keyCode;
+			}else if(e.which){ // Netscape/Firefox/Opera
+				keynum = e.which;	
+			}
+			if(keynum==27){ //escape
+				$(this).val('');
+			}
+		});
+	});
+</script>
+
+<br><h1>Операции:</h1><br>
+<table width=100% border=0>
+<tr><td align=right nowrap>
+<form name = clear_form method = get action =legend-kp.php OnSubmit="return confirm('Вы уверены??');">
+<input type = hidden name = comp_id value = <?=$comp_id?>>
+<input type = hidden name = f_category value = <?=$f_category?>>
+<input type = hidden name = filters_str value = "<?=$filters_tr?>">
+<input type = hidden name = flag value = 3>
+<input type = submit value = "Очистить все точки в категории">
+&nbsp;&nbsp;<input type = button value = "Вернуться к списку соревнований" OnClick="window.location.href='<?=$back_url?>'">
+</form>
+</td><td><img src=i/sp.gif width=1></td></tr>
+<tr><td><img src=i/sp.gif height=1></td></tr>
+</table>
+<table cellpadding="5" cellspacing="0" border="0" width="100%" class="filter">
+<tr align=left>
+<td width=50%>
+<fieldset style="border:1px solid #333333;">
+<legend><b>Массовое добавление точек:</b></legend>
+<form name = mass_add_form method = get action = legend-kp.php OnSubmit="return check_mass_form();">
+<input type = hidden name = comp_id value = <?=$comp_id?>>
+<input type = hidden name = f_category value = <?=$f_category?>>
+<input type = hidden name = filters_str value = "<?=$filters_tr?>">
+<input type = hidden name = flag value = 1>
+<p>Начало диапазона:
+<input type = text name = num_begin id = num_begin class=num_input size=3 maxlength=3 onkeypress="return only_numbers(event);">
+Конец диапазона:
+<input type = text name = num_end id = num_end class=num_input size=3 maxlength=3 onkeypress="return only_numbers(event);">
+&nbsp;&nbsp;
+<input type = submit value = Добавить>
+</p>
+</form>
+</fieldset></td>
+<td width=35%>
+<fieldset>
+<legend><b>Добавление одной точки:</b></legend>
+<form name = add_form method = get action = legend-kp.php OnSubmit="return check_add_form();">
+<input type = hidden name = comp_id value = <?=$comp_id?>>
+<input type = hidden name = f_category value = <?=$f_category?>>
+<input type = hidden name = filters_str value = "<?=$filters_tr?>">
+<input type = hidden name = flag value = 2>
+<p>Номер точки:
+<input type = text name = num id = num size=3 class=num_input maxlength=3 onkeypress="return only_numbers(event);">
+&nbsp;&nbsp;
+<input type = submit value = Добавить>
+</p>
+</form>
+</fieldset>
+
+</td>
+<td>&nbsp;</td>
+
+</tr></table>
+<?if($item_output){?>
+<br><h1>Управление:</h1><br>
+
+<?if($item_output){?>
+<table width=25% class=body border=0>
+<tr class=head>
+<td><b>Точка</b></td>
+<td><b>Comment</b></td>
+<td><b>Акт.</b></td>
+<td><b>Уд.</b></td>
+</tr>
+<?foreach($item_output as $key=>$value){
+?><tr>
+	<td align=right><b><?=$value['name']?></b></td>
+	<td align=center><form name = comment_form_<?=$key?>>
+                <input type = hidden name = comp_id value = <?=$comp_id?>>
+                <input type = hidden name = f_category value = <?=$f_category?>>
+                <input type = hidden name = flag value = 7>
+                <input type = hidden name = name value = <?=$key?>>
+		<input type = text name = comment size=15 maxlength=25 value = "<?=$value['comment']?>">&nbsp;
+		<input type = submit value = OK></form></td>
+	<td align=center><form name = active_form_<?=$key?>>
+		<input type = hidden name = comp_id value = <?=$comp_id?>>
+		<input type = hidden name = f_category value = <?=$f_category?>>
+		<input type = hidden name = flag value = 5>
+		<input type = hidden name = name value = <?=$key?>>
+		<input type = checkbox name = active value = 1<?if($value['active']) print " checked ";?> OnChange="this.form.submit();">
+		</form></td>
+	<td align=center><input type = button value = X OnClick="if(confirm('Совсем?')){window.location.href='<?=$value['delete_link']?>';}"></td>
+</tr><?}
+?></table>
+<?}?>
+<br>
+<table width=100% border=0>
+<tr><td align=right nowrap>
+<input type = button value = "Вернуться к списку соревнований" OnClick="window.location.href='<?=$back_url?>'">
+</td><td><img src=i/sp.gif width=1></td></tr></table>
+<?
+}	
+}
+?>

@@ -1,0 +1,15 @@
+<br>
+<table width=100% class="filter" border=0>
+<tr><td>
+<form name = filter_form method = get action = results_multi.php>
+<input type = hidden name = comp_id id=comp_id value = <?=$comp_id?>>
+<b>Категория:&nbsp;&nbsp;</b><select name = f_category id = f_category onChange="this.form.submit();">
+<option value = 0>(Выберите категорию)</option>
+<?foreach($cat as $key=>$value)
+	if($key==$f_category)
+		print "<option value = $key selected>{$value['name']}</option>\r\n";
+	else
+		print "<option value = $key>{$value['name']}</option>\r\n";
+?></select>
+</td></tr>
+</table>

@@ -1,0 +1,37 @@
+<div align=center>
+<table width=99% border=1 cellspacing=0 cellpadding=1>
+<tr>
+<td width=15><b>№</b></td>
+<td width=20><b>Борт.<b></td>
+<td><b>Экипаж</b></td>
+<td><b>Машина</b></td>
+<td><b>Пенал.</b></td>
+<td><b>Причина</b></td>
+<?if($anyone_has_portal or $anyone_has_winch){?>
+<td><b>Комментарий</b></td>
+<?}?>
+</tr>
+<?foreach($item_output as $key=>$value){
+?>
+<tr>
+<td><?=$key?></td>
+<td><?=$value['start_number']?></td>
+<td><?=$value['crew']?></td>
+<td><?=$value['auto_brand']?></td>
+<td><?=$value['pen_time']?></td>
+<td><?=$value['pen_reason']?></td>
+<?if($anyone_has_portal or $anyone_has_winch){
+	print "<td>";
+	$str='&nbsp;';
+	if($value['have_portal'])
+		$str.="порталы,";
+	if($value['have_winch'] and !preg_match('/леб[её]дк?а/i',$value['pen_reason']))
+		$str.="лебедка,";
+	$str=trim($str,',');
+	print $str;
+	print "</td>";
+}?>
+</tr>
+<?}?>
+
+

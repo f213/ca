@@ -1,0 +1,83 @@
+<?php
+//full
+//Блок предназначен для вывода списка возможных точек и форм для их сабмита в процессе ввода результатов. 
+//Входные данные:
+//	$kp_output - массив с точками
+//	$kps_per_row - количество точек в ряду, нужно для рассчета красивой таблички с ними.
+//	$kp_form_url - урл по которому сабмитицо форма с точками
+//	$start_number - борт номера экипажа с которым работаем.
+//
+// Так же для работы необходим jquery.tooltip.js
+//
+/* Пример $kp_output:
+ *   [0]=> //номер ряда в списке точек
+  array(8) { 
+    [119]=> //id точки
+    array(5) {
+      ["cost"]=>
+      int(2)
+      ["name"]=>
+      string(3) "016" //реальное имя точки
+      ["comment"]=>
+      string(0) ""
+      ["required"]=> //это и предыдущее поле нужны для подсветки нестандартных видов точек
+      bool(false)
+      ["taken"]=> //взята точка или нет
+      bool(true)
+    }
+    [103]=>
+    array(5) {
+      ["cost"]=>
+      int(5)
+      ["name"]=>
+      string(3) "017"
+      ["comment"]=>
+      string(0) ""
+      ["required"]=>
+      bool(false)
+      ["taken"]=>
+      bool(true)
+    }
+ */
+?>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('.point_name_with_comment').tooltip();
+		$('.point_name_required').tooltip();
+	});
+</script>
+<table class=body width=40%>
+<?
+	foreach($kp_output as $x){?>
+		<tr class=head>
+		<?
+			for($i=0;$i<sizeof($x);$i++)
+				print "<td>№</td>";
+			if(sizeof($x)<$kps_per_row)
+				print "<td colspan=".($kps_per_row-sizeof($x)).">&nbsp;</td>";
+		?>
+		</tr>
+		<tr>
+		<?
+		$c=0;
+		foreach($x as $key=>$value){
+			$c++;
+			$class='point_name';
+			if($value['comment'])
+				$class='point_name_with_comment';
+			if($value['required'])
+				$class='point_name_required';
+			?><td>
+				<form name = kp_form_<?=$Key?> method = get <?if($kp_form_url) print "action=\"$kp_form_url\"";?> >
+					<input type = hidden name = comp_id value = <?=$comp_id?>>
+					<input type = hidden name = start_number value = <?=$start_number?>>
+					<input type = hidden name = flag value = 3>
+					<input type = hidden name = item_id value = <?=$key?>>
+					<span title="<?=$value['comment']?>" class=<?=$class?>><?=$value['name']?></span> <input type = checkbox name = taken value = 1 <?if($value['taken']) print " checked ";?> OnChange="this.form.submit();"></form>
+			</td><?
+		}
+			
+		if($c<$kps_per_row) print "<td colspan=".($kps_per_row-$c).">&nbsp;</td>"; //последняя, длинная ячейка
+	?></tr>
+	<?}?>
+</table>

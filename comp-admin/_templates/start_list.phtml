@@ -1,0 +1,333 @@
+<script type="text/javascript" src="js/misc.js"></script>
+<script type="text/javascript" src="js/results.js"></script>
+<script language=JavaScript src="js/jquery.min.js"></script>
+<script language=JavaScript src="js/jquery.hotkeys.min.js"></script>
+<script language=JavaScript src="js/jquery.quicksearch.js"></script>
+<script language=JavaScript src="js/jquery.scrollTo-min.js"></script>
+<br><br>
+<table width=100% class="filter" border=0>
+<tr><td>
+<form name = filter_form method = get action = start_list.php>
+<input type = hidden name = comp_id id=comp_id value = <?=$comp_id?>>
+<b>Категория:&nbsp;&nbsp;</b><select name = f_category id = f_category onChange="this.form.submit();">
+<option value = 0>(Выберите категорию)</option>
+<?foreach($cat as $key=>$value)
+	if($key==$f_category)
+		print "<option value = $key selected>{$value['name']}({$value['num_started']})</option>\r\n";
+	else
+		print "<option value = $key>{$value['name']}({$value['num_started']})</option>\r\n";
+?></select>
+<?if($tpl_print_link){?>
+	&nbsp;<input type = button title="Печать стартовой ведомости (на стенд)" value = "Печать" onclick="print_with_title('<?=$tpl_print_link?>',$('#change_start_list_title'),'Стартовая ведомость');"> <input type = checkbox id = change_start_list_title title="Изменить заголовок"><label for="change_start_list_title" title="Изменить заголовок">title</label>
+	<?if(function_exists('can_export_xls') and can_export_xls()){?>
+		&nbsp;<input type = button title="Экспорт в excel" value = "Экспорт" onclick="window.open('<?=$tpl_print_link.'&xls=1'?>');">
+	<?}?>
+<?}?>
+<?if($tpl_tkproto_link){?>
+	<b>|</b>&nbsp;<input type = button title="Печать протокола техкомиссии (на стенд)" value = "Протокол техкомиссии" onclick="window.open('<?=$tpl_tkproto_link?>');" <?if($tpl_tkproto_disabled) print " disabled ";?>>
+	<?if(function_exists('can_export_xls') and can_export_xls()){?>
+		&nbsp;<input type = button title="Экспорт к excel протокола техкомиссии" value = "Экспорт" onclick="window.open('<?=$tpl_tkproto_link.'&xls=1'?>');"  <?if($tpl_tkproto_disabled) print " disabled ";?>>
+	<?}?>
+
+<?}?>
+</form>
+
+</tr></td>
+</table>
+<?if($f_category and $item_output){?>
+<script language=JavaScript>
+var just_edited=<?=$just_edited?>; 
+$('document').ready(function(){
+
+	$('.start_time').click(function(){
+		var start_number=parseInt($(this).attr('id').match(/\d+/));
+		var start_time=$(this).html();
+		var comp_id=$('#comp_id').val();
+		var f_category=$('#f_category').val();
+		$(this).addClass('invisible');
+		$('#get_back_'+start_number).removeClass('invisible');
+		$(this).after('<form class=edit_form name = edit_form_'+start_number+' id=edit_form_'+start_number+' method = get action=start_list.php><input type = hidden name = flag value = 1><input type = hidden name = comp_id value = '+comp_id+'><input type = hidden name = f_category value = '+f_category+'><input type = hidden name = start_number value = '+start_number+'><input type = text" name = time class=time id=time_'+start_number+' size=9 maxlength=8 value = \''+start_time+'\'></form>');
+		var form=$('#edit_form_'+start_number);
+		form.submit(function(){
+			if(!check_time($(this).children('.time').val())){
+				alert('Указано неправильное время старта!');
+				return false;
+			}
+			return true;
+			
+		});
+<?if(defined('USE_TIME_INPUT_HELPER') and USE_TIME_INPUT_HELPER){?>		
+		form.children('.time').keyup(function(e){
+			time_input_helper($(this),e);
+		});
+<?}?>
+		$(document).bind('keydown','esc',function(){
+			get_back(start_number);
+		});
+		$('#time_'+start_number).select() .focus();
+	});
+	$(document).bind('keydown','<?=CA_SEARCH_HOTKEY?>',function(){
+		$('#qs').focus();
+	});
+	$('#qs').quicksearch('table#main_table tr.row',{
+		selector:'td.st',
+		bind:'keydown keyup'
+	});
+	$('#qs').keydown(function(e){
+		var keynum;
+		var keychar;
+		var numcheck;
+		if(window.event){ // IE
+			keynum = e.keyCode;
+		}else if(e.which){ // Netscape/Firefox/Opera
+			keynum = e.which;       
+		}
+		if(keynum==27){ //ESC отменяет поиск
+			setTimeout(function(){
+				$('#qs').val('');
+				$('#qs').keyup();
+			},100);
+			return true;
+		}
+		return (keynum<48 || (keynum>=48 && keynum<= 57));
+
+	});
+	$('#qs').blur(function(){
+		$('#qs').val('');
+	});
+	//фокусировка только что измененной строки
+	if(just_edited){
+		$.scrollTo('#data'+just_edited);
+		$('#data'+just_edited).children().each(function(){ //неохота с css разбираться, поэтому сделано через перебор всех TD. Надо бы один раз на TR назначать, до хер с ним.
+			$(this).removeClass('body')
+				.addClass('datahl');
+		});
+	}else{
+		$('#qs').focus();
+	}
+
+});
+
+function get_back(start_number){
+	$('#edit_form_'+start_number).empty();
+	$('#edit_form_'+start_number).remove();
+	$('#start_time_'+start_number).removeClass('invisible');
+	$('#get_back_'+start_number).addClass('invisible');
+	$(document).unbind('keydown','esc');
+}
+function queue_start(link){ //переписать ведомость на старт очередями (только легенда)
+	var col; var interval;
+
+	col=prompt('Количество машин за раз:',5);
+	if(!col){
+		return false;
+	}
+	link=link+'&col='+col;
+	interval=prompt('Промежуток',2);
+	if(!interval){
+		return false;
+	}
+	link=link+'&interval='+interval;
+	if(confirm('Переписываем ведомость по '+col+' машин за раз с интервалом '+interval+' м.?')){
+		window.location.href=link;
+	}
+}
+function mix_start(link){ //переписать ведомость на старт друг за другом (только gps)
+	var interval;
+	interval=prompt('Промежуток',2);
+	if(!interval){
+		return false;
+	};
+	link=link+'&interval='+interval;
+	if(confirm('Переписываем ведомомсть на поочередный старт с интервалом '+interval+' м.?')){
+		window.location.href=link;
+	}
+}
+</script>
+
+
+
+<br>
+<b>Искать по номеру(<?=CA_SEARCH_HOTKEY?>):</b> <input type = text name = qs id = qs size=20>
+<table width=80% class=body id=main_table border=0>
+<tr class=head>
+<td width=2% title="Номер п\п.">#</td>
+<td width=2% title="Бортовой номер">#B</td>
+<?if($tpl_need_tk){?> <td width=2% title="Статус техкомиссии" align=center>ТК</td> <?}?>
+<?if(defined('CA_TRACK_PORTAL') and CA_TRACK_PORTAL){?>
+<td width=2% align=center title="Портальные мосты">П</td>
+<?}?>
+<?if(defined('CA_TRACK_WINCH') and CA_TRACK_WINCH and in_array($f_category,$winch_cat)){?>
+<td width=2% align=center title="Лебедка">W</td>
+<?}?>
+<td>Экипаж</td>
+<td>Машина</td>
+<td>Колеса</td>
+<td>Время старта</td>
+</tr>
+<?
+$c=0;
+foreach($item_output as $key=>$value){
+?>
+	<tr class=row id=data<?=$value['start_number']?>>
+	<td><?=++$c?></td>
+	<td class=st><b><?=$value['start_number']?></b></td>
+	<?if($tpl_need_tk){?><td><input type = checkbox disabled <?if($value['tk_is_passed']) print " checked "?> ></td><?}?>
+	<?
+	if(defined('CA_TRACK_PORTAL') and CA_TRACK_PORTAL){?>
+	<td><input type = checkbox disabled <?if($value['have_portal']) print " checked "?> ></td>
+	<?}?>
+	<?
+	if(defined('CA_TRACK_WINCH') and CA_TRACK_WINCH and in_array($f_category,$winch_cat)){?>
+	<td><input type = checkbox disabled <?if($value['have_winch']) print " checked "?> ></td>
+	<?}?>
+	<td><a href = "<?=$value['req_link']?>"><?
+		if($value['disq'])
+			print "<b>[СНЯТ] </b> ";
+		if($value['tk_is_relative'])
+			print "<b>[УСЛОВНЫЙ ДОПУСК] </b> ";
+
+?><?=$value['crew']?></a></td>
+	<td><?=$value['auto_brand']?> / <?=$value['auto_number']?></td>
+	<td><?=$value['wheel_size']?></td>
+	<td style="white-space: nowrap"><div style="white-space: nowrap;" ><a href = # id=start_time_<?=$value['start_number']?> class=start_time><?=$value['start_time']?></a>&nbsp;
+<?
+	if($value['move_up_link'])
+		print "<a href = '{$value['move_up_link']}' onclick=\"return confirm('точно?');\"><img width='13' height='13' src='i/up.gif'></a>&nbsp;";
+	if($value['move_down_link'])
+		print "<a href = '{$value['move_down_link']}' onclick=\"return confirm('точно?');\"><img width='13' height='13' src='i/down.gif'></a>&nbsp;";
+?>	
+<a class=invisible id=get_back_<?=$value['start_number']?> href = # Onclick="get_back(<?=$value['start_number']?>); return false;">Отмена</a></div></td>
+	</tr>
+<?}
+?>
+</table>
+<br><br>
+<p>Всего: <b><?=$total_cnt?></b><?if($tpl_need_tk){?>, прошли тех. комиссию: <b><?=$tk_cnt?></b><?}?>
+</p>
+<br><br>
+<?if($tpl_sync_start_link or $tpl_queue_start_link){?>
+<table width=1% class=filter border=0>
+<tr><td>
+<fieldset style="border:1px solid #333333;">
+<legend><b>Инструменты</b></legend>
+<ul>
+<?if($tpl_sync_start_link){?>
+	<li><a href="#" title="Сделать старт одноременным. За начало старта берется самое раннее время в категории. Если не устраивает - надо перегенерировать стартовую ведомость" onclick="if(confirm('Точно? Изменится время старта всех экипажей...')){window.location.href='<?=$tpl_sync_start_link?>';return false;}">Одновременный&nbsp;старт</a></li>
+<?}
+if($tpl_queue_start_link){?>
+	<li><a href="#" title="Старт очередями по X машин с интервалом Y" onclick="queue_start('<?=$tpl_queue_start_link?>');return false;">Старт&nbsp;очередями</a></li>
+<?}
+if($tpl_clean_link){?>
+	<li><a href=#" title="Очистка стартовой ведомости" onclick="if(confirm('Точно? Результаты если есть тоже удалятся?')){window.location.href='<?=$tpl_clean_link?>'; return false;}">Очистка&nbsp;стартовой&nbsp;ведомости</a></li>
+<?}?>
+</ul>
+</fieldset>
+</td></tr>
+</table>
+<?}?>
+<?}else{ //если категория не задана, смотрим, надо ли генерировать стартовую ведомость
+	if(sizeof($categories_without_start_list)){
+	?>
+	<script type="text/javascript">
+		var Types=new Array();
+		<?foreach($categories_without_start_list as $cat_id=>$type)
+			print "Types[$cat_id]='$type';\r"
+		?>
+		$(document).ready(function(){
+			$('#interval_td').addClass('invisible');
+
+			<?if(defined('USE_TIME_INPUT_HELPER') and USE_TIME_INPUT_HELPER){?>
+			$('#time_begin').keyup(function(e){
+					time_input_helper($(this),e);
+				});
+			<?}?>
+			$(document).bind('keydown','esc',function(){
+				$('#cancel').click();
+				$('#time_begin').focus();
+			});
+			$('#cat_id').change(function(){
+				if(Types[parseInt($(this).val())]=='legend'){
+					if($('#interval_td').hasClass('invisible')){
+						$('#interval_td').removeClass('invisible');
+					}
+				}else{
+					if(!$('#interval_td').hasClass('invisible')){
+						$('#interval_td').addClass('invisible');
+					}
+				}
+				if(!parseInt($(this).val())){
+					$('#submit').attr('disabled',1);
+					$('#cancel').attr('disabled',1);
+				}else{
+					$('#submit').attr('disabled',0);
+					$('#cancel').attr('disabled',0);
+				}
+				$('#cancel').click();
+				$('#time_begin').focus();
+			});
+			$('#cancel').click(function(){
+				$('#time_begin').val('');
+				$('#interval').val('');
+			});
+
+			$('#cat_id').change();
+			$('#time_begin').focus();
+
+		});
+		function check_form(){
+			if(!check_time($('#time_begin').val())){
+				$('#time_begin').select() .focus();
+				alert('Неверно указано время!');
+				return false;
+			}
+			if(!$('#interval_td').hasClass('invisible') && $('#interval').val().length<1){
+				$('#interval').select() .focus();
+				alert('Неверено указан интервал!');
+				return false;
+			}
+			return true;
+		}
+	</script>
+	<br /><br /><br />
+	<?if($_GET['start_list_generated'])
+		print "<h1>Успешно сгенерирована стартовая ведомость в категории ".$cat_name[(int)$_GET['start_list_generated']]."!</h1>";
+	?>
+	<table width="100%" border=0 cellspacing=5 class=filter>
+	<tr><td>
+	<fieldset style="border:1px solid #333333;">
+	<legend><b>Создание стартовой ведомости</b></legend>
+	<form name = start_list_form method = get action = gen_start_list.php onsubmit="return check_form();">
+	<input type = hidden name = comp_id value = <?=$comp_id?>>
+	<input type = hidden name = rnd value=<?=rnd_str(8)?>>
+	<table width=100% border=0>
+	<tr>
+	<td style="white-space: nowrap;">
+	<select name = cat_id id = cat_id>
+		<option>(выберите категорию)</option>
+		<?foreach($categories_without_start_list as $cat_id=>$cat_type){
+			?><option value = <?=$cat_id?>><?=$cat_name[$cat_id]?>(<?=$types_array[$cat_type]?>)</option><?
+		}?>
+	</select></td>
+	<td style="white-space: nowrap;">Время:<input type = text name = time_begin id = time_begin size=8 maxlength = 8></td>
+	<td style="white-space: nowrap;" id = interval_td>Промежуток: <input type = text name = interval id=interval size=2 maxlength=3 onkeypress="return only_numbers(event);"></td>
+	<td style="white-space: nowrap;">Метод сортировки:</td>
+	<td style="white-space: nowrap;"><select name = sort_type ><?foreach($sl_sort_types as $key=>$value){
+		if(array_key_exists('last_sort_type',$_GET) and $key==$_GET['last_sort_type'])
+			print "<option value = \"$key\" selected>$value</option>\r\n";
+		else
+			print "<option value = \"$key\">$value</option>\r\n";
+		}
+	?>
+	<td style="white-space: nowrap;"><input type = submit value = "Создать" id = submit></td>
+	<td style="white-space: nowrap;"><input type = button id = cancel value = "Очистить"></td>
+	</form>
+	<td width=100%>&nbsp;</td>
+	</tr></table>
+	</fieldset>
+	</td></tr>
+	</table>
+
+	
+	<?}
+}

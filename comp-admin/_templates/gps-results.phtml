@@ -1,0 +1,156 @@
+<br><br>
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/jquery.dimensions.js"></script>
+<script type="text/javascript" src="js/jquery.tooltip.js"></script>
+<script type="text/javascript" src="js/jquery.hotkeys.min.js"></script>
+<script type="text/javascript" src="js/misc.js"></script>
+<script type="text/javascript" src="js/results.js"></script>
+<script language=JavaScript>
+var validNumbers=new Array(<?=$valid_numbers_str?>);
+var validNames=new Array(<?=$valid_names_str?>);
+var takenNames=new Array(<?=$taken_names_str?>);
+function check_start_number(){
+	var el=$('#start_number');
+	if(!in_array(el.val(),validNumbers)){
+		alert('Этот номер не стартовал по GPS!');
+		el.select();
+		el.focus();
+		return false;
+	}
+	return true;
+}
+		
+function check_name(){
+	var el=$('#num_single');
+	if(!in_array(el.val(),validNames)){
+		alert('Указана несуществующая точка!');
+		el.select();
+		el.focus();
+		return false;
+	}
+	if(in_array(el.val(),takenNames)){
+		alert('Эта точка уже взята!');
+		el.select();
+		el.focus();
+		return false;
+	}
+	return true;
+}
+function doc_focus(){
+	$(document).bind('keyup','esc',function(){
+<?if(!$start_number)
+	print "		$('#start_number').val('') .focus();\n";
+if($start_number and !$tpl_have_finish)
+	print "		$('#finish_time').val('') .focus();\n";
+if($start_number and $tpl_have_finish)
+	print "		$('#num_single').val('') .focus();\n";
+?>
+	});
+	
+<?if(!$start_number)
+	print "	$('#start_number').focus();\n";
+if($start_number and !$tpl_have_finish)
+	print "	$('#finish_time').focus();\n";
+if($start_number and $tpl_have_finish)
+	print "	$('#num_single').focus();\n";
+?>
+}
+</script>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('#finish_form').submit(function(){
+			if(!check_time($('#finish_time').val())){
+				alert('Неправильно указано время!');
+				return false;
+			}
+			return true;
+		});
+<?if(defined('USE_TIME_INPUT_HELPER') and USE_TIME_INPUT_HELPER){?>
+		$('#finish_time').keyup(function(e){
+			time_input_helper($(this),e);
+		});
+<?}?>
+		doc_focus();
+
+
+});
+</script>
+<table width=30% class=filter border=0>
+<tr align=left>
+<td align=left>
+<form name = start_form method = get action = gps-results.php OnSubmit="return check_start_number();">
+<input type = hidden name = comp_id value = <?=$comp_id?>>
+<input type = hidden name = rnd value = <?=rnd_str(8)?>>
+<p>Введите бортовой номер экипажа: <input type = text name = start_number id = start_number size=3 maxlength=3 OnKeyPress="return only_numbers(event);" value = "<?=$start_number?>">&nbsp;&nbsp;
+<input type = submit value = OK>
+</form>
+</td></tr>
+</table>
+<?
+if($start_number){
+
+?>
+<table width=30% class=filter border=0>
+<tr align=left>
+<td align=left>
+<form name = finish_form id=finish_form method = get action = gps-results.php>
+<input type = hidden name = comp_id value = <?=$comp_id?>>
+<input type = hidden name = start_number value = <?=$start_number?>>
+<input type = hidden name = rnd value = <?=rnd_str(8)?>>
+<input type = hidden name = flag value = 1>
+<p>Введите время финиша: <input type = text name = finish_time id = finish_time size=8 maxlength=8 onkeypress="return only_numbers_time(event);" value = <?=$item['finish_time']?>>
+<input type = submit value = OK>
+</form>
+</td></tr></table>
+
+
+<h1>Данные экипажа:</h1>
+<?require('_templates/blocks/vehicle_data_results.phtml')?>
+<br><br>
+<?if($tpl_have_finish){?>
+<table width=30% class=filter border=0>
+<tr><td>
+<fieldset style="border:1px solid #333333;">
+<legend><b>Добавить точку:</b></legend>
+<form name = single_add_form method = get action = gps-results.php OnSubmit="return check_name();">
+<input type = hidden name = comp_id value = <?=$comp_id?>>
+<input type = hidden name = start_number value = <?=$start_number?>>
+<input type = hidden name = flag value = 2>
+<p>Номер точки: <input type = text name = num id = num_single size=3 maxlength=3 OnKeyPress="return only_numbers(event);" >&nbsp;&nbsp;&nbsp;
+<input type = submit value = Добавить>
+</form>
+</fieldset>
+</td></tr>
+</table>
+<br>
+<input type = button value = "Закончить ввод" OnClick="window.location.href='gps-results.php?comp_id=<?=$comp_id?>';">
+<br>
+<h1 id=list>Список точек</h1>
+<br>
+<?if($kp_output)
+	require('_templates/blocks/kp_results.phtml');
+
+
+}?>
+
+
+
+
+
+
+
+
+
+<?
+
+
+
+
+
+
+
+
+
+
+}?>

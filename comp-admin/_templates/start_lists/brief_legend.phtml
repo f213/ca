@@ -1,0 +1,32 @@
+<div align=center>
+<table width=100% border=1 cellspacing=0 cellpadding=1>
+<tr>
+<td width=15><b>№</b></td>
+<td width=20><b>Борт.<b></td>
+<td width=10><b>Время</b></td>
+<td><b><?=$_people_names['pilot']['print']?></b></td>
+<?if(check_name('shturman','print')){?>
+	<td><b><?=$_people_names['shturman']['print']?></b></td>
+<?}?>
+<td><b>Машина</b></td>
+<td><b>Колеса</b></td>
+</tr>
+<?foreach($item_output as $key=>$value){
+?><tr>
+	<td><?=$key?></td>
+	<td><?=$value['start_number']?></td>
+	<td><?=$value['start_time']?></td>
+	<td nowrap><?=$value['pilot_name_official']?></td>
+	<?if(check_name('shturman','print')){?>
+		<td nowrap><?=$value['navigator_name_official']?></td>	
+	<?}?>
+	<td nowrap><?=$value['auto_brand']?><?
+	if(defined('CA_TRACK_PORTAL') and CA_TRACK_PORTAL and $value['have_portal'])
+		print " <b>(П)</b> ";
+	if(defined('CA_TRACK_WINCH') and CA_TRACK_WINCH and $value['have_winch'] and in_array($cat_id,$winch_cat))
+		print "&nbsp;<b>(W)</b>";
+	?></td>
+	<td><?=$value['wheel_size']?></td>
+</tr><?}
+?>
+</table>	</div>

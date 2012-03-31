@@ -1,0 +1,24 @@
+
+<br><br>
+<input type = button value = "Добавление соревнования" OnClick="window.location.href='<?=$add_url?>'">
+<br><br><br><br>
+
+<table class="body" width=40% cellspacing=2>
+<tr class=head>
+	<td>Название соревнования</td>
+	<td>Активность</td>
+	<td>Ред.</td>
+	<td>Уд.</td>
+</tr>
+<?
+foreach($item_output as $key=>$value){
+	?>
+	<tr>
+		<td><?=$value['name']?></td>
+		<td align=center><?if($value['current']) print "<b>ТЕКУЩЕЕ</b>"; else{ ?><input type = button value = "Сделать активным" OnClick="window.location.href='<?=$value['make_active_url']?>';"><?}?></td>
+		<td><input type = button value = ">>" title="Редактировать" OnClick="window.location.href='<?=$value['edit_url']?>';"></td>
+		<td><input type = button value = "X" title="Удалить" OnClick="if(confirm('Совсем?')){window.location.href='<?=$value['edit_url']?>';}"></td>
+	</tr><?
+}
+?>
+</table>

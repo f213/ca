@@ -1,0 +1,122 @@
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/jquery.hotkeys.min.js"></script>
+<script type="text/javascript" src="js/misc.js"></script>
+<script type="text/javascript" src="js/results.js"></script>
+<script type="text/javascript">
+var validNumbers=new Array(<?=$valid_numbers_str?>);
+$(document).ready(function(){
+	$('#sn_err').addClass('invisible');
+	$('#start_number').keyup(function(){
+		
+		var sn=$(this).val();
+		var err_el=$('#sn_err');
+		if(!sn.length){
+			return;
+		}
+		if(!in_array(sn,validNumbers)){
+			if(!err_el.hasClass('invisible')){
+				err_el.addClass('invisible');
+			}
+		}else{
+			if(err_el.hasClass('invisible')){
+				err_el.removeClass('invisible');
+			}
+		}
+
+	});
+	$('.pass_time, .wait_time ').keypress(function(e){
+		return only_numbers(e);
+	});
+	$('.pass_time').attr('disabled',1);
+	$('#zachet').change(function(){
+		if($(this).attr('checked')){
+			$('.pass_time').attr('disabled',0);
+		}else{
+			$('.pass_time').attr('disabled',1);
+		}
+
+	});
+
+
+	$(document).bind('keyup','esc',clear_all);
+	$('#cancel_button').click(clear_all);
+	
+});
+function clear_all(){
+	$('#start_number').val('') .focus();
+	$('.wait_time, .pass_time').each(function(){$(this).val('');});
+}
+</script>
+<br><br>
+<table width=100% class="filter" border=0>
+<tr><td>
+<form name = filter_form method = get action = pp.php autocomplete="off">
+<input type = hidden name = comp_id id=comp_id value = <?=$comp_id?>>
+<b>Категория:&nbsp;&nbsp;</b><select name = f_category id = f_category onChange="this.form.submit();">
+<option value = 0>(Выберите категорию)</option>
+<?foreach($cat as $key=>$value)
+	if($key==$f_category)
+		print "<option value = $key selected>{$value['name']}({$value['num_started']})</option>\r\n";
+	else
+		print "<option value = $key>{$value['name']}({$value['num_started']})</option>\r\n";
+?></select>
+</td></tr>
+</table>
+
+<br /><br />
+<form name = add_form id=add_form method = get action=pp.php>
+<input type = hidden name = comp_id value = <?=$comp_id?>>
+<input type = hidden name = f_category value = <?=$f_category?>>
+<input type = hidden name = flag value = 2>
+<table width=15% class="filter">
+<tr><td>
+<fieldset style="border:1px solid #333333;">
+<legend><b>Добавление записи</b></legend>
+<table width=100% border=0>
+<tr>
+<td align="right" width="1%">Номер:</td><td align="left"><input type = text name = start_number id = start_number size=3 maxlength=3 OnKeyPress="return only_numbers(event);">&nbsp;<img id=sn_err src="i/err.gif" width="12" height="12"></td></tr>
+
+<tr><td align="right">Отсечка:</td><td align="left"><input type = text class=wait_time name = wait_time_h id = wait_time_h size=2 maxlength=2 >:<input type = text class=wait_time name = wait_time_m id = wait_time_m size=2 maxlength=2></td></tr>
+<tr><td align="right">Зачет:</td><td align="left"><input type = checkbox name = zachet id = zachet></td></tr>
+<tr><td align="right">Время:</td><td align="left"<input type = text class=pass_time name = pass_time_h id = pass_time_h size=2 maxlength=2>:<input type = text class=pass_time name = pass_time_m id = pass_time_m size=2 maxlength=2></td></tr>
+<tr><td align="right"><input type = submit value = OK></td><td align="left"><input type = "button" id = "cancel_button" value = "Отмена"></td></tr>
+</table>
+
+</td></tr>
+
+</table>
+</form>
+<?if($item_output){?>
+<br /><br />
+<h1>Протокол</h1>
+<table width=80% class=body id=main_table border=0>
+<tr class="head">
+<td width=1%>#</td>
+<td width=1%>B</td>
+<td>Пилот</td>
+<td>Штурман</td>
+<td>Машина</td>
+<td width=5%>Отсечка</td>
+<td width=1% align="center">З</td>
+<td width=5%>Время</td>
+<td width=1%>уд.</td>
+</tr>
+<?
+$cnt=0;
+foreach($item_output as $key=>$value){
+?>
+<tr>
+<td><?=++$cnt?></td>
+<td><b><?=$key?></b></td>
+<td><?=$value['pilot_name']?></td>
+<td><?=$value['navigator_name']?></td>
+<td><?=$value['auto_brand']?>/<?=$value['auto_number']?></td>
+<td><?=$value['wait_time']?></td>
+<td><input type = checkbox id = pass_<?=$key?> disabled <?if($value['result']) print " checked ";?> ></td>
+<td><?if($value['result']) print $value['pass_time']; else print "--:--";?></td>
+<td><input type = button value = X onclick="if(confirm('Совсем?')){window.location.href='<?=$value['del_link']?>';}"></td>
+</tr>
+<?}?>
+</table>
+
+<?}?>

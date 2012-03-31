@@ -1,0 +1,37 @@
+<form method = post action = <?=$form_submit_url?> >
+<input type = hidden name = item_id value = <?=$item_id?>>
+<input type = hidden name = flag value = 1>
+<table class=body width=80%  cellspacing=2>
+<tr class=head>
+	<td>Параметр</td>
+	<td>Значение</td>
+</tr>
+<tr>
+	<td align=right>Название соревнования: </td>
+	<td align=left><input type = text name = comp_name id = comp_name value = "<?=$item_output['name']?>" size=25 maxlength=64></td>
+</tr>
+<?
+for($i=1;$i<=_CATEGORIES;$i++){
+?><tr>
+	<td align=right><b><?=$cat_name[$i]?></b></td>
+	<td align=left>Время: <input type = text name = cat<?=$i?>_time_h value = "<?=$item_output["cat$i"]['time_h']?>"  size=2 maxlength=2><b> : </b><input type = text name =cat<?=$i?>_time_m value = "<?=$item_output["cat$i"]['time_m']?>" size=2 maxlength=2><b> : </b><input type = text name = cat<?=$i?>_time_s value="<?=$item_output["cat$i"]['time_s']?>" size=2 maxlength=2> 
+Тип: <select name = cat<?=$i?>_type>
+	<option value=''>Не определен</option>
+<?
+	foreach($types_array as $type=>$type_name){
+		if($item_output["cat$i"]['type']==$type)
+			print "<option value = '$type' selected>$type_name</option>\r\n";
+		else
+			print "<option value = '$type'>$type_name</option>\r\n";
+	}
+?></select>
+<?if($item_output["cat$i"]['type']=='legend'){?>
+КП(легенда): <input type = text name = cat<?=$i?>_cp value = "<?=$item_output["cat$i"]['cp']?>" size=2 maxlength=2> 
+<?}?>
+<input type = checkbox name = cat<?=$i?>_need_tk id = cat<?=$i?>_need_tk <?if($item_output["cat$i"]['need_tk']) print " checked "?>> <label for="cat<?=$i?>_need_tk">Техкомиссия проводится</label>
+</tr>
+<?}?>
+</table>
+<input type = button value = Назад onclick="window.location.href='<?=$return_url?>'">&nbsp;&nbsp;
+<input type = submit value = Применить>
+</form>

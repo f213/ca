@@ -1,0 +1,318 @@
+<br>
+<script type="text/javascript" src="js/misc.js"></script>
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/jquery.dimensions.js"></script>
+<script type="text/javascript" src="js/jquery.tooltip.js"></script>
+<script type="text/javascript">
+function print_results_with_title(link){
+	var title_checkbox=$('#change_print_title');
+	if(title_checkbox.attr('checked')){
+		var title=prompt('Укажите заголовок','Результаты');
+		if(title){
+			link=link+'&print_title='+title;
+		}
+	}
+	var prelim_checkbox=$('#print_prelim');
+	if(prelim_checkbox.attr('checked')){
+		link=link+'&prelim=true';
+	}
+	var short_names_checkbox=$('#print_short_names');
+	if(short_names_checkbox.attr('checked')){
+		link=link+'&official_names=true';
+	}
+	window.open(link);
+
+}
+</script>
+<form name = category_f_form id = category_f_form method = get action = results.php>
+<input type = hidden name = comp_id value = "<?=$comp_id?>">
+<table cellpadding="5" cellspacing="0" border="0" width="100%" class="filter">
+<td align=left width=1% nowrap><b>Категория:</b>&nbsp;&nbsp;
+<select name = f_category id = f_category OnChange="this.form.submit();">
+<option value = 0>(Выберите категорию)</option>
+<?
+foreach($active_categories as $key=>$value)
+	if($key==$f_category)
+		print "<option value = $key selected>{$value['name']}</option>\r\n";
+	else
+		print "<option value = $key>{$value['name']}</option>\r\n";
+?>
+</select>
+</form>
+</td>
+<?if($f_category){?>
+	<td align=left> 
+	<form name = filter_form method = get action = results.php>
+	<input type = hidden name = comp_id value = <?=$comp_id?>>
+	<input type = hidden name = f_category value = <?=$f_category?>>
+	<b>Финиш:</b>&nbsp;&nbsp;
+	<select name = f_finished id = f_finished OnChange="this.form.submit();">
+	<?
+	foreach($finish_types as $key=>$value)
+		if($key==$f_finished)
+			print "<option value = $key selected>$value</option>\r\n";
+		else
+			print "<option value = $key>$value</option>\r\n";
+	?></select>
+	&nbsp;&nbsp;&nbsp;
+	<?
+	if($type=='legend'){?>
+		<b>Взятые КП:</b>&nbsp;&nbsp;
+		<select name = f_kp id = f_kp OnChange="this.form.submit();">
+		<?
+		foreach($kp_types as $key=>$value)
+			if($key==$f_kp)
+				print "<option value = $key selected>$value</option>\r\n";
+			else
+				print "<option value = $key>$value</option>\r\n"
+		?></select>
+		&nbsp;&nbsp;&nbsp;
+	<?}?>
+	<b>Наличие результата:</b>&nbsp;&nbsp;
+	<select name = f_result id = f_result OnChange="this.form.submit();">
+	<?
+	foreach($result_types as $key=>$value)
+		if($key==$f_result)
+			print "<option value = $key selected>$value</option>\r\n";
+		else
+			print "<option value = $key>$value</option>\r\n";
+	?></select>
+	</td></tr>
+	<tr><td colspan=2>
+	<b>Пинок:</b>&nbsp;&nbsp;
+	<select name = f_pinok id = f_pinok OnChange="this.form.submit();">
+<?
+	foreach($pinok_types as $key=>$value)
+		if($key==$f_pinok)
+			print "<option value = $key selected>$value</option>\r\n";
+		else
+			print "<option value = $key>$value</option>\r\n";
+?></select>&nbsp;&nbsp;&nbsp;
+	
+	<b>Бонус время:</b>
+	<select name = f_time_bonus id = f_time_bonus OnChange="this.form.submit();">
+	<?foreach($pinok_types as $key=>$value)
+		if($key==$f_time_bonus)
+			print "<option value = $key selected>$value</option>\r\n";
+		else
+			print "<option value = $key>$value</option>\r\n";
+?></select>&nbsp;&nbsp;
+	<?if($type=='gps' or $type=='gr-gps'){?>
+	<b>Бонус баллы:</b>
+	<select name = f_points_bonus id = f_points_bonus OnChange="this.form.submit();">
+	<?foreach($pinok_types as $key=>$value)
+		if($key==$f_points_bonus)
+			print "<option value = $key selected>$value</option>\r\n";
+		else
+			print "<option value = $key>$value</option>\r\n";
+	?></select>&nbsp;&nbsp;&nbsp;<?}?>
+	</form></td>
+	<td><img src=i/sp.gif width=10></td>
+<?}?>
+</tr>
+</table>	
+<br><br>
+<?if($item_output){?>
+Макс. время на трассе для категории <?=$cat_name[$f_category]?>: <b><?=format_hms_time($max_time,false)?></b>, тип соренования: <b><?=$types_array[$type]?></b><?
+if($type=='gps' or $type=='gr-gps'){
+	?>, обязательных точек в категории: <span id="required4cat" title="<?=$required4cat_str?>"><b><?=$required4cat_count?></b></span><?}
+if($type=='legend'){
+	?>, макс. количество КП в категории: <span id="maxkp4cat"><b><?=$maxkp4cat_count?></b></span><?
+}
+if($type=='gr-gps'){
+	?>, Множитель балов <b><?=GR_POINTS_MULT;?>м.</b><?
+}?>
+<table class=body id = main_table width=100% border=0>
+<tr class=head>
+<td width=1%>#</td>
+<td width=1%>Борт</td>
+<?if(defined('CA_TRACK_PORTAL') and CA_TRACK_PORTAL and $anyone_has_portal){?>
+<td width=1% align=center>П</td>
+<?}?>
+<?if(defined('CA_TRACK_WINCH') and CA_TRACK_WINCH and $anyone_has_winch){?>
+<td width=1% align=center>W</td>
+<?}?>
+<td>Экипаж</td>
+<td>Машина</td>
+<?if($type=='gps' or $type=='gr-gps'){?>
+	<td>Точки</td>
+	<td>Об</td>
+<?}
+if($type=='gps'){?>
+	<td>Очки</td>
+	<td>Б. Очки</td>
+<?}
+if($type=='gr-gps'){?>
+	<td>Невз. точек</td>
+	<td>Невз. очков</td>
+<?}
+if($type=='legend'){?>
+	<td>КП</td>
+<?}?>
+<td>Трасса</td>
+<td>Время</td>
+<td>Старт</td>
+<td>Финиш</td>
+<td>Пенал.</td>
+<td>Бонус</td>
+<td>Комментарий</td>
+</tr>
+<?foreach($item_output as $key=>$value){?>
+	<tr>
+	<td <?if($value['disq_comment']) print ' class="disq" title="'.stripslashes($value['disq_comment']).'" ';?>><?
+	if($value['res'])
+		print $value['res'];
+	else{
+		if($value['details_link'])
+			print "<a target=_blank href = '{$value['details_link']}'><b>$key</b></a>";
+		else
+			print "<b>$key</b>";	
+	}
+?></td>
+	<td><?=$value['start_number']?></td>
+	<?if(defined('CA_TRACK_PORTAL') and CA_TRACK_PORTAL and $anyone_has_portal){?>
+	<td><input type = checkbox disabled <?if($value['have_portal']) print " checked "?> ></td>
+	<?}?>
+	<?if(defined('CA_TRACK_WINCH') and CA_TRACK_WINCH and $anyone_has_winch){?>
+	<td><input type = checkbox disabled <?if($value['have_winch']) print " checked "?> ></td>
+	<?}?>
+	<td><a target=_blank href = "<?=$value['edit_link']?>"><?=$value['crew']?></a></td>
+	<td><?
+		if($tpl_need_tk){
+			if(!$value['tk_is_passed']) print "<b>нет тк!</b>&nbsp;";
+			if($value['tk_is_relative']) print "<b>!</b>&nbsp;";
+		}
+		print $value['auto_brand']
+	?></td>
+	<?if($type=='gps' or $type=='gr-gps'){?>
+		<td><?=$value['gps_points_sum']?></td>
+		<td><?=$value['gps_required_points_sum']?></td>
+	<?}
+	if($type=='gps'){?>
+		<td><?=$value['gps_total_cost']?></td>
+		<td><?=$value['gps_bonus_points']?></td>
+	<?}
+	if($type=='gr-gps'){?>
+		<td><?=$value['gps_untaken_sum']?></td>
+		<td><?=$value['gps_untaken_cost']?></td>
+	<?}
+	if($type=='legend'){?>
+		<td><?=$value['legend_kps']?></td>
+	<?}?>
+	<td><?=$value['total_time']?></td>
+	<td nowrap><?=$value['final_time_hms']?></td>
+	<td><?=$value['start_time']?></td>
+	<td><?=$value['finish_time']?></td>
+	<td><?=$value['pinok']?></td>
+	<td><?=$value['bonus_time']?></td>
+	<td><?=$value['comment']?></td>
+	</tr>
+<?}?>
+</table>
+Всего: <b><?=sizeof($item_output)?></b>
+<?}?>
+
+<script langunage = JavaScript>
+function HL(id, lineColor, backColor) {
+  var t = document.getElementById(id);
+  var cells = t.getElementsByTagName('td');
+  for(var i=0; i<cells.length; i++) {
+    cells[i].onmouseover = function(e) {
+      if(!e) e = window.event;
+      var row = (e.target || e.srcElement).parentNode;
+      var cls = row.getElementsByTagName('td');
+      for(var j=0; j<cls.length; j++) cls[j].style.backgroundColor = lineColor;
+    }
+    cells[i].onmouseout = function(e) {
+      if(!e) e = window.event;
+      var row = (e.target || e.srcElement).parentNode;
+      var cls = row.getElementsByTagName('td');
+      for(var j=0; j<cls.length; j++) cls[j].style.backgroundColor = backColor;
+    }
+  }
+}
+function results_onload(){
+	<?if($f_category){?>HL('main_table', '#C6D0D5', '#E6EAEC');<?}
+			else  print "return true;";
+?>
+
+}	
+$(document).ready(function(){
+	$('#required4cat').tooltip();
+	$('#export_xls').tooltip();
+	$('.disq').tooltip();
+<?if($tpl_export_xls_link){?>
+	$('#export_xls').click(function(){
+		window.location.href='<?=$tpl_export_xls_link?>';
+	})
+		.attr('disabled',0);
+<?}?>
+
+});
+</script>
+
+<script language=JavaScript>
+
+function check_comment_form(){
+	var startedNumbers=new Array(<?=$started_numbers_str?>);
+	if(document.getElementById('start_number').value.length<1){
+		alert('Вы некорректно ввели номер!');
+		$('#start_number').select() .focus();
+		return false;
+	}
+
+	if(!in_array(document.getElementById('start_number').value,startedNumbers)){
+		alert('Вы ввели нестартовавший номер!');
+		$('#start_number').select() .focus();
+		return false;
+	}
+	if(document.getElementById('comment').value.length<2){
+		alert('Вы не указали комментарий!');
+		$('#comment').select() .focus();
+		return false;
+	}
+	return true;	
+
+}
+</script>
+<br><br>
+<?if($item_output){?>
+<table border=0 width=60%>
+<tr><td>
+<table width=100% class=filter border=0>
+<tr><td>
+<fieldset style="border:1px solid #333333;">
+<legend><b>Добавление комментария</b></legend>
+<form name = results_form method = get action = results.php OnSubmit="return check_comment_form();">
+<input type = hidden name = comp_id value = "<?=$comp_id?>">
+<input type = hidden name = f_category value = "<?=$f_category?>">
+<?if($type=='legend'){?><input type = hidden name = f_kp value = "<?=$f_kp?>"><?}?>
+<input type = hidden name = f_finished value = "<?=$f_finished?>">
+<input type = hidden name = f_result value = "<?=$f_result?>">
+<input type = hidden name = flag value =1>
+<p>Введите бортовой номер: <input type = text name = start_number id = start_number size=3 maxlength=3 OnKeyPress="return only_numbers(event);">
+</p>
+<p><textarea name = comment id = comment cols=26 rows=2></textarea></p>
+<input type = submit value = 'Добавить'> &nbsp;&nbsp;<input type = reset value = "Очистить">
+</form>
+</td></tr></table>
+</td>
+<td><img src=i/sp.gif width=20></td>
+<td valign=top> 
+<table width=100% height=100% class=filter border=0>
+<tr><td>
+<fieldset  style="border:1px solid #333333;">
+<legend><b>Операции</b></legend>
+<input type = button value = "Распечатать" onclick="print_results_with_title('<?=$tpl_print_results_link?>');"><input type = checkbox id = change_print_title title="Изменить заголовок"><label for="change_print_title" title="Изменить заголовок">title</label> | <input type = checkbox id= print_prelim title="Предварительные"><label for="print_prelim">Предварительные</label> | <input type = checkbox id=print_short_names title="Короткие имена"><label for="print_short_names">Короткие имена</label> <br/>
+<input type = button value = "Зафиксировать" onclick="window.location.href='<?=$tpl_fix_results_link?>';"> <br />
+<input type = button id=export_xls value = "Экспорт в Excel" disabled title="<?=export_xls_descr()?>"> <br />
+</form>
+</td></tr>
+</table>
+</td>
+
+
+
+</tr>
+</table>
+<?}?>

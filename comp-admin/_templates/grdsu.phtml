@@ -1,0 +1,164 @@
+<br><br>
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script language=JavaScript>
+var validNumbers=new Array(<?=$valid_numbers_str?>);
+function check_start_number(){
+	if(!in_array(document.getElementById('start_number').value,validNumbers)){
+		alert('Этот номер отсутсвует в стартовой ведомости!');
+		document.getElementById('start_number').select();
+		document.getElementById('start_number').focus();
+		return false;
+	}
+	return true;
+
+}
+function in_array(what, where){ //не смеяца!!
+	var a=false;
+	for(var i=0; i<where.length; i++) {
+		if(parseInt(what) == parseInt(where[i])) {
+			a=true;
+			break;
+		}
+	}	
+	return a;
+
+}
+function only_numbers(e){
+	var keynum;
+	var keychar;
+	var numcheck;
+	if(window.event){ // IE
+		keynum = e.keyCode;
+	}else if(e.which){ // Netscape/Firefox/Opera
+		keynum = e.which;	
+	}
+	if(keynum==8){
+		if(document.getElementById('finish_m').value.length==0){
+			document.getElementById('finish_h').value="";
+			document.getElementById('finish_h').focus();
+		}	
+		return true;
+	}	
+	return (keynum<48 || (keynum>=48 && keynum<= 57));
+}	
+function HL(id, lineColor, backColor) {
+  var t = document.getElementById(id);
+  var cells = t.getElementsByTagName('td');
+  for(var i=0; i<cells.length; i++) {
+    cells[i].onmouseover = function(e) {
+      if(!e) e = window.event;
+      var row = (e.target || e.srcElement).parentNode;
+      var cls = row.getElementsByTagName('td');
+      for(var j=0; j<cls.length; j++) cls[j].style.backgroundColor = lineColor;
+    }
+    cells[i].onmouseout = function(e) {
+      if(!e) e = window.event;
+      var row = (e.target || e.srcElement).parentNode;
+      var cls = row.getElementsByTagName('td');
+      for(var j=0; j<cls.length; j++) cls[j].style.backgroundColor = backColor;
+    }
+  }
+}
+function reset_add_form() {
+	$('#start_number').val('');
+	$('#points').val('');
+}
+$(document).ready(function(){
+	<?if($item_output){?>
+		HL('main_table', '#C6D0D5', '#E6EAEC');
+	<?}?>
+	$('#start_number').focus();
+});	
+</script>
+
+<table width=100% border=0>
+<tr>
+	<td width=10%>
+		<form name = res_form method = get action = grdsu.php OnSubmit="return  check_start_number();">
+		<input type = hidden name = comp_id value = <?=$comp_id?>>
+		<input type = hidden name = flag value = 1>
+		<input type = hidden name = rnd value = <?=rnd_str(12)?>>
+		<table width=100% class=filter border=0>
+			<tr>
+				<td width=10% nowrap align=right valign=top>
+				<p>Бортовой номер:</td><td align=left valign=top>  <input type = text name = start_number id = start_number size=3 maxlength=3 OnKeyPress="return only_numbers(event);"></p>
+				</td>
+			</tr>
+			<tr>
+				<td align=right nowrap valign=top>
+				<p>Кол-во штрафных балов:</td><td valign=top align=left> <input type = text name = points id = points size=4 maxlength=4 OnKeyPress="return only_numbers(event);"></p>
+				</td>
+			</tr>
+			<tr>
+				<td valign=bottom align=right>
+				<input type = submit value = OK>
+				<input type = button value = Отмена OnClick="reset_add_form();">
+				</td>
+				<td>&nbsp;</td>
+			</tr>
+		</table>
+		</form>
+	</td>
+	<td width=10% valign=top>
+		<table width=100% class=filter border=0>
+		<tr>
+			<td width=10% nowrap align=left valign=top>
+				<form name = bonus_test_form method = get>
+				<input type = hidden name = comp_id value = <?=$comp_id?>>
+				<input type = hidden name = rnd value = <?=rnd_str(12)?>>
+				<p>Рассчитать бонус от <input type = text name = bon_min value="<?=$_GET['bon_min']?>" size=3 maxlength=3 OnKeyPress="return only_numbers(event);"> до <input type = text name = bon_max value="<?=$_GET['bon_max']?>" size=3 maxlength=3 OnKeyPress="return only_numbers(event);"> минут. <input type = submit value = OK></form>
+			</td>
+		</tr>
+		<tr>
+			<td width=10% nowrap align=left valign=top>
+			<form name = bonus_submit_form method = get>
+			<input type = hidden name = comp_id value = <?=$comp_id?>>
+			<input type = hidden name = flag value = 2>
+			<input type = hidden name = rnd value = <?=rnd_str(12)?>>
+			<p>Засчитать бонус от <input type = text name = bon_min value="<?=$_GET['bon_min']?>" size=3 maxlength=3 OnKeyPress="return only_numbers(event);"> до <input type = text name = bon_max value="<?=$_GET['bon_max']?>" size=3 maxlength=3 OnKeyPress="return only_numbers(event);"> минут. <input type = submit value = OK></form>
+			</td>
+		</tr>
+		<tr>
+			<td width=10% nowrap align=left valign=top>
+			<input type = button value = "Очистить таблицу бонусов" title="При этом удаляются только бонусы, автоматически добавленные этим разделом. Остальные остаются на месте." OnClick="if(confirm('Совсем?')){window.location.href='grdsu.php?flag=3&comp_id=<?=$comp_id?>';}">
+			</td>
+		</tr>
+		<tr>
+			<td width=10% nowrap align=left valign=top>
+			<input type = button value = "Распечатать!" OnClick="window.open('<?=$print_link?>');">
+			</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+</table>
+
+<?if($item_output){?>
+<br><br><br><br>
+<table class=body id='main_table' width=70% border=0>
+<tr class=head>
+<td>Место</td>
+<td>Борт</td>
+<td>Экипаж</td>
+<td>Штраф</td>
+<?if($bonus_is_calced){?>
+<td>Бонус</td>
+<?}?>
+<td>уд.</td>
+</tr>
+<?foreach($item_output as $key=>$value){?>
+	<tr>
+	<td><b><?=$value['place']?></b></td>
+	<td><?=$key?></td>
+	<td><?=$value['pilot_name']?>/<?=$value['navigator_name']?></td>
+	<td><?=$value['points']?></td>
+	<?if($bonus_is_calced){?>
+		<td><?=$value['bon_str']?></td>
+	<?}?>
+	<td><a href = # OnClick="if(confirm('Совсем?')){window.location.href='<?=$value['del_link']?>';}">удалить</a></td>
+	</tr>
+<?}?>
+</table>
+
+
+<?}?>

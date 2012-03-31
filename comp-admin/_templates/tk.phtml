@@ -1,0 +1,304 @@
+<br><br>
+<script type="text/javascript" src="js/misc.js"></script>
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/jquery.dimensions.js"></script>
+<script language=JavaScript src="js/jquery.hotkeys.min.js"></script>
+<?if(in_array('tk',$keypad_pages)){
+?>
+<script type="text/javascript" src="js/jquery.cookie.js"></script>
+<script type="text/javascript" src="js/jquery.keypad.pack.js"></script>
+<script type="text/javascript" src="js/jquery.keypad-ru.js"></script>
+<style type="text/css">@import "js/jquery.keypad.css";</style>
+<?}?>
+
+<script language=JavaScript>
+var validNumbers=new Array();
+function check_start_number(){
+	if(!in_array(document.getElementById('start_number').value,validNumbers)){
+		alert('Этот номер не зарегистрирован!');
+		document.getElementById('start_number').select();
+		document.getElementById('start_number').focus();
+		return false;
+	}
+	return true;
+
+}
+function append_time(min,reason)
+{
+	var Fmin=$('#min');
+	var Freason=$('#reason');
+	if(Freason.val().match(reason)){
+		return;
+	}
+	if(Fmin.val()){
+		Fmin.val(parseInt(Fmin.val())+min);
+	}else{
+		Fmin.val(min);
+	}
+	if(Freason.val()){
+		Freason.val(Freason.val()+', '+reason);
+	}else{
+		Freason.val(reason);
+	}
+}
+function reset_time(){
+	$('#min').val('');
+	$('#reason').val('');
+}
+function can_submit_checkbox(cb){
+
+	if($('#min').val() || $('#reason').val()){
+		if(confirm('Будут утеряны несохраненные пенализации!')){
+			return true;
+		}else{
+			if(cb.checked){
+				cb.checked=false;
+			}else{	
+				cb.checked=true;
+			}
+		}
+	}
+	return true;
+}
+function can_pass(){
+	if($('#min').val() || $('#reason').val()){
+		if(confirm('Будут утеряны несохраненные пенализации!')){
+			return true;
+		}
+		return false;
+	}
+	return true;
+}
+function relative_allow(url){
+	url=url+'&relative=1';
+	var rel_reason=prompt('Введите причину условного допуска(необязательно');
+	if(rel_reason.length){
+		url=url+'&relative_reason='+rel_reason;
+	}
+	window.location.href=url;
+}
+
+$(document).ready(function(){
+	<?if(!$start_number){
+		print "$('#start_number').focus();\n";
+	}else{
+		if($item['tk_is_passed'])
+			print "$('#revoke_button').focus();\n";
+		else
+			print "$('#pass_button').focus();\n";
+	}
+	?>
+	update_registered_numbers();
+	window.setInterval(update_registered_numbers,30000);
+	$('#confirm_category_change').click(function(){
+		$('#cat_change').attr('disabled',!$(this).attr('checked'));
+	});
+
+	$(document).bind('keyup','esc',function(){
+<?if($start_number)
+	print "		$('#cancel_button').click();\n";
+else
+	print "		$('#start_number').val('');\n";
+?>
+	});
+
+
+<?if(in_array('tk',$keypad_pages)){?>
+	var sn_el=$('#start_number');
+	var keypad_is_enabled=0;
+	$('#kl').click(function(){
+		if(!keypad_is_enabled){
+			kp($('#start_number'));
+			sn_el.keypad('show');
+			$.cookie('ca-keypad','enabled');
+			keypad_is_enabled=1;
+		}else{
+			sn_el.keypad('destroy');
+			$.cookie('ca-keypad',null);
+		}
+
+	});
+	var ca_keypad_cookie=$.cookie('ca-keypad');
+
+	if(ca_keypad_cookie && ca_keypad_cookie=='enabled' && !sn_el.val().length){
+		kp(sn_el);
+		sn_el.keypad('show');
+		keypad_is_enabled=1;
+	}
+<?}?>
+});
+function update_registered_numbers(){
+	$.getJSON('json.php?registered_numbers',function(data){
+		validNumbers=data;	
+	});
+}
+</script>
+
+<form name = start_number_form method = get action=tk.php OnSubmit="return check_start_number();">
+<input type = hidden name = comp_id value = "<?=$comp_id?>">
+<table width=30% class=filter border=0>
+<tr align=left>
+<td align=left nowrap>
+<p>Введите бортовой номер экипажа: <input type = text autocomplete="off" name = start_number id = start_number size=3 maxlength=3 OnKeyPress="return only_numbers(event);" value = "<?=$start_number?>" >&nbsp;&nbsp;
+<input type = submit value = OK>&nbsp;<input id="cancel_button" type = button onclick="window.location.href='<?=$cancel_link?>';" value = Отмена><?
+	if(in_array('tk',$keypad_pages)){
+		?>&nbsp;<input id=kl type = button value = "Кл."><?
+	}
+?>
+</td>
+</tr>
+</table>
+</form>
+<?
+if($start_number){
+?>
+<h1>Данные экипажа:</h1>
+<table width=30% border=0 cellpadding=1 cellspacing=0 class=filter>
+<tr>
+<td>Категория:</td>
+<td><b><?=$item['cat_name']?></b></td>
+<tr>
+<td>Экипаж:</td>
+<td><b><?=$item['crew']?></b></td>
+</tr>
+<tr>
+<td>Машина:</td>
+<td><b><?=$item['auto_brand']?> г\н <?=$item['auto_number']?></b></td>
+</tr>
+<?if(defined('CA_TRACK_PORTAL') and CA_TRACK_PORTAL){?>
+<tr>
+<td>Порталы:</td>
+<td><b><?if($item['portal'])
+	print "есть";
+else
+	print "нет";
+?></b></td>
+</tr>
+<?}?>
+<?if(defined('CA_TRACK_WINCH') and CA_TRACK_WINCH and in_array($item['cat_id'],$winch_cat)){?>
+<tr>
+<td>Лебедка:</td>
+<td><b><?if($item['winch'])
+	print "есть";
+else
+	print "нет";
+?></b></td>
+</tr>
+<?}?>
+<?if($item['tk_info'])
+	print "<tr><td colspan=2><hr>{$item['tk_info']}</td></tr>";
+?>
+</table>
+<br>
+<?if(defined('CA_TRACK_PORTAL') and CA_TRACK_PORTAL and !$item['tk_is_passed']){?>
+<form name = portal_form method = post action = tk.php>
+<input type = hidden name = comp_id value = <?=$comp_id?>>
+<input type = hidden name = start_number value = <?=$start_number?>>
+<input type = hidden name = flag value = 5>
+<input type = checkbox name = portal id = portal value = 'yes' <?if($item['portal']) print " checked "?> OnChange="if(can_submit_checkbox(this)){this.form.submit();}">
+<label for="portal">Портальные мосты</label>
+</form>
+<br>
+<?}?>
+<?if(defined('CA_TRACK_WINCH') and CA_TRACK_WINCH and !$item['tk_is_passed'] and in_array($item['cat_id'],$winch_cat)){?>
+<form name = winch_form method = post action = tk.php>
+<input type = hidden name = comp_id value = <?=$comp_id?>>
+<input type = hidden name = start_number value = <?=$start_number?>>
+<input type = hidden name = flag value = 6>
+<input type = checkbox name = winch id = winch value = 'yes' <?if($item['winch']) print " checked "?> OnChange="if(can_submit_checkbox(this)){this.form.submit();}">
+<label for="winch">Лебедка</label>
+</form>
+<br>
+<?}?>
+
+<?if($item['pass_link']){?>
+	<input id="pass_button" type = button value = "Завершить прохождение" onclick="if(can_pass()){window.location.href='<?=$item['pass_link']?>'};";>
+	<img src="i/sp.gif" height="1" width="15">
+	<input id="relative_pass_button" type = "button" value="Условный допуск" onclick="relative_allow('<?=$item['pass_link']?>');">
+	<br>
+<?}?>
+<?if($item['revoke_link']){?>
+	<input id="revoke_button" type = button value = "Отменить техкомиссию" onclick="if(confirm('Начисленные пенализации будут удалены. Точно отменить?')){window.location.href='<?=$item['revoke_link']?>';}">
+	<br>
+<?}?>
+<br>
+<?if(!$item['tk_is_passed']){?>
+<form name = pen_form id=pen_form method = post action = tk.php>
+<input type = hidden name = comp_id value = <?=$comp_id?>>
+<input type = hidden name = start_number value = <?=$start_number?>>
+<input type = hidden name = flag value = 1>
+<table width=30% class=filter border=0>
+<tr><td>
+<fieldset style="border:1px solid #333333;">
+<legend><b>Добавить пенализацию для №<?=$start_number?>:</b></legend>
+<table width=100% border=0>
+<tr>
+<td>
+<table width=100% border=0>
+<tr><td align=right>Минуты: </td><td align=left><input type = text name = min id = min size=3 maxlength=3 onkeypress="return only_numbers(event);"></td></tr>
+<tr><td align=right>Причина: </td><td align=left><input type = text name = reason id = reason size=20 maxlength=40></td></tr>
+<tr><td align=right><input type = submit value = OK></td><td>&nbsp;</td></tr>
+</table>
+</td>
+<td valign=top>
+<?if($pen_reasons){?>
+<input type = button value = "Сбросить" onclick="reset_time();"><br>
+<hr>
+<?foreach($pen_reasons as $key=>$value){
+	$min=$value['min'];
+	$reason=$value['reason'];
+?>
+	<input type = button value = "<?="$reason - $min минут"?>" onclick="append_time(<?=$min?>,'<?=$reason?>');"> <br>
+<?}?>
+<?}
+else print "&nbsp;";
+?>
+</td>
+</tr>
+</table>
+</fieldset>
+</td></tr>
+</table>
+</form>
+<?}?>
+<?if($item['pen']){
+?>
+<table width=30% class=body id = pen_table>
+<tr class=head>
+<td colspan=4>Существующая пенализация:</td>
+</tr>
+<tr class=row>
+<td><b><?=$item['pen']['min']?></b></td>
+<td><b><?=$item['pen']['reason']?></b></td>
+<td><?=$item['pen']['author']?></td>
+<td><a href = "<?=$item['pen']['del_link']?>" onclick="return confirm('точно?');">отменить</a></td>
+</tr>
+</table>	
+<?}?>	
+<?if(!$item['tk_is_passed'] and sizeof($tpl_categories_to_change)){?>
+<br>
+<form name = category_form id=category_form method = post action = tk.php>
+<input type = hidden name = comp_id value = <?=$comp_id?>>
+<input type = hidden name = start_number value = <?=$start_number?>>
+<input type = hidden name = flag value = 8>
+<table width=30% class=filter border=0>
+<tr><td>
+<fieldset style="border:1px solid #333333;">
+<legend><b>Изменение класса участника</b></legend>
+<table width=100% border=0>
+<tr><td><input type = checkbox name = confirm_category_change id = confirm_category_change><label for="confirm_category_change">Подтвердить изменение класса</label</td></tr>
+<tr><td><select name = category id = cat_change disabled onchange="this.form.submit();">
+<option>(Выберите категорию)</option>
+<?
+	foreach($tpl_categories_to_change as $i=>$q){
+		if($item['cat_id']!=$i)
+			print "	<option value = $i>{$cat_name[$i]}</option>\n";
+	}?></select>
+</td>
+</tr>
+</table>
+</fieldset>
+</td></tr></table>
+</form>
+<?}?>
+<?}?>

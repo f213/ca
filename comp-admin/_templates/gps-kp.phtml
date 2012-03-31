@@ -1,0 +1,223 @@
+<br><br>
+<form name = filter_form id = filter_form method = get action = gps-kp.php>
+<input type = hidden name = comp_id value = "<?=$comp_id?>">
+<table cellpadding="5" cellspacing="0" border="0" width="100%" class="filter">
+<tr align=left>
+<td><b>Категория:</b>&nbsp;&nbsp;
+<select name = f_category id = f_category OnChange="this.form.submit();">
+<option value = (-1)>(Выберите категорию)</option>
+<?foreach($gps_cats as $category){
+	if($category==$f_category)
+		print "<option value = $category selected>{$cat_name[$category]}</option>\r\n";
+	else
+		print "<option value = $category>{$cat_name[$category]}</option>\r\n";
+}?></select>
+&nbsp;&nbsp;&nbsp;
+</td>
+</tr></table>
+</form>
+<?if($f_category){ //дальше идем тока если задана категория
+
+
+?>
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/misc.js"></script>
+
+<script type="text/javascript">
+var usedNumbers=new Array(<?=$used_nums_str?>);
+function check_mass_form(){
+	if($('#num_begin').val().length<1){
+		alert('Вы не ввели начало диапазона!');
+		$('#num_begin').select()
+			.focus();
+		return false;
+	}
+	if($('#num_end').val().length<1){
+		alert('Вы не ввели конец диапазона!');
+		$('#num_end').select()
+			.focus();
+		return false;
+	}
+	if($('#mass_cost').val().length<1){
+		alert('Вы не ввели стоимость!');
+		$('#mass_cost').select()
+			.focus();
+		return false;
+	}
+	return true;
+}
+function check_add_form(){
+	var num_val=$('#num').val();
+	if(num_val.length<1){
+		alert('Вы не ввели название точки!');
+		$('#num').select()
+			focus();
+		return false;
+	}
+	if(in_array(num_val,usedNumbers)){
+		alert('Такая точка уже есть!');
+		$('#num').select()
+			focus();
+		return false;
+	}
+	if($('#single_cost').val().length<1){
+		alert('Вы не ввели стоимость!');
+		$('#single_cost').select()
+			.focus();
+		return false;
+	}
+	return true;
+}
+function doc_focus(){
+<?
+	if($_GET['one_added'])
+		print "	$('#num').focus();\n";
+	if($_GET['multiple_added'])
+		print "	$('#num_begin').focus();\n";
+?>
+}
+</script>	
+<script type="text/javascript">
+	$(document).ready(function(){
+		doc_focus();
+		$('.cost_form').submit(function(){
+			var el=$(this).children(":text[name='cost']");
+			if(el.val().length<1){
+				alert('Укажите стоимость!');
+				el.focus()
+					.select();
+				return false;
+			}
+			return true;
+		});
+		$('.num_input').keyup(function(e){
+			
+			if(_keynum(e)==27){ //escape
+				$(this).val('');
+			}
+		});
+
+	});
+
+</script>
+<br><h1>Операции:</h1><br>
+<table width=100% border=0>
+<tr><td align=right nowrap>
+<form name = clear_form method = get action = gps-kp.php OnSubmit="return confirm('Вы уверены??');">
+<input type = hidden name = comp_id value = <?=$comp_id?>>
+<input type = hidden name = f_category value = <?=$f_category?>>
+<input type = hidden name = filters_str value = "<?=$filters_tr?>">
+<input type = hidden name = flag value = 3>
+<input type = submit value = "Очистить все точки в категории">
+&nbsp;&nbsp;<input type = button value = "Вернуться к списку соревнований" OnClick="window.location.href='<?=$back_url?>'">
+</form>
+</td><td><img src=i/sp.gif width=1></td></tr>
+<tr><td><img src=i/sp.gif height=1></td></tr>
+</table>
+<table cellpadding="5" cellspacing="0" border="0" width="100%" class="filter">
+<tr align=left>
+<td width=50%>
+<fieldset style="border:1px solid #333333;">
+<legend><b>Массовое добавление точек:</b></legend>
+<form name = mass_add_form method = get action = gps-kp.php OnSubmit="return check_mass_form();">
+<input type = hidden name = comp_id value = <?=$comp_id?>>
+<input type = hidden name = f_category value = <?=$f_category?>>
+<input type = hidden name = filters_str value = "<?=$filters_tr?>">
+<input type = hidden name = flag value = 1>
+<p>Начало диапазона:
+<input type = text name = num_begin id = num_begin class=num_input size=3 maxlength=3 OnKeyPress="return only_numbers(event);">
+Конец диапазона:
+<input type = text name = num_end id = num_end size=3 class=num_input maxlength=3 OnKeyPress="return only_numbers(event);">
+Стоимость:
+<input type = text name = cost id = mass_cost size=2 class=num_input maxlength=2 OnKeyPress="return only_numbers(event);">
+&nbsp;&nbsp;
+<input type = submit value = Добавить>
+</p>
+</form>
+</fieldset></td>
+<td width=35%>
+<fieldset style="border:1px solid #333333;">
+<legend><b>Добавление одной точки:</b></legend>
+<form name = add_form method = get action = gps-kp.php OnSubmit="return check_add_form();">
+<input type = hidden name = comp_id value = <?=$comp_id?>>
+<input type = hidden name = f_category value = <?=$f_category?>>
+<input type = hidden name = filters_str value = "<?=$filters_tr?>">
+<input type = hidden name = flag value = 2>
+<p>Номер точки:
+<input type = text name = num id = num size=3 class=num_input maxlength=3 OnKeyPress="return only_numbers(event);">
+Стоимость:
+<input type = text name = cost id = single_cost size=2 class=num_input maxlength=2 OnKeyPress="return only_numbers(event);">
+&nbsp;&nbsp;
+<input type = submit value = Добавить>
+</p>
+</form>
+</fieldset>
+
+</td>
+<td>&nbsp;</td>
+
+</tr></table>
+<br><h1>Управление:</h1><br>
+
+<?if($item_output){?>
+<table width=45% class=body border=0>
+<tr class=head>
+<td><b>Точка</b></td>
+<td><b>Cost</b></td>
+<td><b>Comment</b></td>
+<td><b>Акт.</b></td>
+<td><b>Об.</b></td>
+<td><b>Уд.</b></td>
+</tr>
+<?foreach($item_output as $key=>$value){
+?><tr>
+	<td align=right><b><?=$value['num']?></b></td>
+	<td align=center><form name = cost_form_<?=$key?> class=cost_form>
+		<input type = hidden name = comp_id value = <?=$comp_id?>>
+		<input type = hidden name = f_category value = <?=$f_category?>>
+		<input type = hidden name = flag value = 4>
+		<input type = hidden name = item_id value = <?=$key?>>
+		<input type = text name = cost size = 2 maxlength = 2 OnKeyPress="return only_numbers(event);" value = "<?=$value['cost']?>">&nbsp;
+		<input type = submit value = OK></form></td>
+	<td align=center><form name = comment_form_<?=$key?>>
+                <input type = hidden name = comp_id value = <?=$comp_id?>>
+                <input type = hidden name = f_category value = <?=$f_category?>>
+                <input type = hidden name = flag value = 7>
+                <input type = hidden name = item_id value = <?=$key?>>
+		<input type = text name = comment size=15 maxlength=25 value = "<?=$value['comment']?>">&nbsp;
+		<input type = submit value = OK></form></td>
+	<td align=center><form name = active_form_<?=$key?>>
+		<input type = hidden name = comp_id value = <?=$comp_id?>>
+		<input type = hidden name = f_category value = <?=$f_category?>>
+		<input type = hidden name = flag value = 5>
+		<input type = hidden name = item_id value = <?=$key?>>
+		<input type = checkbox name = active value = 1<?if($value['active']) print " checked ";?> OnChange="this.form.submit();">
+		</form></td>
+	<td align=center><form name = required_form<?=$key?>>
+		<input type = hidden name = comp_id value = <?=$comp_id?>>
+		<input type = hidden name = f_category value = <?=$f_category?>>
+		<input type = hidden name = flag value = 8>
+		<input type = hidden name = item_id value = <?=$key?>>
+		<input type = checkbox name = required value = 1<?if($value['required']) print " checked ";?> OnChange="this.form.submit();">
+		</form></td>
+	<td align=center><input type = button value = X OnClick="if(confirm('Совсем?')){window.location.href='<?=$value['delete_link']?>';}"></td>
+</tr><?}
+?></table>
+
+<br>
+<table width=100% border=0>
+<tr><td align=right nowrap>
+<form name = clear_form method = get action = gps-kp.php OnSubmit="return confirm('Вы уверены??');">
+<input type = hidden name = comp_id value = <?=$comp_id?>>
+<input type = hidden name = f_category value = <?=$f_category?>>
+<input type = hidden name = filters_str value = "<?=$filters_tr?>">
+<input type = hidden name = flag value = 3>
+<input type = submit value = "Очистить все точки в категории">
+&nbsp;&nbsp;<input type = button value = "Вернуться к списку соревнований" OnClick="window.location.href='<?=$back_url?>'">
+</form>
+</td><td><img src=i/sp.gif width=1></td></tr></table>
+
+<?
+}	
+}
+?>

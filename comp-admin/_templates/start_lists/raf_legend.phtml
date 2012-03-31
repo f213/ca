@@ -1,0 +1,17 @@
+<table width=70% border=1 cellspacing=0 cellpadding=1>
+<tr>
+<td width=15><b>№</b></td>
+<td width=5%><b>Гос. номер</b></td>
+<td width=10%><b>Марка ТС</b></td>
+<td><b>ФИО водителя ТС</b></td>
+<td width=15%><b>№ экипажа<b></td>
+<?foreach($item_output as $key=>$value){
+?><tr>
+	<td><?=$key?></td>
+	<td nowrap><?=$value['auto_number']?></td>
+	<td nowrap><?=$value['auto_brand']?></td>
+	<td nowrap><?=$value['pilot_name']?></td>
+	<td><?=$value['start_number']?></td>
+</tr><?}
+?>
+</table>	</div>
