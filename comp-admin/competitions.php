@@ -65,12 +65,7 @@ if(mysql_num_rows($res)){
 	$db_user=$row[0];
 }
 print "<br><br><br><br>";
-?><div align=center><?if(DB_TYPE=='phpbb3' or DB_TYPE=='phpbb2'){?>Forum-ver: <b><?=PHPBBVER?></b>, Forum-path: <b><?=$phpbb_root_path?></b>,<?}?>System-type: <?
-if(VERSION_TYPE=='full')
-	print "<b>FULL</b>";
-else
-	print "<b>CUT</b>";
-?>, db-name: <b><?=$db_name?></b>, db-user: <b><?=$db_user?></b>
+?><div align=center><?if(DB_TYPE=='phpbb3' or DB_TYPE=='phpbb2'){?>Forum-ver: <b><?=PHPBBVER?></b>, Forum-path: <b><?=$phpbb_root_path?></b>,<?}?>db-name: <b><?=$db_name?></b>, db-user: <b><?=$db_user?></b>
 </div><?
 
 	

@@ -68,12 +68,6 @@ $sl_sort_types=array( //все возможные типы сортировки 
 );
 
 
-//определение типа используемой версии
-
-if(file_exists('../comp-admin/full-rev'))
-	define('VERSION_TYPE','full');
-else
-	define('VERSION_TYPE','cut');
 
 if(defined('CA_WHEEL_SIZE') and !CA_WHEEL_SIZE)
 	if(defined('CA_REQUIRE_WHEEL_SIZE') and CA_REQUIRE_WHEEL_SIZE)
