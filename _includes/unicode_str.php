@@ -9,6 +9,7 @@
 
 //функции для работы со строками, пока не все, а те, которые пригождались
 
+
 function _stristr($str, $search){ //based on kohana code
 	if ($search == '')
 		return $str;
@@ -29,4 +30,13 @@ function _substr($str,$start,$length=0){
 }
 function _strlen($str){
 	return mb_strlen($str,'utf-8');
+}
+function _strtolower($str){
+	return mb_convert_case($str,MB_CASE_LOWER,'utf-8');
+}
+function _ucfirst($str){
+	return mb_convert_case($str,MB_CASE_TITLE,'utf-8');
+}
+function _strtoupper($str){
+	return mb_convert_case($str,MB_CASE_UPPER,'utf-8');
 }

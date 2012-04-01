@@ -96,36 +96,20 @@ function __get_crew($req_data,$type='full',$where='ca'){
 
 
 function name2official($name){
-	$enc='UTF-8';
 	$name=preg_replace('/([^\ ]+)\ +([^\ ]+)\ +([^\ ]+)/','$1 $2',$name);
 	list($f,$i)=preg_split('/\ +/',$name);
-	if(function_exists('mb_strtolower')){
-		$f=mb_strtolower($f,$enc);
-		$i=mb_strtolower($i,$enc);
-	}else{
-		$f=strtolower($f);
-		$i=strtolower($i);
-	}
-	$f=__req_ucfirst($f);
-	$i=__req_ucfirst($i);
+	$f=_ucfirst($f);
+	$i=_ucfirst($i);
 	//искуственный интеллект, бля
-	if(strlen($i)==1)
+	if(_strlen($i)==1)
 		$i.='.';
 	$i=str_replace(',','.',$i);
-	if(preg_match('/\./',$i) and strlen($i<6)){
-		if(function_exists('mb_strtoupper'))
-			$i=mb_strtoupper($i,$enc);
-		else
-			$i=strtoupper($i);
+	if(preg_match('/\./',$i) and _strlen($i<6)){
+		$i=_strtoupper($i);
 		if(!preg_match('/\.$/',$i))
 			$i.='.';
 		$i=preg_replace('/.\.$/','',$i);
 	}
 	$name="$f $i";
 	return $name;
-}
-
-function __req_ucfirst($str){
-	$str=chr(ord(substr($str,0,1))-32).substr($str,1);
-	return $str;
 }
