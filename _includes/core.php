@@ -125,7 +125,7 @@ function add_item($db_name,$item_data,$item_id=0,$id_name='ID')
  foreach($item_data as $key=>$value)
  {
   if($str!=='') $str.=', ';
-  $str.="`".$key."`='".escape_value(str_replace(array(chr(171), chr(150), chr(187), chr(151), chr(179), chr(174), chr(153), chr(136), chr(132), chr(147), chr(167)), array('&laquo;','&ndash;','&raquo;','&mdash;','&#8470;','&reg;','&trade;','&euro;','&bdquo;','&ldquo;','&sect;'), $value))."'";
+  $str.="`".$key."`='".escape_value($value)."'";
  }
  if(query_eval($pre." $db_name SET $str".$post))
  {
