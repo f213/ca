@@ -15,6 +15,7 @@ require('current_comp.php'); //узнаем ID текущего соревнов
 require('comp_data.php'); //"официальные" данные гонки
 require('people_names.php'); //библиотека для именования членов экипажа, на разных гонках бывают разные
 require('comp_cat_var.php'); //библиотека для хранения параметров гонки по каждой категории
+require('unicode_str.php'); //работа с юникодными строками
 
 
 $admin_user='fedor.test'; //заглушка
