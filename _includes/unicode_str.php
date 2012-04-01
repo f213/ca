@@ -9,6 +9,8 @@
 
 //функции для работы со строками, пока не все, а те, которые пригождались
 
+if(!function_exists('mb_strtolower'))
+	die('Для работы системы необходимо расширение mbstring!');
 
 function _stristr($str, $search){ //based on kohana code
 	if ($search == '')
