@@ -29,6 +29,16 @@ if(isset($_GET['registered_numbers'])){ //список зарегистриро�
 	print json_encode($ret);
 	exit;
 }
+if(isset($_GET['tk_numbers'])){ //список зарегистрированных номеров для техкомиссии (она может быть выключена у части категорий
+	$res=query_eval("SELECT DISTINCT(start_number) FROM $compres_dbt WHERE comp_id=$comp_id AND cat_id IN (SELECT cat_id FROM $compcatvar_dbt WHERE comp_id=$comp_id AND need_tk='yes');");
+	if(!mysql_num_rows($res))
+		return;
+	$ret=array();
+	while($row=mysql_fetch_row($res))
+		$ret[]=(int)$row[0];
+	print json_encode($ret);
+	exit;
+}
 if(isset($_GET['next_start_number'])){ //следущий выдаваемый номер
 	require('_includes/online_requests.functions.php');
 	print json_encode(next_start_number($comp_id));

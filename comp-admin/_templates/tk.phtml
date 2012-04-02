@@ -14,10 +14,9 @@
 <script language=JavaScript>
 var validNumbers=new Array();
 function check_start_number(){
-	if(!in_array(document.getElementById('start_number').value,validNumbers)){
+	if(!in_array($('#start_number').val(),validNumbers)){
 		alert('Этот номер не зарегистрирован!');
-		document.getElementById('start_number').select();
-		document.getElementById('start_number').focus();
+		$('#start_number').focus() .select();
 		return false;
 	}
 	return true;
@@ -88,8 +87,8 @@ $(document).ready(function(){
 			print "$('#pass_button').focus();\n";
 	}
 	?>
-	update_registered_numbers();
-	window.setInterval(update_registered_numbers,30000);
+	update_tk_numbers();
+	window.setInterval(update_tk_numbers,30000);
 	$('#confirm_category_change').click(function(){
 		$('#cat_change').attr('disabled',!$(this).attr('checked'));
 	});
@@ -127,8 +126,8 @@ else
 	}
 <?}?>
 });
-function update_registered_numbers(){
-	$.getJSON('json.php?registered_numbers',function(data){
+function update_tk_numbers(){
+	$.getJSON('json.php?tk_numbers',function(data){
 		validNumbers=data;	
 	});
 }
