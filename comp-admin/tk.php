@@ -59,7 +59,7 @@ case 1: //добавить пенализацию
 		die("Некорректно указана причина");
 	add_pen($comp_id,$start_number,$min,$reason,'tk');
 	if(defined('CA_WINCH_AUTODETECT') and CA_WINCH_AUTODETECT)
-		if(preg_match('/леб[её]дк?а/i',$reason))
+		if(preg_match('/леб[её]дк?а/iu',$reason))
 			query_eval("UPDATE $compres_dbt SET winch='yes' WHERE comp_id=$comp_id AND start_number='$start_number' LIMIT 1;");
 
 
