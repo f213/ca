@@ -22,6 +22,21 @@ function check_start_number(){
 	return true;
 
 }
+function check_pen_form(){
+	var Fmin=$('#min');
+	var Freason=$('#reason');
+	if(!Fmin.val().length){
+		alert('Не указаны минуты!');
+		Fmin.select() .focus();
+		return false;
+	}
+	if(Freason.val().length<3){
+		alert('Не указана причина!');
+		Freason.select() .focus();
+		return false;
+	}
+	return true;
+}
 function append_time(min,reason)
 {
 	var Fmin=$('#min');
@@ -222,7 +237,7 @@ else
 <?}?>
 <br>
 <?if(!$item['tk_is_passed']){?>
-<form name = pen_form id=pen_form method = post action = tk.php>
+<form name = pen_form id=pen_form method = post action = tk.php onsubmit="return check_pen_form();">
 <input type = hidden name = comp_id value = <?=$comp_id?>>
 <input type = hidden name = start_number value = <?=$start_number?>>
 <input type = hidden name = flag value = 1>
