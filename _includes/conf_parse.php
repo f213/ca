@@ -190,7 +190,7 @@ if(default_no('interface.or_show_site_filters'))
 	define('CA_REQUESTS_SHOW_SITE_FILTERS',1); //показывать ли в online-requests фильтры, предназначенные чисто для сайта, антиспамерское подтверждение, и т.д.
 
 if(CA_TRACK_WINCH and default_yes('interface.winch_auto_detect'))
-	define('CA_WINCH_AUTO_DETECT',1); //пытаться ли угадать наличие ледеки в процессе техкомисси по добавленным пенализациям. Техкомиссару так на одну кнопку меньше приходится нажимать.
+	define('CA_WINCH_AUTODETECT',1); //пытаться ли угадать наличие ледеки в процессе техкомисси по добавленным пенализациям. Техкомиссару так на одну кнопку меньше приходится нажимать.
 
 
 if(!cfg_has('interface.r_kps_per_row') or !(int)cfg_val('interface.r_kps_per_row'))
