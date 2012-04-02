@@ -109,7 +109,7 @@ if($_GET['xls']){
 		$com_str=''; //комментарий
 		if($value['have_portal'])
 			$com_str.="порталы,";
-		if($value['have_winch'] and !preg_match('/леб[её]дк?а/i',$value['pen_reason']))
+		if($value['have_winch'] and !preg_match('/леб[её]дк?а/iu',$value['pen_reason']))
 			$com_str.="лебедка,";
 		$data[8]=trim($com_str,',');
 		$sheet->writeRow($rowcnt++,0,$data);

@@ -96,7 +96,7 @@ function __get_crew($req_data,$type='full',$where='ca'){
 
 
 function name2official($name){
-	$name=preg_replace('/([^\ ]+)\ +([^\ ]+)\ +([^\ ]+)/','$1 $2',$name);
+	$name=preg_replace('/([^\ ]+)\ +([^\ ]+)\ +([^\ ]+)/u','$1 $2',$name);
 	list($f,$i)=preg_split('/\ +/',$name);
 	$f=_ucfirst($f);
 	$i=_ucfirst($i);
@@ -104,11 +104,11 @@ function name2official($name){
 	if(_strlen($i)==1)
 		$i.='.';
 	$i=str_replace(',','.',$i);
-	if(preg_match('/\./',$i) and _strlen($i<6)){
+	if(preg_match('/\./u',$i) and _strlen($i<6)){
 		$i=_strtoupper($i);
-		if(!preg_match('/\.$/',$i))
+		if(!preg_match('/\.$/u',$i))
 			$i.='.';
-		$i=preg_replace('/.\.$/','',$i);
+		$i=preg_replace('/.\.$/u','',$i);
 	}
 	$name="$f $i";
 	return $name;
