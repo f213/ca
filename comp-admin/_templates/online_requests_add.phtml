@@ -243,6 +243,36 @@ $(document).ready(function(){
 <?}?>	
 	//автодоплнение городов
 	$('#city').autocomplete('autocomplete.php',{extraParams:{cities:1},cacheLength:10,delay:10,matchSubset:1,autoFill:true,maxItemsToShow:10});
+	//необходимые настройки доп полей
+	$('.ext_attr_field').keyup(function(e){
+		if(_keynum(e) == 27){ //escape очищает поле
+			$(this).val('');
+			$(this).html('');
+		}
+	});
+
+	//паспорт
+	$('.ext_attr_field_passport_series').attr('size',5) .attr('maxlength',5) .keypress(function(e){return only_numbers(e);});
+	$('.ext_attr_field_passport_number').attr('size',6) .attr('maxlength',6) .keypress(function(e){return only_numbers(e);});
+
+	$('.ext_attr_field_passport_given_who').attr('size',40) .attr('maxlength',60);
+	$('.ext_attr_field_passport_given_when').attr('size',10) .attr('maxlength',10);
+	//доп данные 1
+	$('.ext_attr_field_birthday').attr('size',10) .attr('maxlength',10) .keypress(function(e){return only_numbers(e);}) .keyup(function(){ if(!$(this).val().match(/\d{2}\.\d{2}\.\d{4}/)){$(this).addClass('red_color')} else {$(this).removeClass('red_color')} });
+	$('.ext_attr_field_license_type').attr('size',2) .attr('maxlength',2);
+	$('.ext_attr_field_license_num').attr('size','6') .attr('maxlength',8) .keypress(function(e){return only_numbers(e);});
+	$('.ext_attr_field_rank').attr('size',5) .attr('maxlength',10) .autocomplete('autocomplete.php',{extraParams:{ranks:1},cacheLength:10,delay:10,matchSubset:1,autoFill:true,maxItemsToShow:10});
+
+	//галочка "спортивные атрибуты"
+	$('.ext_data').addClass('invisible');
+	$('#ext_attr').change(function(){
+		if($(this).attr('checked')){
+			$('.ext_data').removeClass('invisible');
+		}else{
+			$('.ext_data').addClass('invisible');
+		}
+	})
+	.change();
 });	
 
 function recheck_all(){
@@ -359,7 +389,7 @@ function recheck_all(){
 <tr>
 	<td align=left><b>Доп. атрибуты:</b></td>
 	<td align=left>
-		<input type = checkbox id=ext_attr <?if($item_output['ext_attr_enabled']) print " checked "?>>
+		<input type = checkbox name = ext_attr id=ext_attr <?if($item_output['ext_attr_enabled']) print " checked "?> value = 1>
 		<label for="ext_attr">Спортивные данные</label>
 	</td>
 </tr>
@@ -368,13 +398,76 @@ function recheck_all(){
 	<td><input type = text name = pilot_name id = pilot_name size = 40 maxlength = 50 value = "<?=$item_output['pilot_name']?>">&nbsp;Ник: <input type = text name = pilot_nik id = pilot_nik size = 12 maxlength = 50  value = "<?=$item_output['pilot_nik']?>">	Тел: <input type = text name = pilot_phone id = pilot_phone size=30 maxlength=50 onkeypress="return only_numbers(event);" value = "<?=$item_output['pilot_phone']?>"> Город: <input type = text name = pilot_city id = pilot_city size=10 maxlength=32 value = "<?=$item_output['pilot_city']?>">
 </td>
 </tr>
+<?
+$aa=array('pilot_passport_series','pilot_passport_number','pilot_passport_given_who','pilot_passport_given_when');
+$need_passport=true;
+foreach($aa as $q)
+	if(!_ext_attr_enabled($q))
+		$need_passport=false;
+if($need_passport){?>
+<tr class="ext_data">
+	<td align=left valign=top><b><?=$_people_names['pilot']['ca']?> - паспорт:</b></td>
+	<td valign=top><?foreach($aa as $q){
+		tpl_print_ext_field($q);
+		print "&nbsp;&nbsp;\r\n";
+	}
+	?></td>
+</tr>
+<?}
+$aa=array('pilot_addr', 'pilot_birthday','pilot_license_type','pilot_license_num','pilot_rank');
+$need_sp1=false;
+foreach($aa as $q)
+	if(_ext_attr_enabled($q))
+		$need_sp1=true;
+if($need_sp1){?>
+<tr class="ext_data">
+	<td align=left valign=top><b><?=$_people_names['pilot']['ca']?> - данные(1):</b></td>
+	<td valign=top><?foreach($aa as $q){
+		tpl_print_ext_field($q);
+		print "&nbsp;&nbsp;\r\n";
+	}
+	?></td>
+</tr>
+<?}?>
 <?if($_people_names['shturman']['ca']){?>
 <tr>
 	<td align=left valign=top><b><?=$_people_names['shturman']['ca']?>:</b></td>
 	<td><input type = text name = navigator_name id = navigator_name size = 40 maxlength = 50 value = "<?=$item_output['navigator_name']?>">&nbsp;Ник: <input type = text name = navigator_nik id = navigator_nik size = 12 maxlength = 50 value = "<?=$item_output['navigator_nik']?>"> Тел: <input type = text name = navigator_phone id = navigator_phone size=30 maxlength=50 onkeypress="return only_numbers(event);" value = "<?=$item_output['navigator_phone']?>"> Город: <input type = text name = navigator_city id = navigator_city size=10 maxlength=32 value = "<?=$item_output['navigator_city']?>">
 </td>
 </tr>
-<?}?>
+<?
+$aa=array('shturman_passport_series','shturman_passport_number','shturman_passport_given_who','shturman_passport_given_when');
+$need_passport=true;
+foreach($aa as $q)
+	if(!_ext_attr_enabled($q))
+		$need_passport=false;
+if($need_passport){?>
+<tr class="ext_data">
+	<td align=left valign=top><b><?=$_people_names['shturman']['ca']?> - паспорт:</b></td>
+	<td><?foreach($aa as $q){
+		tpl_print_ext_field($q);
+		print "&nbsp;&nbsp;\r\n";
+	}
+	?></td>
+</tr>
+<?}
+$aa=array('shturman_addr', 'shturman_birthday','shturman_license_type','shturman_license_num','shturman_rank');
+$need_sp1=false;
+foreach($aa as $q)
+	if(_ext_attr_enabled($q))
+		$need_sp1=true;
+if($need_sp1){?>
+<tr class="ext_data">
+	<td align=left valign=top><b><?=$_people_names['shturman']['ca']?> - данные(1):</b></td>
+	<td valign=top><?foreach($aa as $q){
+		tpl_print_ext_field($q);
+		print "&nbsp;&nbsp;\r\n";
+	}
+	?></td>
+</tr>
+<?}
+
+}?>
 <?if($item_output['start_number']){?>
 <tr>
 	<td align=left>Снятие с соревнований:</td>
@@ -496,3 +589,13 @@ function recheck_all(){
 	<td width=1%>&nbsp;</td>
 </tr>
 </table>
+<?
+function tpl_print_ext_field($field_name){
+	global $_allowed_ext_attr;
+	global $item_output;
+	if(!_ext_attr_enabled($field_name))
+		return;
+	$array_name=preg_replace('/^[^_]+_/','',$field_name);
+	print "{$_allowed_ext_attr[$array_name]}: <input class=\"ext_attr_field ext_attr_field_$array_name\" type = text name = $field_name id = $field_name value = \"{$item_output[$field_name]}\">";
+}
+?>

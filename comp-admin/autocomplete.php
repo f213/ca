@@ -39,4 +39,13 @@ if(isset($_GET['cities'])){
 		if(_stristr(_substr($city,0,_strlen($q)),$q)) //здесь не стоит использовать регулярки в целях безопасности
 			print "$city\n";
 }
+if(isset($_GET['ranks'])){
+	$ranks=array();
+	$res=query_eval("SELECT DISTINCT(attr_val) FROM $compreq_ext_dbt WHERE attr_name LIKE '%_rank';");
+	while($row=mysql_fetch_row($res))
+		$ranks[]=stripslashes($row[0]);
+	foreach($ranks as $rank)
+		if(_stristr(_substr($rank,0,_strlen($q)),$q))
+			print "$rank\n";
+}
 

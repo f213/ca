@@ -131,6 +131,9 @@ case 3: //добавление\редактирование
 		$err.="<br>Некорректно указан номер телефона!";
 	$club=addslashes(trim($_POST['club']));
 	$passangers=(int)$_POST['passangers'];
+	$ext_attr_enabled='no';
+	if(isset($_POST['ext_attr']))
+		$ext_attr_enabled='yes';
 	$data=array(
 		'comp_id'=>CURRENT_COMP,
 		'PilotName'=>$pilot_name,
@@ -145,6 +148,7 @@ case 3: //добавление\редактирование
 		'city'=>$city,
 		'club'=>$club,
 		'ip'=>$_SERVER['REMOTE_ADDR'],
+		'ext_attr_enabled'=>$ext_attr_enabled,
 	);
 	if($_people_names['shturman']['ca'] and strlen($_people_names['shturman']['ca'])){
 		$data['NavigatorName']=$navigator_name;
@@ -178,6 +182,11 @@ case 3: //добавление\редактирование
 	$data['comp_id']=$comp_id;
 	if(!strlen($err)){
 		$item_id=add_item($compreq_dbt,$data,$item_id);
+		//добавили данные, теперь прогоняем по доп атрибутам
+		foreach(array('pilot','shturman') as $p)
+			foreach($_people_names[$p]['ext_attr'] as $attr)
+				if(isset($_POST[$p.'_'.$attr]) and _ext_attr_enabled($p.'_'.$attr))
+					_ext_attr($comp_id,$item_id,$p.'_'.$attr,$_POST[$p.'_'.$attr]);
 
 		if($_POST['back']=='add' && $item_id)
 			header("Location: online_requests_add.php?comp_id=$comp_id&item_id=$item_id&$filters_str");
@@ -250,25 +259,15 @@ if($item_id){
 	$row=mysql_fetch_assoc($res);
 	$cat_id=$item_output['category']=(int)$row['category'];
 
-	if($row['ExtAttrEnabled']=='yes')
-		$item_output['extended_attr_enabled']=true;
+	if($row['ext_attr_enabled']=='yes')
+		$item_output['ext_attr_enabled']=true;
 	else
-		$item_output['extended_attr_enabled']=false;
+		$item_output['ext_attr_enabled']=false;
 
 	$item_output['pilot_name']=stripslashes($row['PilotName']);
 	$item_output['pilot_nik']=stripslashes($row['PilotNik']);
 	$item_output['pilot_phone']=stripslashes($row['PilotPhone']);
 	$item_output['pilot_city']=stripslashes($row['PilotCity']);
-	if($item_output['exteneded_attr_enabled']){
-		$item_output['pilot_addr']=stripslashes($row['PilotAddr']);
-		$item_output['pilot_birthday']=stripslashes($row['PilotBirthday']);
-		$item_output['pilot_passport_series']=stripslashes($row['PilotPassportSeries']);
-		$item_output['pilot_passport_given_who']=stripslashes($row['PilotPassportGivenWho']);
-		$item_output['pilot_passport_given_when']=stripslashes($row['PilotPasportGivenWhen']);
-		$item_output['pilot_licence_type']=$row['PilotLicenceType'];
-		$item_output['pilot_licence_num']=stripslashes($row['PilotLicenceNum']);
-		$item_output['pilot_rank']=stripslashes($row['PilotRank']);
-	}
 	$item_output['pilot_size']=stripslashes($row['PilotSize']);
 
 
@@ -276,16 +275,6 @@ if($item_id){
 	$item_output['navigator_nik']=stripslashes($row['NavigatorNik']);
 	$item_output['navigator_phone']=stripslashes($row['NavigatorPhone']);
 	$item_output['navigator_city']=stripslashes($row['NavigatorCity']);
-	if($item_output['exteneded_attr_enabled']){
-		$item_output['navigator_addr']=stripslashes($row['NavigatorAddr']);
-		$item_output['navigator_birthday']=stripslashes($row['NavigatorBirthday']);
-		$item_output['navigator_passport_series']=stripslashes($row['NavigatorPassportSeries']);
-		$item_output['navigator_passport_given_who']=stripslashes($row['NavigatorPassportGivenWho']);
-		$item_output['navigator_passport_given_when']=stripslashes($row['NavigatorPasportGivenWhen']);
-		$item_output['navigator_licence_type']=$row['NavigatorLicenceType'];
-		$item_output['navigator_licence_num']=stripslashes($row['NavigatorLicenceNum']);
-		$item_output['navigator_rank']=stripslashes($row['NavigatorRank']);
-	}
 	$item_output['navigator_size']=stripslashes($row['NavigatorSize']);
 
 	$item_output['auto_brand']=stripslashes($row['AutoBrand']);
@@ -363,6 +352,7 @@ if($item_id){
 	}
 
 	$item_output['print_link']=append_rnd("print-request.php?comp_id=$comp_id&request_id=$item_id");
+	$item_output=fill_ext_attr($comp_id,$item_id,$item_output);
 }	
 if(!$item_output['register_date']) //default date
 	$item_output['register_date']=date('d.m.Y');
