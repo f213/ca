@@ -12,20 +12,44 @@
  * 	'ca' - основное media, наименование в системе управления. Если media не задано, или пустое, поле везде отключается.
  * 	'request' - заявки. Если не задано - в заявках не печатается
  * 	'print' - прочие места для печати. Если не задано - не печатается.
+ * 	'ext_attr' - масив со список дополнительных атрибутов. Должны пересекаться с разрешенными дополнительными аттрибутами, расположенными в файле req_ext_data.php
  * Для пилота обязательно задавать минимум media ca, иначе пиздец.
  * Встроенная функция check_name() проверяет необходимость печати столбца.
  * В дальнейшем возможно сюда добавятся еще какие-то люди, к примеру заявители.
  */
+define('__PEOPLE_NAMES__',1);
 $_people_names['pilot']=array(
 	'ca'=>'1-й водитель',
 	'request'=>'1-й водитель(заявитель)',
-	'print'=>'1-й водитель'
+	'print'=>'1-й водитель',
+	'ext_attr'=>array(
+		'addr',
+		'birthday',
+		'passport_series',
+		'passport_number',
+		'passport_given_who',
+		'passport_given_when',
+		'license_type',
+		'license_num',
+		'rank',
+	),
 );
 
 $_people_names['shturman']=array(
 	'ca'=>'2-й водитель',
 	'request'=>'2-й водитель',
 	'print'=>'2-й водитель',
+	'ext_attr'=>array(
+		'addr',
+		'birthday',
+		'passport_series',
+		'passport_number',
+		'passport_given_who',
+		'passport_given_when',
+		'license_type',
+		'license_num',
+		'rank',
+	),
 );
 
 function check_name($name,$where){

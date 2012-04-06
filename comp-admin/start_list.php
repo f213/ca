@@ -174,7 +174,7 @@ if($f_category){
 		$id=$start_number=(int)$row['start_number'];
 		$item_output[$id]['start_time']=format_user_hms_time((int)$row['start_time'],$_null_sec_bool);
 		$item_output[$id]['start_number']=$start_number;
-		$item_output[$id]=get_brief_request_data($comp_id,num2req($comp_id,$start_number),$item_output[$id]);
+		$item_output[$id]=get_full_request_data($comp_id,num2req($comp_id,$start_number),$item_output[$id]);
 		$item_output[$id]['req_link']=append_rnd("online_requests_add.php?comp_id=$comp_id&item_id=".num2req($comp_id,$start_number));
 		if($prev_id){
 			$item_output[$id]['move_up_link']=$_SERVER['PHP_SELF']."?$filters_str&flag=3&prev_id=$prev_id&item_id=$id";
