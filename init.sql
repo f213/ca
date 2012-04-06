@@ -1,6 +1,6 @@
--- MySQL dump 10.13  Distrib 5.1.61, for debian-linux-gnu (i486)
+-- MySQL dump 10.13  Distrib 5.1.61, for debian-linux-gnu (x86_64)
 --
--- Host: localhost    Database: ca
+-- Host: localhost    Database: ca_master
 -- ------------------------------------------------------
 -- Server version	5.1.61-0+squeeze1
 
@@ -348,9 +348,13 @@ CREATE TABLE `CA_CompRequests` (
   `PilotName` varchar(256) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `PilotNik` varchar(256) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `PilotSize` text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `PilotPhone` varchar(256) NOT NULL,
+  `PilotCity` varchar(256) NOT NULL,
   `NavigatorName` text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `NavigatorNik` text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `NavigatorSize` text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `NavigatorPhone` varchar(256) NOT NULL,
+  `NavigatorCity` varchar(256) NOT NULL,
   `AutoBrand` text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `AutoNumber` text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `phone` text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
@@ -367,6 +371,7 @@ CREATE TABLE `CA_CompRequests` (
   `approved` enum('yes','no') NOT NULL DEFAULT 'no',
   `registered` enum('yes','no') NOT NULL DEFAULT 'no',
   `registered_author` tinytext NOT NULL,
+  `ext_attr_enabled` enum('no','yes') NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -541,6 +546,31 @@ LOCK TABLES `CA_PP` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `CA_Requests_ExtAttr`
+--
+
+DROP TABLE IF EXISTS `CA_Requests_ExtAttr`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `CA_Requests_ExtAttr` (
+  `comp_id` int(10) unsigned NOT NULL,
+  `request_id` int(10) unsigned NOT NULL,
+  `attr_name` tinytext NOT NULL,
+  `attr_val` tinytext NOT NULL,
+  UNIQUE KEY `main` (`comp_id`,`request_id`,`attr_name`(32))
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `CA_Requests_ExtAttr`
+--
+
+LOCK TABLES `CA_Requests_ExtAttr` WRITE;
+/*!40000 ALTER TABLE `CA_Requests_ExtAttr` DISABLE KEYS */;
+/*!40000 ALTER TABLE `CA_Requests_ExtAttr` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `CA_ResultsFixed`
 --
 
@@ -628,4 +658,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2012-03-31 12:21:55
+-- Dump completed on 2012-04-07  0:25:02
