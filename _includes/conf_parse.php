@@ -31,6 +31,7 @@ define('CONFIG_PATH_ACCEPT_REGEX','/^[\_\-\/\\\:\.a-z\d]+$/i');
 
 $_ca_ini=array('conf/ca.ini','../conf/ca.ini','../../conf/ca.ini','/etc/ca/ca.ini','/usr/local/etc/ca/ca.ini');
 $_cat_ini=array('conf/categories.ini','../conf/categories.ini','../../conf/categories.ini','/etc/ca/categories.ini','/usr/local/etc/ca/categories.ini');
+$_official_ini=array('conf/official.ini','../conf/official.ini','../../conf/official.ini','/etc/ca/official.ini','/usr/local/etc/ca/official.ini');
 
 if(defined('CA_INI_SEARCH_PATH'))
 	$_ca_ini=array_merge(array(CA_INI_SEARCH_PATH),$_ca_ini);
@@ -40,6 +41,7 @@ if(defined('CATEGORIES_INI_SEARCH_PATH'))
 
 $_raw_ca_conf=parse_ini_file(_get_ini($_ca_ini),true);
 $_raw_cat_conf=parse_ini_file(_get_ini($_cat_ini),true);
+$_raw_official_conf=parse_ini_file(_get_ini($_official_ini),true);
 
 //
 //разбираем настройки БД
@@ -105,6 +107,11 @@ if(!_CATEGORIES)
 $detailed_legend_cat=get_detailed_legend_cat(); //список категорий, у которых работа с точками линейной гонки - подробоная, т.е. ввод точек происходит не количество, а по одной взятой точке, как при навигации
 
 $winch_cat=get_winch_cat(); //список категорий, у которых следует особо отмечать наличие лебедки
+
+//
+//Получаем "официальные" данные гонки
+//
+$OFFICIAL_DATA=get_official_data();
 
 //
 //секция MAIN 
@@ -201,9 +208,20 @@ else
 if(default_yes('interface.time_input_helper'))
 	define('USE_TIME_INPUT_HELPER',true); //включить ли автоматическую расставлялку знаков ':' при вводе времени
 
+if(default_no('pdf.enabled')){
+	define('CA_PDF_ENABLED',1); //включена генерация pdf
+	if(!cfg_has('pdf.tfpdf_table_path'))
+		die('ca.ini: включен режим регенации pdf, но не задан путь к классам tfpdf <a href="http://www.interpid.eu/fpdf-table">http://www.interpid.eu/fpdf-table</a>!');
+	define('CA_PDF_TFPDF_TABLE_PATH',rtrim(cfg_val('pdf.tfpdf_table_path'),'\/\\'));
+	if(!file_exists(CA_PDF_TFPDF_TABLE_PATH.'/myfpdf-table.php'))
+		die('ca.ini: не найден класс tfpdf по указанному пути: '.CA_PDF_TFPDF_TABLE_PATH);
+	if(!cfg_has('pdf.font'))
+		define('CA_PDF_FONT','times');
+	else
+		define('CA_PDF_FONT',cfg_val('pdf.font'));
 
 
-
+}
 function get_categories_list(){
 	global $_raw_cat_conf;
 	$cfg=$_raw_cat_conf;
@@ -246,6 +264,22 @@ function get_winch_cat(){
 			$ret[]=$id;
 	return $ret;
 }
+function get_official_data(){
+	global $_raw_official_conf;
+	$cfg=$_raw_official_conf;
+	$ret=array();
+	$ret['name']=$cfg['official']['name'];
+	$ret['rukogon']=$cfg['official']['rukogon'];
+	$ret['secretary']=$cfg['official']['secretary'];
+	$ret['tech_commissar']=$cfg['official']['tech_commissar'];
+	$ret['date']=$cfg['official']['date'];
+	$ret['place']=$cfg['official']['place'];
+	$ret['ksk']=array();
+	foreach($cfg['ksk'] as $key=>$value)
+		$ret['ksk'][]=$value;
+	return $ret;
+}
+
 function cfg_val($val){
 	global $_raw_ca_conf;
 	$cfg=$_raw_ca_conf;
