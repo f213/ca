@@ -28,6 +28,7 @@
 //
 
 define('CONFIG_PATH_ACCEPT_REGEX','/^[\_\-\/\\\:\.a-z\d]+$/i');
+define('MAGIC_MAX_RAF_RACE_TYPES',10);
 
 $_ca_ini=array('conf/ca.ini','../conf/ca.ini','../../conf/ca.ini','/etc/ca/ca.ini','/usr/local/etc/ca/ca.ini');
 $_cat_ini=array('conf/categories.ini','../conf/categories.ini','../../conf/categories.ini','/etc/ca/categories.ini','/usr/local/etc/ca/categories.ini');
@@ -278,6 +279,10 @@ function get_official_data(){
 	$ret['ksk']=array();
 	foreach($cfg['ksk'] as $key=>$value)
 		$ret['ksk'][]=$value;
+	$ret['raf_race_types']=array();
+	for($i=1;$i<=MAGIC_MAX_RAF_RACE_TYPES;$i++)
+		if($cfg['raf_race_types'][$i])
+			$ret['raf_race_types'][$i]=$cfg['raf_race_types'][$i];
 	return $ret;
 }
 
