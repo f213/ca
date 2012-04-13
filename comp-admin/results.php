@@ -392,7 +392,7 @@ while($row=mysql_fetch_assoc($res)){
 	}	
 	$item_output[$p]['start_time']=format_hms_time((int)$row['start_time'],$_null_sec_bool);
 
-	$item_output[$p]=get_brief_request_data($comp_id,$req_id,$item_output[$p]);
+	$item_output[$p]=get_full_request_data($comp_id,$req_id,$item_output[$p]);
 	if($_GET['print_results']){
 		$print_where='full';
 		if($_GET['official_names'])

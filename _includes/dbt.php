@@ -34,3 +34,4 @@ $compdisq_dbt=TABLE_PREFIX.'CA_CompDisq'; //таблица со снятиями
 $complegpoints_dbt=TABLE_PREFIX.'CA_Legend_Points'; //список возможных точек легенды
 $complegdetails_dbt=TABLE_PREFIX.'CA_Legend_Details'; //промежуточная таблица - взятые точки на легенде
 $comppp_dbt=TABLE_PREFIX.'CA_PP'; //полоса препятствий, прииск на ЗЛ
+$compreq_ext_dbt=TABLE_PREFIX.'CA_Requests_ExtAttr'; //таблица с дополнительными полями заявок

@@ -20,8 +20,21 @@
  * cat_id - id категории участника
  * cat_name (если есть) - название категории участника
  * crew - экипаж, пилот и штурман, если есть.
+
+ get_full_request_data($comp_id,$request_id,$append_hash=array()) - Более полный список данных. пока отличается только наличием "спортивных аттрибутов". Список атрибутов см. в соответсвующих файлах req_ext_data.php и people_names.php/
+
 */
 
+function get_full_request_data($comp_id,$request_id,$append_hash=array()){
+	$comp_id=(int)$comp_id;
+	$request_id=(int)$request_id;
+	
+	if(!$comp_id or !$request_id)
+		return null;
+	$append_hash=get_brief_request_data($comp_id,$request_id,$append_hash);
+	$append_hash=fill_ext_attr($comp_id,$request_id,$append_hash);
+	return $append_hash;
+}
 
 function get_brief_request_data($comp_id,$request_id,$append_hash=array()){
 	global $compreq_dbt;

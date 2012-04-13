@@ -91,6 +91,8 @@ case 3: //добавление\редактирование
 	if(!strlen($pilot_name))
 		$err.="<br>Не указано имя пилота!";
 	$pilot_nik=addslashes(trim($_POST['pilot_nik']));
+	$pilot_phone=addslashes(trim($_POST['pilot_phone']));
+	$pilot_city=addslashes(trim($_POST['pilot_city']));
 	if(defined('USE_SIZE') and USE_SIZE){
 		$pilot_size=addslashes(trim($_POST['pilot_size']));
 		if(!strlen($pilot_size))
@@ -102,6 +104,8 @@ case 3: //добавление\редактирование
 		if(!strlen($navigator_name))
 			$err.="<br>Не указано имя штурмана!";
 		$navigator_nik=addslashes(trim($_POST['navigator_nik']));
+		$navigator_phone=addslashes(trim($_POST['navigator_phone']));
+		$navigator_city=addslashes(trim($_POST['navigator_city']));
 		if(defined('USE_SIZE') and USE_SIZE){
 			$navigator_size=addslashes(trim($_POST['navigator_size']));
 			if(!strlen($navigator_size) or !in_array($navigator_size,$sizes))
@@ -127,11 +131,16 @@ case 3: //добавление\редактирование
 		$err.="<br>Некорректно указан номер телефона!";
 	$club=addslashes(trim($_POST['club']));
 	$passangers=(int)$_POST['passangers'];
+	$ext_attr_enabled='no';
+	if(isset($_POST['ext_attr']))
+		$ext_attr_enabled='yes';
 	$data=array(
 		'comp_id'=>CURRENT_COMP,
 		'PilotName'=>$pilot_name,
 		'PilotNik'=>$pilot_nik,
 		'PilotSize'=>$pilot_size,
+		'PilotPhone'=>$pilot_phone,
+		'PilotCity'=>$pilot_city,
 		'AutoBrand'=>$auto_brand,
 		'AutoNumber'=>$auto_number,
 		'phone'=>$phone,
@@ -139,11 +148,14 @@ case 3: //добавление\редактирование
 		'city'=>$city,
 		'club'=>$club,
 		'ip'=>$_SERVER['REMOTE_ADDR'],
+		'ext_attr_enabled'=>$ext_attr_enabled,
 	);
 	if($_people_names['shturman']['ca'] and strlen($_people_names['shturman']['ca'])){
 		$data['NavigatorName']=$navigator_name;
 		$data['NavigatorNik']=$navigator_nik;
 		$data['NavigatorSize']=$navigator_size;
+		$data['NavigatorPhone']=$navigator_phone;
+		$data['NavigatorCity']=$navigator_city;
 	}
 	if(!$item_id) //если добавляем новую заяфку
 		$data['RegisterDate']=time();
@@ -170,6 +182,11 @@ case 3: //добавление\редактирование
 	$data['comp_id']=$comp_id;
 	if(!strlen($err)){
 		$item_id=add_item($compreq_dbt,$data,$item_id);
+		//добавили данные, теперь прогоняем по доп атрибутам
+		foreach(array('pilot','shturman') as $p)
+			foreach($_people_names[$p]['ext_attr'] as $attr)
+				if(isset($_POST[$p.'_'.$attr]) and _ext_attr_enabled($p.'_'.$attr))
+					_ext_attr($comp_id,$item_id,$p.'_'.$attr,$_POST[$p.'_'.$attr]);
 
 		if($_POST['back']=='add' && $item_id)
 			header("Location: online_requests_add.php?comp_id=$comp_id&item_id=$item_id&$filters_str");
@@ -241,12 +258,25 @@ if($item_id){
 		die('bad item_id!');
 	$row=mysql_fetch_assoc($res);
 	$cat_id=$item_output['category']=(int)$row['category'];
+
+	if($row['ext_attr_enabled']=='yes')
+		$item_output['ext_attr_enabled']=true;
+	else
+		$item_output['ext_attr_enabled']=false;
+
 	$item_output['pilot_name']=stripslashes($row['PilotName']);
 	$item_output['pilot_nik']=stripslashes($row['PilotNik']);
+	$item_output['pilot_phone']=stripslashes($row['PilotPhone']);
+	$item_output['pilot_city']=stripslashes($row['PilotCity']);
 	$item_output['pilot_size']=stripslashes($row['PilotSize']);
+
+
 	$item_output['navigator_name']=stripslashes($row['NavigatorName']);
 	$item_output['navigator_nik']=stripslashes($row['NavigatorNik']);
+	$item_output['navigator_phone']=stripslashes($row['NavigatorPhone']);
+	$item_output['navigator_city']=stripslashes($row['NavigatorCity']);
 	$item_output['navigator_size']=stripslashes($row['NavigatorSize']);
+
 	$item_output['auto_brand']=stripslashes($row['AutoBrand']);
 	$item_output['auto_number']=stripslashes($row['AutoNumber']);
 	$item_output['wheel_size']=stripslashes($row['WheelSize']);
@@ -322,6 +352,7 @@ if($item_id){
 	}
 
 	$item_output['print_link']=append_rnd("print-request.php?comp_id=$comp_id&request_id=$item_id");
+	$item_output=fill_ext_attr($comp_id,$item_id,$item_output);
 }	
 if(!$item_output['register_date']) //default date
 	$item_output['register_date']=date('d.m.Y');
