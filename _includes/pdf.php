@@ -10,6 +10,8 @@
 
 //Функции для работы с pdf
 require_once("../3dparty/fpdf/tfpdf.php");
+if(!defined('CA_PDF_ENABLED'))
+	die('pdf.php: работа с pdf не включена в конфигурационном файле!');
 require_once(CA_PDF_TFPDF_TABLE_PATH.'/myfpdf-table.php');
 require_once(CA_PDF_TFPDF_TABLE_PATH.'/class.tfpdftable.php');
 
