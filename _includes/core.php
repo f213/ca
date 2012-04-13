@@ -32,20 +32,6 @@ $keypad_pages=array('tk'); //места, где нужно использова�
 //
 
 //дальше вообще не смотреть.
-$mon_name=array(
-	1=>'Январь',
-	2=>'Февраль',
-	3=>'Март',
-	4=>'Апрель',
-	5=>'Май',
-	6=>'Июнь',
-	7=>'Июль',
-	8=>'Август',
-	9=>'Сентябрь',
-	10=>'Октябрь',
-	11=>'Ноябрь',
-	12=>'Декабрь',
-);	
 
 $from_array=array(
 	'online'=>'Онлайн-заявка',
@@ -112,12 +98,6 @@ function query_eval($query)
 		 return false;
 	}
 }
-function user_error_handler($errno, $errmsg, $filename, $linenum)
-{
- $errortype = array(1=>'Error', 2=>'Warning!', 4=>'Parsing Error', 8=>'Notice', 16=>'Core Error', 32=>'Core Warning!', 64=>'Compile Error', 128=>'Compile Warning!', 256=>'User Error', 512=>'User Warning!', 1024=>'User Notice');
- $msg="PHP error $errno {$errortype[$errno]}: $errmsg ($filename - line $linenum)";
- #error_log($msg,0);
-}
 function add_item($db_name,$item_data,$item_id=0,$id_name='ID')
 {
  if(!empty($item_id)) { $pre="UPDATE"; $post=" WHERE `$id_name`='".addslashes($item_id)."'"; }
@@ -140,17 +120,6 @@ function add_item($db_name,$item_data,$item_id=0,$id_name='ID')
 function delete_item($db_name,$item_id,$kid='id')
 {
  if(isset($item_id)) query_eval("DELETE FROM $db_name WHERE $kid='".addslashes($item_id)."'");
-}
-function replace_item($db_name, $item_data)
-{
-  $pre = "REPLACE INTO";
-  $str = '';
-  foreach( $item_data as $key => $value )
-  {
-    if($str!=='') $str.=', ';
-    $str.='`'.$key."`='".addslashes(str_replace(array(chr(171), chr(150), chr(187), chr(151), chr(179), chr(174), chr(153), chr(136), chr(132), chr(147), chr(167)), array('&laquo;','&ndash;','&raquo;','&mdash;','&#8470;','&reg;','&trade;','&euro;','&bdquo;','&ldquo;','&sect;'), $value))."'";
-  }
-  return query_eval($pre." $db_name SET $str");
 }
 
 function escape_value($value) {
