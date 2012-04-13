@@ -46,7 +46,7 @@ function raf_pdf_header($pdf,$print_hueta=0){
 	$pdf->setXY(50,8); $pdf->setFont('times','',13.5);
 	$pdf->Write(5,'Российская автомобильная федерация');
 	$pdf->setXY(85,12); $pdf->setFont('times','',11.5);
-	$pdf->Write(5,'трофи-рейд');
+	$pdf->Write(5,$OFFICIAL_DATA['comp_type']);
 
 	$pdf->setXY(50,18); $pdf->setFont('times','B',15);
 	$pdf->Write(5,$OFFICIAL_DATA['name']);

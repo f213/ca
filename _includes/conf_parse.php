@@ -269,6 +269,7 @@ function get_official_data(){
 	$cfg=$_raw_official_conf;
 	$ret=array();
 	$ret['name']=$cfg['official']['name'];
+	$ret['comp_type']=$cfg['official']['comp_type'];
 	$ret['rukogon']=$cfg['official']['rukogon'];
 	$ret['secretary']=$cfg['official']['secretary'];
 	$ret['tech_commissar']=$cfg['official']['tech_commissar'];
