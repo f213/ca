@@ -12,6 +12,7 @@
  * Возвращает хеш со следующими ключами
  * pilot_name, navigator_name - имена пилота и штурамана. Если есть ники, ставятся после скобочек.
  * pilot_name_official, navigator_name_official - имена пилота и штурмана без ников
+ * pilot_name_f, pilot_name_i, pilot_name_o; navigator_name_f, navigator_name_i, navigator_name_o - отдельно фамилия, имя и отчество на каждого члена экипажа
  * auto_brand - марка машины
  * auto_number - госномер
  * wheel_size - размер колес
@@ -51,10 +52,12 @@ function get_brief_request_data($comp_id,$request_id,$append_hash=array()){
 	$row=mysql_fetch_assoc($res);
 	$ret['pilot_name']=stripslashes($row['PilotName']);
 	$ret['pilot_name_official']=name2official($ret['pilot_name']);
+	list($ret['pilot_name_f'],$ret['pilot_name_i'],$ret['pilot_name_o'])=get_fio($ret['pilot_name']);
 	if($row['PilotNik'])
 		$ret['pilot_name'].=' ('.stripslashes($row['PilotNik']).')';
 	$ret['navigator_name']=stripslashes($row['NavigatorName']);
 	$ret['navigator_name_official']=name2official($ret['navigator_name']);
+	list($ret['navigator_name_f'],$ret['navigator_name_i'], $ret['navigator_name_o'])=get_fio($ret['navigator_name']);
 	if($row['NavigatorNik'])
 		$ret['navigator_name'].=' ('.stripslashes($row['NavigatorNik']).')';
 	$ret['auto_brand']=stripslashes($row['AutoBrand']);
