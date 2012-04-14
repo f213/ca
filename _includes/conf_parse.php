@@ -180,7 +180,8 @@ else
 
 if(default_no('requests.dummy_declarant_pilot_equal'))
 	define('CA_DECLARANT_PILOT_EQUAL',1); //заглушка - заявитель всегда равен имени пилота
-
+if(cfg_has('requests.dummy_single_country'))
+	define('CA_DUMMY_SINGLE_COUNTRY',cfg_val('requests.dummy_single_country')); //заглушка - единая страна для всех участников
 //
 //секция INTERFACE
 //

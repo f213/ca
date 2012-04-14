@@ -20,6 +20,7 @@ $_allowed_ext_attr=array(
 	'license_num'=>'Номер лицензии',
 	'rank'=>'Звание',
 	'zayav_name'=>'заявитель',
+	'country'=>'страна',
 );
 
 $_req_ext_attr=array('zayav_name');
@@ -90,6 +91,12 @@ function fill_ext_attr($comp_id,$req_id,$item_output){
 	foreach($_req_ext_attr as $ext_attr)
 		if(_ext_attr_enabled($ext_attr))
 			$item_output[$ext_attr]=_ext_attr($comp_id,$req_id,$ext_attr);
+
+	//заглушка, единственная страна для всех
+	if(defined('CA_DUMMY_SINGLE_COUNTRY') and _strlen('CA_DUMMY_SINGLE_COUNTRY'))
+		foreach($_people_names as $type=>$value)
+			if(_ext_attr_enabled($type.'_country'))
+				$item_output[$type.'_country']=CA_DUMMY_SINGLE_COUNTRY;
 
 	//заглушка, забиваем имя заявителя, как имя пилота
 	if(defined('CA_DECLARANT_PILOT_EQUAL') and CA_DECLARANT_PILOT_EQUAL)

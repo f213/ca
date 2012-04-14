@@ -25,6 +25,7 @@ $_people_names['pilot']=array(
 	'ext_attr'=>array(
 		'addr',
 		'birthday',
+		'country',
 		'passport_series',
 		'passport_number',
 		'passport_given_who',
@@ -42,6 +43,7 @@ $_people_names['shturman']=array(
 	'ext_attr'=>array(
 		'addr',
 		'birthday',
+		'country',
 		'passport_series',
 		'passport_number',
 		'passport_given_who',
