@@ -178,6 +178,9 @@ if(default_no('requests.can_change_cat_id_after_start_list_generation'))
 else
 	define('CAN_CHANGE_CAT_ID_AFTER_START_LIST',false);
 
+if(default_no('requests.dummy_declarant_pilot_equal'))
+	define('CA_DECLARANT_PILOT_EQUAL',1); //заглушка - заявитель всегда равен имени пилота
+
 //
 //секция INTERFACE
 //
