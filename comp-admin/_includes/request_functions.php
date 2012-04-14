@@ -110,9 +110,7 @@ function __get_crew($req_data,$type='full',$where='ca'){
 
 function name2official($name){
 	$name=preg_replace('/([^\ ]+)\ +([^\ ]+)\ +([^\ ]+)/u','$1 $2',$name);
-	list($f,$i)=preg_split('/\ +/',$name);
-	$f=_ucfirst($f);
-	$i=_ucfirst($i);
+	list($f,$i)=get_fi($name);
 	//искуственный интеллект, бля
 	if(_strlen($i)==1)
 		$i.='.';
@@ -125,4 +123,16 @@ function name2official($name){
 	}
 	$name="$f $i";
 	return $name;
+}
+function get_fi($name){
+	$name=preg_replace('/([^\ ]+)\ +([^\ ]+)\ +([^\ ]+)/u','$1 $2',$name);
+	list($f,$i)=preg_split('/\ +/',$name);
+	$f=_ucfirst($f); $i=_ucfirst($i);
+	return array($f,$i);
+}
+function get_fio($name){
+	$name=preg_replace('/([^\ ]+)\ +([^\ ]+)\ +([^\ ]+)/u','$1 $2',$name);
+	list($f,$i,$o)=preg_split('/\ +/',$name);
+	$f=_ucfirst($f); $i=_ucfirst($i); $o=_ucfirst($o);
+	return array($f,$i,$o);
 }
