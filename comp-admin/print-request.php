@@ -10,6 +10,7 @@
 require_once('../_includes/core.php');
 require_once('_includes/auth.php');
 require_once('_includes/online_requests.functions.php');
+require_once('_includes/request_functions.php');
 
 require('_includes/nocache.php');
 
@@ -20,7 +21,12 @@ if(!$comp_id)
 	die('не указан id соревнования');
 if(!$request_id)
 	die('не указан id заявки');
+if($_GET['pdf']){
+	$item_output=get_full_request_data($comp_id,$request_id);
+	require_once('pdf/request.php');
+	print_pdf_request($item_output);
 
+}
 if(defined('ADM_TRACK_EDITS') and ADM_TRACK_EDITS) //печать снимает отметку о редактировании
 	cancel_tracked_edit($request_id);
 
