@@ -12,6 +12,7 @@
 $_allowed_ext_attr=array(
 	'addr' => 'Адрес',
 	'birthday'=>'День рождения',
+	'email'=>'E-mail',
 	'passport_series'=>'Серия',
 	'passport_number'=>'Номер',
 	'passport_given_who'=>'Кем выдан',

@@ -242,7 +242,7 @@ $(document).ready(function(){
 	});
 <?}?>	
 	//автодоплнение городов
-	$('#city').autocomplete('autocomplete.php',{extraParams:{cities:1},cacheLength:10,delay:10,matchSubset:1,autoFill:true,maxItemsToShow:10});
+	$('#city, .ext_city').autocomplete('autocomplete.php',{extraParams:{cities:1},cacheLength:10,delay:10,matchSubset:1,autoFill:true,maxItemsToShow:10});
 	//необходимые настройки доп полей
 	$('.ext_attr_field').keyup(function(e){
 		if(_keynum(e) == 27){ //escape очищает поле
@@ -395,7 +395,7 @@ function recheck_all(){
 </tr>
 <tr>
 	<td align=left valign=top><b><?=$_people_names['pilot']['ca']?>:</b></td>
-	<td><input type = text name = pilot_name id = pilot_name size = 40 maxlength = 50 value = "<?=$item_output['pilot_name']?>">&nbsp;Ник: <input type = text name = pilot_nik id = pilot_nik size = 12 maxlength = 50  value = "<?=$item_output['pilot_nik']?>">	Тел: <input type = text name = pilot_phone id = pilot_phone size=30 maxlength=50 onkeypress="return only_numbers(event);" value = "<?=$item_output['pilot_phone']?>"> Город: <input type = text name = pilot_city id = pilot_city size=10 maxlength=32 value = "<?=$item_output['pilot_city']?>">
+	<td><input type = text name = pilot_name id = pilot_name size = 40 maxlength = 50 value = "<?=$item_output['pilot_name']?>">&nbsp;Ник: <input type = text name = pilot_nik id = pilot_nik size = 12 maxlength = 50  value = "<?=$item_output['pilot_nik']?>">	Тел: <input type = text class="ext_attr_field" name = pilot_phone id = pilot_phone size=30 maxlength=50 onkeypress="return only_numbers(event);" value = "<?=$item_output['pilot_phone']?>"> Город: <input type = text class="ext_attr_field ext_city" name = pilot_city id = pilot_city size=10 maxlength=32 value = "<?=$item_output['pilot_city']?>">
 </td>
 </tr>
 <?
@@ -432,7 +432,7 @@ if($need_sp1){?>
 <?if($_people_names['shturman']['ca']){?>
 <tr>
 	<td align=left valign=top><b><?=$_people_names['shturman']['ca']?>:</b></td>
-	<td><input type = text name = navigator_name id = navigator_name size = 40 maxlength = 50 value = "<?=$item_output['navigator_name']?>">&nbsp;Ник: <input type = text name = navigator_nik id = navigator_nik size = 12 maxlength = 50 value = "<?=$item_output['navigator_nik']?>"> Тел: <input type = text name = navigator_phone id = navigator_phone size=30 maxlength=50 onkeypress="return only_numbers(event);" value = "<?=$item_output['navigator_phone']?>"> Город: <input type = text name = navigator_city id = navigator_city size=10 maxlength=32 value = "<?=$item_output['navigator_city']?>">
+	<td><input type = text name = navigator_name id = navigator_name size = 40 maxlength = 50 value = "<?=$item_output['navigator_name']?>">&nbsp;Ник: <input type = text name = navigator_nik id = navigator_nik size = 12 maxlength = 50 value = "<?=$item_output['navigator_nik']?>"> Тел: <input type = text class="ext_attr_field" name = navigator_phone id = navigator_phone size=30 maxlength=50 onkeypress="return only_numbers(event);" value = "<?=$item_output['navigator_phone']?>"> Город: <input type = text class="ext_attr_field ext_city" name = navigator_city id = navigator_city size=10 maxlength=32 value = "<?=$item_output['navigator_city']?>">
 </td>
 </tr>
 <?
