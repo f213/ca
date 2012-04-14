@@ -216,11 +216,7 @@ if(default_no('pdf.enabled')){
 	define('CA_PDF_TFPDF_TABLE_PATH',rtrim(cfg_val('pdf.tfpdf_table_path'),'\/\\'));
 	if(!file_exists(CA_PDF_TFPDF_TABLE_PATH.'/myfpdf-table.php'))
 		die('ca.ini: не найден класс tfpdf по указанному пути: '.CA_PDF_TFPDF_TABLE_PATH);
-	if(!cfg_has('pdf.font'))
-		define('CA_PDF_FONT','times');
-	else
-		define('CA_PDF_FONT',cfg_val('pdf.font'));
-
+	
 
 }
 function get_categories_list(){
