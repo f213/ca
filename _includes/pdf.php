@@ -33,14 +33,17 @@ $default_tbl_config=array(
 $default_font_size=9;
 
 
-function raf_pdf_header($pdf,$print_hueta=0){
+function raf_pdf_header($pdf,$print_hueta=0,$title='CA_DOC'){
 	global $default_tbl_config;
 	global $OFFICIAL_DATA;
+	$pdf->SetCreator('CA');
+	$pdf->SetAuthor('Fedor A Borshev <fedor9@gmail.com>');
+	$pdf->SetTitle($title,true);
 	$pdf->Image('i/raf.png',5,9);
 	$pdf->setFont('times','',5.5);
-	$pdf->setXY(140,2); 
+	$pdf->setXY(140,4); 
 	$pdf->Write(5,'ОРГАНИЗОВАНО В СООТВЕТСТВИИ');
-	$pdf->setXY(140,5);
+	$pdf->setXY(140,7);
 	$pdf->Write(5,'СО СПОРТИВНЫМ КОДЕКСОМ РАФ');
 
 	$pdf->setXY(50,8); $pdf->setFont('times','',13.5);
@@ -51,7 +54,7 @@ function raf_pdf_header($pdf,$print_hueta=0){
 	$pdf->setXY(50,18); $pdf->setFont('times','B',15);
 	$pdf->Write(5,$OFFICIAL_DATA['name']);
 
-	$pdf->SetXY(5,34); $pdf->setFont('times','',7.5); $pdf->Write(5,$OFFICIAL_DATA['place']);
+	$pdf->SetXY(5,34); $pdf->setFont('times','B',7.5); $pdf->Write(5,$OFFICIAL_DATA['place']);
 	$pdf->setXY(130,34); $pdf->Write(5,$OFFICIAL_DATA['date']);
 	if($print_hueta){
 		$pdf->setY(18);
