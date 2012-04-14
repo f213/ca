@@ -90,5 +90,12 @@ function fill_ext_attr($comp_id,$req_id,$item_output){
 	foreach($_req_ext_attr as $ext_attr)
 		if(_ext_attr_enabled($ext_attr))
 			$item_output[$ext_attr]=_ext_attr($comp_id,$req_id,$ext_attr);
+
+	//заглушка, забиваем имя заявителя, как имя пилота
+	if(defined('CA_DECLARANT_PILOT_EQUAL') and CA_DECLARANT_PILOT_EQUAL)
+		foreach($item_output as $key=>$value)
+			if(stristr($key,'pilot'))
+				$item_output[str_ireplace('pilot','declarant',$key)]=$value;
+	die(var_dump($item_output));
 	return $item_output;
 }
