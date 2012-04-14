@@ -216,7 +216,15 @@ if(default_no('pdf.enabled')){
 	define('CA_PDF_TFPDF_TABLE_PATH',rtrim(cfg_val('pdf.tfpdf_table_path'),'\/\\'));
 	if(!file_exists(CA_PDF_TFPDF_TABLE_PATH.'/myfpdf-table.php'))
 		die('ca.ini: не найден класс tfpdf по указанному пути: '.CA_PDF_TFPDF_TABLE_PATH);
-	
+	if(default_yes('pdf.request_enabled')){
+		define('CA_PDF_REQUEST_ENABLED',1);
+		if(cfg_has('pdf.request_font'))
+			define('CA_PDF_REQUEST_FONT',cfg_val('pdf.request_font'));
+		else
+			define('CA_PDF_REQUEST_FONT','FreeSans.ttf');
+		if(!strlen(CA_PDF_REQUEST_FONT) or !file_exists('../3dparty/fpdf/font/unifont/'.CA_PDF_REQUEST_FONT))
+			die('Не найден шрифт для печати заявок (pdf.request_font) по пути 3dparty/fpdf/font/unifont/'.CA_PDF_REQUEST_FONT);
+	}
 
 }
 function get_categories_list(){
