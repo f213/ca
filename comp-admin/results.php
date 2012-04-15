@@ -547,6 +547,6 @@ if(!$_GET['print_results']){
 	$page_title=$title=$results_title;
 	//TODO сделать отдельные шаблоны для разных видов соревнований, а так же в зависимости от template_path
 	include('_includes/nocache.php');
-	require('_templates/print_header.phtml');
-	require('_templates/results_print.phtml');	
+	require('print/header.php');
+	require('_templates/print/results.phtml');	
 }	

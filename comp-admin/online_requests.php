@@ -306,7 +306,7 @@ while($row=mysql_fetch_assoc($res)){
 	$item_output[$id]['edit_link']=append_rnd("online_requests_add.php?comp_id=$comp_id&item_id=$id&$filters_str");
 	$item_output[$id]['delete_link']=append_rnd("online_requests.php?comp_id=$comp_id&item_id=$id&flag=3&$filters_str");
 	$item_output[$id]['un_hl_link']=append_rnd("online_requests.php?comp_id=$comp_id&item_id=$id&flag=6$filters_str");
-	$item_output[$id]['print_url']=append_rnd("print-request.php?comp_id=$comp_id&request_id=$id");
+	$item_output[$id]['print_url']=append_rnd("print/request.php?comp_id=$comp_id&request_id=$id");
 	if(defined('CA_PDF_REQUEST_ENABLED') and CA_PDF_REQUEST_ENABLED)
 		$item_output[$id]['print_url'].='&pdf=1';
 	
@@ -344,7 +344,7 @@ if(!sizeof($item_output)){ //если никого нет - формируем �
 	}
 }
 if($f_category)
-	$tpl_tkproto_link=append_rnd("print_tk.php?comp_id=$comp_id&cat_id=$f_category");
+	$tpl_tkproto_link=append_rnd("print/tk.php?comp_id=$comp_id&cat_id=$f_category");
 
 require('admin_header.php');
 require('_templates/online_requests.phtml');

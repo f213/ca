@@ -204,10 +204,10 @@ if($f_category){
 		$total_cnt++;
 	}
 	if($item_output){
-		$tpl_print_link=append_rnd("print_start_list.php?flag=1&cat_id=$f_category&comp_id=$comp_id");
+		$tpl_print_link=append_rnd("print/start_list.php?flag=1&cat_id=$f_category&comp_id=$comp_id");
 		$tpl_clean_link=append_rnd("start_list.php?comp_id=$comp_id&flag=7&f_category=$f_category");
 		if($need_tk)
-			$tpl_tkproto_link=append_rnd("print_tk.php?comp_id=$comp_id&cat_id=$f_category");
+			$tpl_tkproto_link=append_rnd("print/tk.php?comp_id=$comp_id&cat_id=$f_category");
 	}
 	//проверяем, есть ли хоть кто-то, кто прошел техкомиссию. нужно вдруг она не нужна..
 	$tpl_tkproto_disabled=true;

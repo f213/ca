@@ -351,7 +351,7 @@ if($item_id){
 		}
 	}
 
-	$item_output['print_link']=append_rnd("print-request.php?comp_id=$comp_id&request_id=$item_id");
+	$item_output['print_link']=append_rnd("print/request.php?comp_id=$comp_id&request_id=$item_id");
 	if(defined('CA_PDF_REQUEST_ENABLED') and CA_PDF_REQUEST_ENABLED)
 		$item_output['print_link'].='&pdf=1';
 

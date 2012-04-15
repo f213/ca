@@ -7,6 +7,7 @@
 //
 //THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+chdir('../');
 require_once('../_includes/core.php');
 require_once('_includes/auth.php');
 require_once('_includes/online_requests.functions.php');
@@ -37,4 +38,4 @@ if(mysql_num_rows($res)){
 	$output['start_number']=(int)$row[0];
 }
 	
-require("_templates/$tpl_dir/print-request.phtml");
+require("_templates/print/requests/$tpl_dir/request.phtml");
