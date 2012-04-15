@@ -73,7 +73,7 @@ function get_brief_request_data($comp_id,$request_id,$append_hash=array()){
 	$ret['auto_brand']=stripslashes($row['AutoBrand']);
 	$ret['auto_number']=str_replace(' ','',stripslashes($row['AutoNumber']));
 	$ret['city']=stripslashes($row['city']);
-	$ret['city_capitalized']=ucfirst($ret['city']);
+	$ret['city_capitalized']=_ucfirst($ret['city']);
 	$ret['cat_id']=(int)$row['category'];
 	if($ret['cat_id'])
 		$ret['cat_name']=$cat_name[$ret['cat_id']];
