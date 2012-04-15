@@ -173,7 +173,10 @@ function _input_val($flagname){ //для одновременной провер
 }
 function get_base(){ //получить значение тега base для вложенных папок
 	global $_SERVER;
-	$path=ltrim(dirname(dirname($_SERVER['REQUEST_URI'])),'/');
+	$path=dirname($_SERVER['REQUEST_URI']);
+	if(basename($path)!='comp-admin')
+		$path=dirname($path);
+	$path=trim($path,'/');
 	$host=$_SERVER['HTTP_HOST'];
 	$base="http://$host/$path/";
 	return $base;
