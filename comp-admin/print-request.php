@@ -21,8 +21,8 @@ if(!$comp_id)
 	die('не указан id соревнования');
 if(!$request_id)
 	die('не указан id заявки');
+$item_output=get_full_request_data($comp_id,$request_id);
 if($_GET['pdf']){
-	$item_output=get_full_request_data($comp_id,$request_id);
 	require_once('pdf/request.php');
 	print_pdf_request($item_output);
 
@@ -30,29 +30,7 @@ if($_GET['pdf']){
 if(defined('ADM_TRACK_EDITS') and ADM_TRACK_EDITS) //печать снимает отметку о редактировании
 	cancel_tracked_edit($request_id);
 
-$res=query_eval("SELECT name FROM $comp_dbt WHERE id=$comp_id;");
-if(!mysql_num_rows($res))
-	die('ошибка получения названия соревнования!');
-$row=mysql_fetch_row($res);
-$comp_title=stripslashes($row[0]);
-$res=query_eval("SELECT * FROM $compreq_dbt WHERE comp_id=$comp_id AND id=$request_id;");
-if(!mysql_num_rows($res))
-	die("Указанный request_id не найден в соревнования ($comp_id)");
-$row=mysql_fetch_assoc($res);
-$output['pilot_name']=stripslashes($row['PilotName']);
-if($row['PilotNik'])
-	$output['pilot_name'].=' ('.stripslashes($row['PilotNik']).')';
-$output['navigator_name']=stripslashes($row['NavigatorName']);
-if($row['NavigatorNik'])
-	$output['navigator_name'].=' ('.stripslashes($row['NavigatorNik']).')';
-$output['phone']=stripslashes($row['phone']);
-$output['email']=stripslashes($row['email']);
-$output['auto_brand']=stripslashes($row['AutoBrand']);
-$output['auto_number']=stripslashes($row['AutoNumber']);
-$output['wheel_size']=stripslashes($row['WheelSize']);
-$output['class']=$cat_name[(int)$row['category']];
-
-
+$comp_name=comp_name($comp_id);
 $res=query_eval("SELECT start_number FROM $compres_dbt WHERE comp_id=$comp_id AND request_id=$request_id;"); //получаем бортовой номер если есть.
 if(mysql_num_rows($res)){
 	$row=mysql_fetch_row($res);
