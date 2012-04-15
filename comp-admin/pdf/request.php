@@ -16,6 +16,9 @@ function print_pdf_request($item_output){
 	global $default_tbl_config; //настройки табилцы по умолчанию ../_includes/pdf.php
 	global $default_font_size; //размер шрифта, от которого отталкиваются другие ../_includes/pdf.php
 
+	if(!defined('CA_PDF_REQUEST_ENABLED') or !CA_PDF_REQUEST_ENABLED)
+		die('print_pdf_request(): в настройках выключена печать pdf для заявок!');
+
 	$pdf = new tFPDF();
 	$pdf->Open();
 	$pdf->SetAutoPageBreak(true, 20);
