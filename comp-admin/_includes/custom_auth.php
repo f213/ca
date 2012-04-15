@@ -8,9 +8,12 @@
 //THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 $custom_auth_enabled=false;
-if(defined('CUSTOM_AUTH') and strlen(CUSTOM_AUTH) and file_exists(dirname($_SERVER['SCRIPT_FILENAME']).'/'.CUSTOM_AUTH)){
+if(defined('CUSTOM_AUTH') and strlen(CUSTOM_AUTH) and (file_exists(dirname($_SERVER['SCRIPT_FILENAME']).'/../'.CUSTOM_AUTH) or file_exists(dirname($_SERVER['SCRIPT_FILENAME']).'/'.CUSTOM_AUTH))){
 	$custom_auth_enabled=true;
-	$custom_auth_file=dirname($_SERVER['SCRIPT_FILENAME']).'/'.CUSTOM_AUTH;
+	if(file_exists(dirname($_SERVER['SCRIPT_FILENAME']).'/../'.CUSTOM_AUTH))
+		$custom_auth_file=dirname($_SERVER['SCRIPT_FILENAME']).'/../'.CUSTOM_AUTH;
+	else
+		$custom_auth_file=dirname($_SERVER['SCRIPT_FILENAME']).'/'.CUSTOM_AUTH;
 }
 //
 //http://php.net/manual/en/function.crypt.php
@@ -46,7 +49,6 @@ function crypt_apr1_md5($plainpasswd,$salt='') {
 }
 
 function check_htpasswd($file,$login,$pass,$login_is_hash=false){
-
 	if(!file_exists($file) or !is_readable($file))
 		return false;
 	$fh=fopen($file,'r');
