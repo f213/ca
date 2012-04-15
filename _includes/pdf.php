@@ -82,3 +82,16 @@ function raf_pdf_header($pdf,$print_hueta=0,$title='CA_DOC'){
 
 	return 40;
 }
+function raf_pdf_footer($pdf){
+	global $OFFICIAL_DATA;
+	global $default_font_size;
+	$pdf->setY($pdf->getY()+4);
+	$pdf->setFont('times','B',$default_font_size);
+
+	$pdf->Write(4,"Главный секретарь: ".$OFFICIAL_DATA['secretary']." ____________\r\n\r\n");
+	$pdf->Write(4,"Руководитель гонки: ".$OFFICIAL_DATA['rukogon']." ____________\r\n\r\n");
+	foreach($OFFICIAL_DATA['ksk'] as $key=>$value)
+		$pdf->Write(4,"Спортивный комиссар: $value ______________\r\n\r\n");
+	
+	return $pdf->getY();
+}
