@@ -231,6 +231,11 @@ $tpl_need_tk=$need_tk;
 $just_edited=0;
 if($_GET['just_edited'])
 	$just_edited=(int)$_GET['just_edited'];
+
+if(!sizeof($item_output)){ //если нифига нет, то мы на первой странице - давай печатать список допущенных участников
+	$tpl_print_allowed_requests_link=append_rnd("print/allowed_requests.php?comp_id=$comp_id");
+}
+
 $title="Стартовая ведомость";
 require('admin_header.php');
 require('_templates/start_list.phtml');

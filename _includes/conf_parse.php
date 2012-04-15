@@ -229,6 +229,15 @@ if(default_no('pdf.enabled')){
 		if(!strlen(CA_PDF_REQUEST_FONT) or !file_exists('../3dparty/fpdf/font/unifont/'.CA_PDF_REQUEST_FONT))
 			die('Не найден шрифт для печати заявок (pdf.request_font) по пути 3dparty/fpdf/font/unifont/'.CA_PDF_REQUEST_FONT);
 	}
+	if(default_yes('pdf.allowed_requests_enabled')){
+		define('CA_PDF_ALLOWED_REQUESTS_ENABLED',1);
+		if(cfg_has('pdf.allowed_requests_font'))
+			define('CA_PDF_ALLOWED_REQUESTS_FONT',cfg_val('pdf.allowed_requests_font'));
+		else
+			define('CA_PDF_ALLOWED_REQUESTS_FONT','FreeSans.ttf');
+		if(!strlen(CA_PDF_ALLOWED_REQUESTS_FONT) or ! file_exists('../3dparty/fpdf/font/unifont/'.CA_PDF_ALLOWED_REQUESTS_FONT))
+			die('Не найден шрифт для печати списка допущенных участников (pdf.allowed_requests_font) по пути /3dparty/fpdf/font/unifont/'.CA_PDF_ALLOWED_REQUESTS_FONT);
+	}
 
 }
 function get_categories_list(){
