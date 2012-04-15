@@ -13,6 +13,8 @@
  * pilot_name, navigator_name - имена пилота и штурамана. Если есть ники, ставятся после скобочек.
  * pilot_name_official, navigator_name_official - имена пилота и штурмана без ников
  * pilot_name_f, pilot_name_i, pilot_name_o; navigator_name_f, navigator_name_i, navigator_name_o - отдельно фамилия, имя и отчество на каждого члена экипажа
+ * pilot_city, pilot_city_capitalized - город пилота
+ * navigator_city, navigator_city_capitalized - город штурмана
  * auto_brand - марка машины
  * auto_number - госномер
  * wheel_size - размер колес
@@ -47,7 +49,7 @@ function get_brief_request_data($comp_id,$request_id,$append_hash=array()){
 	$request_id=(int)$request_id;
 	if(!$request_id or !$comp_id)
 		return null;
-	$res=query_eval("SELECT category,PilotName,PilotNik,NavigatorName,NavigatorNik,city,AutoBrand,AutoNumber,WheelSize,phone,email FROM $compreq_dbt WHERE comp_id=$comp_id AND id=$request_id;");
+	$res=query_eval("SELECT category,PilotName,PilotNik,PilotCity,NavigatorName,NavigatorNik,NavigatorCity,city,AutoBrand,AutoNumber,WheelSize,phone,email FROM $compreq_dbt WHERE comp_id=$comp_id AND id=$request_id;");
 	if(!mysql_num_rows($res))
 		return null;
 	$ret=$append_hash;
@@ -57,11 +59,15 @@ function get_brief_request_data($comp_id,$request_id,$append_hash=array()){
 	list($ret['pilot_name_f'],$ret['pilot_name_i'],$ret['pilot_name_o'])=get_fio($ret['pilot_name']);
 	if($row['PilotNik'])
 		$ret['pilot_name'].=' ('.stripslashes($row['PilotNik']).')';
+	$ret['pilot_city']=stripslashes($row['PilotCity']);
+	$ret['pilot_city_capitalized']=_ucfirst($ret['pilot_city']);
 	$ret['navigator_name']=stripslashes($row['NavigatorName']);
 	$ret['navigator_name_official']=name2official($ret['navigator_name']);
 	list($ret['navigator_name_f'],$ret['navigator_name_i'], $ret['navigator_name_o'])=get_fio($ret['navigator_name']);
 	if($row['NavigatorNik'])
 		$ret['navigator_name'].=' ('.stripslashes($row['NavigatorNik']).')';
+	$ret['navigator_city']=stripslashes($row['NavigatorCity']);
+	$ret['navigator_city_capitalized']=_ucfirst($ret['navigator_city']);
 	$ret['phone']=stripslashes($row['phone']);
 	$ret['email']=stripslashes($row['email']);
 	$ret['auto_brand']=stripslashes($row['AutoBrand']);
