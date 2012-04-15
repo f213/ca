@@ -175,6 +175,6 @@ function get_base(){ //получить значение тега base для в
 	global $_SERVER;
 	$path=ltrim(dirname(dirname($_SERVER['REQUEST_URI'])),'/');
 	$host=$_SERVER['HTTP_HOST'];
-	$base="http://$host/$path";
+	$base="http://$host/$path/";
 	return $base;
 }
