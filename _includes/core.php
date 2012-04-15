@@ -171,3 +171,10 @@ function _input_val($flagname){ //для одновременной провер
 	if(array_key_exists($flagname,$_POST))
 		return $_POST[$flagname];
 }
+function get_base(){ //получить значение тега base для вложенных папок
+	global $_SERVER;
+	$path=ltrim(dirname(dirname($_SERVER['REQUEST_URI'])),'/');
+	$host=$_SERVER['HTTP_HOST'];
+	$base="http://$host/$path";
+	return $base;
+}
