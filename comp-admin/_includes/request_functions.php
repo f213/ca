@@ -16,6 +16,8 @@
  * auto_brand - марка машины
  * auto_number - госномер
  * wheel_size - размер колес
+ * email
+ * phone - телефон экипажа
  * city - город, как в базе
  * city_capitalized - город, первая буква всегда большая
  * cat_id - id категории участника
@@ -45,7 +47,7 @@ function get_brief_request_data($comp_id,$request_id,$append_hash=array()){
 	$request_id=(int)$request_id;
 	if(!$request_id or !$comp_id)
 		return null;
-	$res=query_eval("SELECT category,PilotName,PilotNik,NavigatorName,NavigatorNik,city,AutoBrand,AutoNumber,WheelSize FROM $compreq_dbt WHERE comp_id=$comp_id AND id=$request_id;");
+	$res=query_eval("SELECT category,PilotName,PilotNik,NavigatorName,NavigatorNik,city,AutoBrand,AutoNumber,WheelSize,phone,email FROM $compreq_dbt WHERE comp_id=$comp_id AND id=$request_id;");
 	if(!mysql_num_rows($res))
 		return null;
 	$ret=$append_hash;
@@ -60,6 +62,8 @@ function get_brief_request_data($comp_id,$request_id,$append_hash=array()){
 	list($ret['navigator_name_f'],$ret['navigator_name_i'], $ret['navigator_name_o'])=get_fio($ret['navigator_name']);
 	if($row['NavigatorNik'])
 		$ret['navigator_name'].=' ('.stripslashes($row['NavigatorNik']).')';
+	$ret['phone']=stripslashes($row['phone']);
+	$ret['email']=stripslashes($row['email']);
 	$ret['auto_brand']=stripslashes($row['AutoBrand']);
 	$ret['auto_number']=str_replace(' ','',stripslashes($row['AutoNumber']));
 	$ret['city']=stripslashes($row['city']);
