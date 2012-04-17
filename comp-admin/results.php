@@ -451,9 +451,9 @@ while($row=mysql_fetch_assoc($res)){
 		$item_output[$p]['res']='СХОД';
 		$item_output[$p]['dontfix']=true;
 	}elseif($type=='gr-gps')
-		$item_output[$p]['details_link']=append_rnd("gps-details.php?start_number=$start_number&comp_id=$comp_id");
+		$item_output[$p]['details_link']=append_rnd("print/gps-details.php?start_number=$start_number&comp_id=$comp_id");
 	elseif($type=='legend')
-		$item_output[$p]['details_link']=append_rnd("legend-details.php?start_number=$start_number&comp_id=$comp_id");
+		$item_output[$p]['details_link']=append_rnd("print/legend-details.php?start_number=$start_number&comp_id=$comp_id");
 
 
 	//проверка на снятие
