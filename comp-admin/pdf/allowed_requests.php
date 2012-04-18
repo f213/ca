@@ -1,11 +1,11 @@
 <?php
 //Copyright (c) 2012, Fedor Borshev <fedor9@gmail.com>
 //
-//Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+//Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 //
 //The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 //
-//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 //Печать РАФовского списка допущенных участников
 
@@ -45,35 +45,35 @@ function print_pdf_allowed_requests($item_output){
 			'TEXT_SIZE'=>$default_font_size,
 		),
 		2=>array(
-			'TEXT'=>"Участник\r\nГород",
+			'TEXT'=>'Участник\r\nГород',
 			'TEXT_SIZE'=>$default_font_size,
 		),
 		3=>array(
-			'TEXT'=>"Лицензия\r\nЗаявителя",
+			'TEXT'=>'Лицензия\r\nЗаявителя',
 			'TEXT_SIZE'=>$default_font_size,
 		),
 		4=>array(
-			'TEXT'=>"1 водитель\r\n2 водитель",
+			'TEXT'=>'1 водитель\r\n2 водитель',
 			'TEXT_SIZE'=>$default_font_size,
 		),
 		5=>array(
-			'TEXT'=>"Лицензии\r\nводителя",
+			'TEXT'=>'Лицензии\r\nводителя',
 			'TEXT_SIZE'=>$default_font_size,
 		),
 		6=>array(
-			'TEXT'=>"Город\r\nГород",
+			'TEXT'=>'Город\r\nГород',
 			'TEXT_SIZE'=>$default_font_size,
 		),
 		7=>array(
-			'TEXT'=>"Спорт\r\nЗвание",
+			'TEXT'=>'Спорт\r\nЗвание',
 			'TEXT_SIZE'=>$default_font_size,
 		),
 		8=>array(
-			'TEXT'=>"Марка\r\nа/м",
+			'TEXT'=>'Марка\r\nа/м',
 			'TEXT_SIZE'=>$default_font_size,
 		),
 		9=>array(
-			'TEXT'=>"Зачетная\r\nгруппа",
+			'TEXT'=>'Зачетная\r\nгруппа',
 			'TEXT_SIZE'=>$default_font_size,
 		),
 	));
@@ -86,21 +86,32 @@ function print_pdf_allowed_requests($item_output){
 
 		$row1[0]['TEXT']=++$cnt;
 		$row1[1]['TEXT']=$key; $row1[1]['TEXT_ALIGN']='C'; $row1[1]['TEXT_TYPE']='B';
-		$row1[2]['TEXT']=$value['declarant_name_official']."\r\n".$value['declarant_city'];
+		$row1[2]['TEXT']=$value['declarant_name_official'].'\r\n'.$value['declarant_city'];
 		$row1[3]['TEXT']=$value['declarant_license_type'].' '.$value['declarant_license_num'];
-		$row1[4]['TEXT']=$value['pilot_name_official']."\r\n".$value['navigator_name_official'];
-		$row1[5]['TEXT']=$value['pilot_license_type'].' '.$value['pilot_license_num']."\r\n".
+		$row1[4]['TEXT']=$value['pilot_name_official'].'\r\n'.$value['navigator_name_official'];
+		$row1[5]['TEXT']=$value['pilot_license_type'].' '.$value['pilot_license_num'].'\r\n'.
 			$value['shturman_license_type'].' '.$value['shturman_license_num'];
-		$row1[6]['TEXT']=$value['pilot_city']."\r\n".$value['navigator_city'];
-		$row1[7]['TEXT']=$value['pilot_rank']."\r\n".$value['shturman_rank'];
+		$row1[6]['TEXT']=$value['pilot_city'].'\r\n'.$value['navigator_city'];
+		$row1[7]['TEXT']=$value['pilot_rank'].'\r\n'.$value['shturman_rank'];
 		$row1[8]['TEXT']=$value['auto_brand'];
 		$row1[9]['TEXT']=$value['cat_name'];
 
 		$table->addRow($row1);
 	}
 	$table->close();
+	//подсчет итогов по категориям
+	$item_categories=array();
+	foreach($item_output as $key=>$value){
+		if(!$item_categories[$value['cat_id']])
+			$item_categories[$value['cat_id']]['name']=$value['cat_name'];
+		$item_categories[$value['cat_id']]['cnt']++;
+	}
 	
+	$pdf->setFont('times','',$default_font_size+1);
+	$pdf->setY($pdf->getY()+3);
+	foreach($item_categories as $value)
+		$pdf->Write(5,'Итого по классу '.$value['name'].': '.$value['cnt']."\r\n");
+	$pdf->setY($pdf->getY()+3);
 	raf_pdf_footer($pdf);
-	
 	$pdf->output();
 }
