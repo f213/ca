@@ -25,6 +25,14 @@ for($i=1;$i<=_CATEGORIES;$i++){
 			print "<option value = '$type'>$type_name</option>\r\n";
 	}
 ?></select>
+Род. кат.: <select name = cat<?=$i?>parent_cat_id>
+<option value = 0>Отсутсвует</option>
+<?if($item_output["cat$i"]['parent_cat_id'])
+	print "<option value = ".$item_output["cat$i"]['parent_cat_id']." selected>".$item_output["cat$i"]['parent_cat_name']."</option>\r\n";
+foreach($item_output['allowed_parent_categories'] as $key=>$value){
+		print "<option value = $key>$value</option>\r\n";
+}
+?></select>
 <?if($item_output["cat$i"]['type']=='legend'){?>
 КП(легенда): <input type = text name = cat<?=$i?>_cp value = "<?=$item_output["cat$i"]['cp']?>" size=2 maxlength=2> 
 <?}?>
