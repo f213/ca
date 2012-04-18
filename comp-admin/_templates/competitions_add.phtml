@@ -30,6 +30,7 @@ for($i=1;$i<=_CATEGORIES;$i++){
 <?if($item_output["cat$i"]['parent_cat_id'])
 	print "<option value = ".$item_output["cat$i"]['parent_cat_id']." selected>".$item_output["cat$i"]['parent_cat_name']."</option>\r\n";
 foreach($item_output['allowed_parent_categories'] as $key=>$value){
+	if($key!=$i)
 		print "<option value = $key>$value</option>\r\n";
 }
 ?></select>
