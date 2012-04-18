@@ -100,6 +100,21 @@ function print_pdf_allowed_requests($item_output){
 	}
 	$table->close();
 	
+        //подсчет итогов по категориям
+        $item_categories=array();
+        foreach($item_output as $key=>$value){
+                if(!$item_categories[$value['cat_id']])
+                        $item_categories[$value['cat_id']]['name']=$value['cat_name'];
+                $item_categories[$value['cat_id']]['cnt']++;
+        }
+
+        $pdf->setFont('times','',$default_font_size+1);
+        $pdf->setY($pdf->getY()+3);
+        foreach($item_categories as $value)
+                $pdf->Write(5,'Итого по классу '.$value['name'].': '.$value['cnt']."\r\n");
+        $pdf->setY($pdf->getY()+3);
+        raf_pdf_footer($pdf);
+
 	raf_pdf_footer($pdf);
 	
 	$pdf->output();
