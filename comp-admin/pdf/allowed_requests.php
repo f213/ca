@@ -81,8 +81,8 @@ function print_pdf_allowed_requests($item_output){
 	foreach($item_output as $key=>$value){
 		$row1=array();
 
-		for($i=0;$i<=0;$i++)
-			$row1[$i]['TEXT_SIZE']=$default_font_size;
+		for($i=0;$i<=10;$i++)
+			$row1[$i]['TEXT_SIZE']=$default_font_size-1;
 
 		$row1[0]['TEXT']=++$cnt;
 		$row1[1]['TEXT']=$key; $row1[1]['TEXT_ALIGN']='C'; $row1[1]['TEXT_TYPE']='B';
