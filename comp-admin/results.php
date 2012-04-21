@@ -32,6 +32,7 @@ require_once('_includes/started_functions.php');
 require_once('_includes/disq.php');
 require_once('_includes/request_functions.php');
 require_once('_includes/export_results.php');
+require_once('_includes/raf_score_system.php');
 
 $finish_types=array(
 	0=>'Все',
@@ -359,6 +360,8 @@ $anyone_taked_required=false;
 $need_tk=false;
 if(_cat_var($comp_id,$cat_id,'need_tk'))
 	$need_tk=true;
+if(mysql_num_rows($res)) //всего стартовавших
+	$num_started=sizeof(get_started_numbers($comp_id,$f_category));
 
 while($row=mysql_fetch_assoc($res)){
 	$req_id=$item_output[$p]['request_id']=(int)$row['request_id'];
@@ -455,7 +458,10 @@ while($row=mysql_fetch_assoc($res)){
 	elseif($type=='legend')
 		$item_output[$p]['details_link']=append_rnd("print/legend-details.php?start_number=$start_number&comp_id=$comp_id");
 
-
+	if(!$item_output[$p]['dontfix']) //если идет в зачет, то начисляем рафовские очки
+		$item_output[$p]['raf_score']=raf_score($item_output[$p]['place'],$num_started);
+	else
+		$item_output[$p]['raf_score']='н\з';
 	//проверка на снятие
 	if($row['taked_off']=='1'){
 		$item_output[$p]['res']='СНЯТ';
@@ -481,7 +487,6 @@ while($row=mysql_fetch_assoc($res)){
 	}
 	
 		
-
 
 
 	$p++;
