@@ -60,13 +60,21 @@ function get_brief_request_data($comp_id,$request_id,$append_hash=array()){
 	if($row['PilotNik'])
 		$ret['pilot_name'].=' ('.stripslashes($row['PilotNik']).')';
 	$ret['pilot_city']=stripslashes($row['PilotCity']);
+
+	if(!_strlen($ret['pilot_city'])) //если нет города чувака - ставим город заявки
+		$ret['pilot_city']=stripslashes($row['city']);
 	$ret['pilot_city_capitalized']=_ucfirst($ret['pilot_city']);
+
 	$ret['navigator_name']=stripslashes($row['NavigatorName']);
 	$ret['navigator_name_official']=name2official($ret['navigator_name']);
 	list($ret['navigator_name_f'],$ret['navigator_name_i'], $ret['navigator_name_o'])=get_fio($ret['navigator_name']);
 	if($row['NavigatorNik'])
 		$ret['navigator_name'].=' ('.stripslashes($row['NavigatorNik']).')';
 	$ret['navigator_city']=stripslashes($row['NavigatorCity']);
+
+	if(!_strlen($ret['navigator_city']))
+		$ret['navigator_city']=stripslashes($row['city']);
+
 	$ret['navigator_city_capitalized']=_ucfirst($ret['navigator_city']);
 	$ret['phone']=stripslashes($row['phone']);
 	$ret['email']=stripslashes($row['email']);
