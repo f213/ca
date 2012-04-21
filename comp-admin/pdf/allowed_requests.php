@@ -47,6 +47,7 @@ function print_pdf_allowed_requests($item_output){
 		2=>array(
 			'TEXT'=>"Участник\r\nГород",
 			'TEXT_SIZE'=>$default_font_size,
+			'TEXT_ALIGN'=>'C',
 		),
 		3=>array(
 			'TEXT'=>"Лицензия\r\nЗаявителя",
@@ -55,22 +56,27 @@ function print_pdf_allowed_requests($item_output){
 		4=>array(
 			'TEXT'=>"1 водитель\r\n2 водитель",
 			'TEXT_SIZE'=>$default_font_size,
+			'TEXT_ALIGN'=>'C',
 		),
 		5=>array(
 			'TEXT'=>"Лицензии\r\nводителя",
 			'TEXT_SIZE'=>$default_font_size,
+			'TEXT_ALIGN'=>'C',
 		),
 		6=>array(
 			'TEXT'=>"Город\r\nГород",
 			'TEXT_SIZE'=>$default_font_size,
+			'TEXT_ALIGN'=>'C',
 		),
 		7=>array(
 			'TEXT'=>"Спорт\r\nЗвание",
 			'TEXT_SIZE'=>$default_font_size,
+			'TEXT_ALIGN'=>'C',
 		),
 		8=>array(
 			'TEXT'=>"Марка\r\nа/м",
 			'TEXT_SIZE'=>$default_font_size,
+			'TEXT_ALIGN'=>'C',
 		),
 		9=>array(
 			'TEXT'=>"Зачетная\r\nгруппа",
@@ -82,7 +88,7 @@ function print_pdf_allowed_requests($item_output){
 		$row1=array();
 
 		for($i=0;$i<=10;$i++)
-			$row1[$i]['TEXT_SIZE']=$default_font_size-1;
+			$row1[$i]['TEXT_SIZE']=$default_font_size-3;
 
 		$row1[0]['TEXT']=++$cnt;
 		$row1[1]['TEXT']=$key; $row1[1]['TEXT_ALIGN']='C'; $row1[1]['TEXT_TYPE']='B';
