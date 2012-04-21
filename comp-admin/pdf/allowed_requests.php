@@ -121,7 +121,6 @@ function print_pdf_allowed_requests($item_output){
         $pdf->setY($pdf->getY()+3);
         raf_pdf_footer($pdf);
 
-	raf_pdf_footer($pdf);
 	
 	$pdf->output();
 }
