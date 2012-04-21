@@ -85,6 +85,8 @@ function raf_pdf_header($pdf,$print_hueta=0,$title='CA_DOC'){
 function raf_pdf_footer($pdf){
 	global $OFFICIAL_DATA;
 	global $default_font_size;
+	if($pdf->getY()>200)
+		$pdf->AddPage();
 	$pdf->setY($pdf->getY()+4);
 	$pdf->setFont('times','B',$default_font_size);
 
