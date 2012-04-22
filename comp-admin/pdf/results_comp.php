@@ -17,7 +17,7 @@ function print_pdf_results_comp($item_output,$cat_name){
 	global $default_font_size; //размер шрифта, от которого отталкиваются другие ../_includes/pdf.php
 
 	if(!defined('CA_PDF_RESULTS_COMP_ENABLED') or !CA_PDF_RESULTS_COMP_ENABLED)
-		die('Печать списка разрешенных участников (pdf) выключена в настройках');
+		die('Печать результатов соревнования (pdf) выключена в настройках');
 
 	$pdf = new tFPDF();
 	$pdf->Open();
