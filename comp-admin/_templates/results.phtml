@@ -155,7 +155,9 @@ if($type=='legend'){?>
 <td>Финиш</td>
 <td>Пенал.</td>
 <td>Бонус</td>
-<td>Очки</td>
+<?if(defined('CA_SHOW_RAF_SCORE') and CA_SHOW_RAF_SCORE){?>
+	<td>Очки</td>
+<?}?>
 <td>Комментарий</td>
 </tr>
 <?foreach($item_output as $key=>$value){?>
@@ -206,7 +208,9 @@ if($type=='legend'){?>
 	<td><?=$value['finish_time']?></td>
 	<td><?=$value['pinok']?></td>
 	<td><?=$value['bonus_time']?></td>
-	<td><?=$value['raf_score']?></td>
+	<?if(defined('CA_SHOW_RAF_SCORE') and CA_SHOW_RAF_SCORE){?>
+		<td><?=$value['raf_score']?></td>
+	<?}?>
 	<td><?=$value['comment']?></td>
 	</tr>
 <?}?>
@@ -307,6 +311,7 @@ function check_comment_form(){
 <legend><b>Операции</b></legend>
 <input type = button value = "Распечатать" onclick="print_results_with_title('<?=$tpl_print_results_link?>');"><input type = checkbox id = change_print_title title="Изменить заголовок"><label for="change_print_title" title="Изменить заголовок">title</label> | <input type = checkbox id= print_prelim title="Предварительные"><label for="print_prelim">Предварительные</label> | <input type = checkbox id=print_short_names title="Короткие имена"><label for="print_short_names">Короткие имена</label> <br/>
 <input type = button value = "Зафиксировать" onclick="window.location.href='<?=$tpl_fix_results_link?>';"> <br />
+<input type = button value = "Результаты РАФ" onclick="window.location.href='<?=$tpl_pdf_link?>';"> <br />
 <input type = button id=export_xls value = "Экспорт в Excel" disabled title="<?=export_xls_descr()?>"> <br />
 </form>
 </td></tr>

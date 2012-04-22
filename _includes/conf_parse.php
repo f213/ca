@@ -212,6 +212,8 @@ else
 
 if(default_yes('interface.time_input_helper'))
 	define('USE_TIME_INPUT_HELPER',true); //включить ли автоматическую расставлялку знаков ':' при вводе времени
+if(default_no('interface.show_raf_score'))
+	define('CA_SHOW_RAF_SCORE',true);
 
 if(default_no('pdf.enabled')){
 	define('CA_PDF_ENABLED',1); //включена генерация pdf

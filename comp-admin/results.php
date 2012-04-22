@@ -500,6 +500,8 @@ $active_categories=get_started_categories($comp_id);
 
 $tpl_print_results_link=append_rnd("results.php?comp_id=$comp_id&print_results=1&f_category=$f_category&f_finished=$f_finished&f_result=$f_result");
 $tpl_fix_results_link=append_rnd("results.php?comp_id=$comp_id&fix_results=1&f_category=$f_category&f_finished=$f_finished&f_result=$f_result");
+$tpl_pdf_link=append_rnd("results.php?comp_id=$comp_id&pdf=1&f_category=$f_category&f_finished=$f_finished&f_result=$f_result");
+
 if(can_export_xls()){
 	$tpl_export_xls_link=append_rnd("results.php?comp_id=$comp_id&export_results=xls&f_category=$f_category&f_finished=$f_finished&f_result=$f_result");
 }
@@ -537,12 +539,7 @@ if($_GET['fix_results']){
 }
 
 $tpl_need_tk=$need_tk;
-if(!$_GET['print_results']){
-	$title='Просмотр результатов';
-	$tpl_onload_function="results_onload()";
-	require('admin_header.php');
-	require('_templates/results.phtml');
-}else{
+if($_GET['print_results']){	
 	$results_title="Результаты\n{$cat_name[$f_category]}";
 	if($_GET['prelim'])
 		$results_title="Предварительные результаты\n{$cat_name[$f_category]}";
@@ -554,4 +551,15 @@ if(!$_GET['print_results']){
 	include('_includes/nocache.php');
 	require('print/header.php');
 	require('_templates/print/results.phtml');	
+	exit;
 }	
+
+if($_GET['pdf']){
+	require_once('pdf/results_comp.php');
+	print_pdf_results_comp($item_output,$cat_name[$f_category]);
+	exit;
+}
+$title='Просмотр результатов';
+$tpl_onload_function="results_onload()";
+require('admin_header.php');
+require('_templates/results.phtml');
