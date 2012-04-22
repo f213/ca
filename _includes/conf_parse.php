@@ -324,8 +324,9 @@ function get_official_data(){
 	$ret['date']=$cfg['official']['date'];
 	$ret['place']=$cfg['official']['place'];
 	$ret['ksk']=array();
-	foreach($cfg['ksk'] as $key=>$value)
-		$ret['ksk'][]=$value;
+	if(sizeof($cfg['ksk']))
+		foreach($cfg['ksk'] as $key=>$value)
+			$ret['ksk'][]=$value;
 	$ret['raf_race_types']=array();
 	for($i=1;$i<=MAGIC_MAX_RAF_RACE_TYPES;$i++)
 		if($cfg['raf_race_types'][$i])
