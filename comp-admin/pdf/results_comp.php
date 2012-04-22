@@ -86,7 +86,7 @@ function print_pdf_results_comp($item_output,$cat_name){
 		$row1[0]['TEXT']=$place;
 		$row1[1]['TEXT']=$value['start_number'];
 		$row1[2]['TEXT']=$value['pilot_name_official']."\r\n".$value['navigator_name_official'];
-		$row1[3]['TEXT']=$value['pilot_city']."\r\n".$value['navigator_city'];
+		$row1[3]['TEXT']=$value['pilot_city_capitalized']."\r\n".$value['navigator_city_capitalized'];
 		$row1[4]['TEXT']=$cat_name;
 		$row1[5]['TEXT']=$score;
 		

@@ -92,12 +92,12 @@ function print_pdf_allowed_requests($item_output){
 
 		$row1[0]['TEXT']=++$cnt;
 		$row1[1]['TEXT']=$key; $row1[1]['TEXT_ALIGN']='C'; $row1[1]['TEXT_TYPE']='B';
-		$row1[2]['TEXT']=$value['declarant_name_official']."\r\n".$value['declarant_city'];
+		$row1[2]['TEXT']=$value['declarant_name_official']."\r\n".$value['declarant_city_capitalized'];
 		$row1[3]['TEXT']=$value['declarant_license_type'].' '.$value['declarant_license_num'];
 		$row1[4]['TEXT']=$value['pilot_name_official']."\r\n".$value['navigator_name_official'];
 		$row1[5]['TEXT']=$value['pilot_license_type'].' '.$value['pilot_license_num']."\r\n".
 			$value['shturman_license_type'].' '.$value['shturman_license_num'];
-		$row1[6]['TEXT']=$value['pilot_city']."\r\n".$value['navigator_city'];
+		$row1[6]['TEXT']=$value['pilot_city_capitalized']."\r\n".$value['navigator_city_capitalized'];
 		$row1[7]['TEXT']=$value['pilot_rank']."\r\n".$value['shturman_rank'];
 		$row1[8]['TEXT']=$value['auto_brand'];
 		$row1[9]['TEXT']=$value['cat_name'];
