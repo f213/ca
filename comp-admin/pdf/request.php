@@ -179,7 +179,7 @@ function print_pdf_request($item_output){
 	_reqpdf_add_request_row($table,'ЛИЦО ДЛЯ КОНТАКТОВ');
 	_reqpdf_add_request_row($table,'КОНТАКТНЫЙ ТЕЛЕФОН',$item_output['pilot_phone'],$item_output['shturman_phone']);
 	_reqpdf_add_request_row($table,'E-MAIL',$item_output['pilot_email'],$item_output['shturman_email']);
-	_reqpdf_add_request_row($table,'ГОРОД',$item_output['pilot_city'],$item_output['shturman_city']);
+	_reqpdf_add_request_row($table,'ГОРОД',$item_output['pilot_city'],$item_output['navigator_city']);
 	_reqpdf_add_request_row($table,"СПОРТИВНОЕ ЗВАНИЕ, \r\nРАЗРЯД",$item_output['pilot_rank'],$item_output['shturman_rank']);
 	_reqpdf_add_request_row($table,"КАТЕГОРИЯ И № \r\nВОДИТ. УДОСТ-Я");
 	_reqpdf_add_request_row($table,"ПАСПОРТ\r\n(№, ДАТА ВЫДАЧИ)",$item_output['pilot_passport_series'].' '.$item_output['pilot_passport_num'].' '.$item_output['pilot_passport_when'],$item_output['shturman_passport_series'].' '.$item_output['shturman_passport_series'].' '.$item_output['shturman_passport_when']);
