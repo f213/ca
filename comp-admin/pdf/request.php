@@ -28,7 +28,7 @@ function print_pdf_request($item_output){
 	$pdf->AddFont('times','',CA_PDF_REQUEST_FONT,true);
 	$pdf->addFont('times','B',CA_PDF_REQUEST_FONT,true);
 	$pdf->SetAutoPageBreak(false);
-	$pdf->setY(raf_pdf_header($pdf,1));
+	$pdf->setY(raf_pdf_header($pdf,1,'',$item_output['start_number']));
 	
 	//Формируем таблицу с типами гонки, без бордера
 

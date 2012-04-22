@@ -33,7 +33,7 @@ $default_tbl_config=array(
 $default_font_size=9;
 
 
-function raf_pdf_header($pdf,$print_hueta=0,$title='CA_DOC'){
+function raf_pdf_header($pdf,$print_hueta=0,$title='CA_DOC',$start_number=NULL){
 	global $default_tbl_config;
 	global $OFFICIAL_DATA;
 	$pdf->SetCreator('CA');
@@ -65,6 +65,9 @@ function raf_pdf_header($pdf,$print_hueta=0,$title='CA_DOC'){
 		$table->addRow(array(
 			0=>array(
 				'ROWSPAN'=>2,
+				'TEXT'=>$start_number,
+				'TEXT_SIZE'=>$default_font_size+19,
+				'TEXT_ALIGN'=>'C',
 			),
 			1=>array(
 				'TEXT'=>" \r\n \r\n ",
@@ -72,6 +75,7 @@ function raf_pdf_header($pdf,$print_hueta=0,$title='CA_DOC'){
 			),
 		));
 		$table->addRow(array(
+			0=>array(),
 			1=>array(
 				'TEXT'=>" \r\n ",
 				'TEXT_SIZE'=>18,
