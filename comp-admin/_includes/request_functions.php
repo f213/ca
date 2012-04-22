@@ -38,6 +38,11 @@ function get_full_request_data($comp_id,$request_id,$append_hash=array()){
 		return null;
 	$append_hash=get_brief_request_data($comp_id,$request_id,$append_hash);
 	$append_hash=fill_ext_attr($comp_id,$request_id,$append_hash);
+	if(empty($append_hash['pilot_email']) and !empty($append_hash['email']))
+		$append_hash['pilot_email']=$append_hash['email'];
+	if(empty($append_hash['shturman_email']) and !empty($append_hash['email']))
+		$append_hash['shturman_email']=$append_hash['email'];
+
 	return $append_hash;
 }
 
