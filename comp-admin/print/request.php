@@ -23,6 +23,12 @@ if(!$comp_id)
 if(!$request_id)
 	die('не указан id заявки');
 $item_output=get_full_request_data($comp_id,$request_id);
+$comp_name=comp_name($comp_id);
+$res=query_eval("SELECT start_number FROM $compres_dbt WHERE comp_id=$comp_id AND request_id=$request_id;"); //получаем бортовой номер если есть.
+if(mysql_num_rows($res)){
+	$row=mysql_fetch_row($res);
+	$item_output['start_number']=(int)$row[0];
+}
 if($_GET['pdf']){
 	require_once('pdf/request.php');
 	print_pdf_request($item_output);
@@ -31,11 +37,5 @@ if($_GET['pdf']){
 if(defined('ADM_TRACK_EDITS') and ADM_TRACK_EDITS) //печать снимает отметку о редактировании
 	cancel_tracked_edit($request_id);
 
-$comp_name=comp_name($comp_id);
-$res=query_eval("SELECT start_number FROM $compres_dbt WHERE comp_id=$comp_id AND request_id=$request_id;"); //получаем бортовой номер если есть.
-if(mysql_num_rows($res)){
-	$row=mysql_fetch_row($res);
-	$output['start_number']=(int)$row[0];
-}
 	
 require("_templates/print/requests/$tpl_dir/request.phtml");
