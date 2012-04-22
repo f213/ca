@@ -249,6 +249,15 @@ if(default_no('pdf.enabled')){
 		if(!strlen(CA_PDF_RESULTS_COMP_FONT) or ! file_exists('../3dparty/fpdf/font/unifont/'.CA_PDF_RESULTS_COMP_FONT))
 			die('Не найден шрифт для печати списка допущенных участников (pdf.RESULTS_COMP_font) по пути /3dparty/fpdf/font/unifont/'.CA_PDF_RESULTS_COMP_FONT);
 	}
+	if(default_no('pdf.points_list_enabled')){
+		define('CA_PDF_POINTS_LIST_ENABLED',1);
+		if(cfg_has('pdf.points_list_font'))
+			define('CA_PDF_POINTS_LIST_FONT',cfg_val('pdf.POINTS_LIST_font'));
+		else
+			define('CA_PDF_POINTS_LIST_FONT','FreeSans.ttf');
+		if(!strlen(CA_PDF_POINTS_LIST_FONT) or ! file_exists('../3dparty/fpdf/font/unifont/'.CA_PDF_POINTS_LIST_FONT))
+			die('Не найден шрифт для печати списка допущенных участников (pdf.POINTS_LIST_font) по пути /3dparty/fpdf/font/unifont/'.CA_PDF_POINTS_LIST_FONT);
+	}
 
 
 }
