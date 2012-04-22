@@ -500,7 +500,8 @@ $active_categories=get_started_categories($comp_id);
 
 $tpl_print_results_link=append_rnd("results.php?comp_id=$comp_id&print_results=1&f_category=$f_category&f_finished=$f_finished&f_result=$f_result");
 $tpl_fix_results_link=append_rnd("results.php?comp_id=$comp_id&fix_results=1&f_category=$f_category&f_finished=$f_finished&f_result=$f_result");
-$tpl_pdf_link=append_rnd("results.php?comp_id=$comp_id&pdf=1&f_category=$f_category&f_finished=$f_finished&f_result=$f_result");
+if(defined('CA_PDF_RESULTS_COMP_ENABLED') and CA_PDF_RESULTS_COMP_ENABLED)
+	$tpl_pdf_link=append_rnd("results.php?comp_id=$comp_id&pdf=1&f_category=$f_category&f_finished=$f_finished&f_result=$f_result");
 if(defined('CA_PDF_POINTS_LIST_ENABLED') and CA_PDF_POINTS_LIST_ENABLED)
 	$tpl_points_list_link=append_rnd("print/cat_taken_points.php?comp_id=$comp_id&cat_id=$f_category");
 

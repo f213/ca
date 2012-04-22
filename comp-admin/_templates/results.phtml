@@ -311,7 +311,9 @@ function check_comment_form(){
 <legend><b>Операции</b></legend>
 <input type = button value = "Распечатать" onclick="print_results_with_title('<?=$tpl_print_results_link?>');"><input type = checkbox id = change_print_title title="Изменить заголовок"><label for="change_print_title" title="Изменить заголовок">title</label> | <input type = checkbox id= print_prelim title="Предварительные"><label for="print_prelim">Предварительные</label> | <input type = checkbox id=print_short_names title="Короткие имена"><label for="print_short_names">Короткие имена</label> <br/>
 <input type = button value = "Зафиксировать" onclick="window.location.href='<?=$tpl_fix_results_link?>';"> <br />
-<input type = button value = "Результаты РАФ" onclick="window.location.href='<?=$tpl_pdf_link?>';"> <br />
+<?if(strlen($tpl_pdf_link)){?>
+	<input type = button value = "Результаты РАФ" onclick="window.location.href='<?=$tpl_pdf_link?>';"> <br />
+<?}?>
 <?if(strlen($tpl_points_list_link)){?>
 	<input type = button value = "Список взятых КП" onclick="window.location.href='<?=$tpl_points_list_link?>';"> <br />
 <?}?>
