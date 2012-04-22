@@ -26,6 +26,9 @@
 		&nbsp;<input type = button title="Экспорт в excel" value = "Экспорт" onclick="window.open('<?=$tpl_print_link.'&xls=1'?>');">
 	<?}?>
 <?}?>
+<?if($tpl_pdf_link){?>
+	&nbsp;<input type = button title="Печать официальной стартовой ведомости" value = "Печать РАФ" onclick="window.location.href='<?=$tpl_pdf_link?>';">
+<?}?>
 <?if($tpl_tkproto_link){?>
 	<b>|</b>&nbsp;<input type = button title="Печать протокола техкомиссии (на стенд)" value = "Протокол техкомиссии" onclick="window.open('<?=$tpl_tkproto_link?>');" <?if($tpl_tkproto_disabled) print " disabled ";?>>
 	<?if(function_exists('can_export_xls') and can_export_xls()){?>

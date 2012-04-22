@@ -240,6 +240,16 @@ if(default_no('pdf.enabled')){
 		if(!strlen(CA_PDF_ALLOWED_REQUESTS_FONT) or ! file_exists('../3dparty/fpdf/font/unifont/'.CA_PDF_ALLOWED_REQUESTS_FONT))
 			die('Не найден шрифт для печати списка допущенных участников (pdf.allowed_requests_font) по пути /3dparty/fpdf/font/unifont/'.CA_PDF_ALLOWED_REQUESTS_FONT);
 	}
+	if(default_yes('pdf.start_list_enabled')){
+		define('CA_PDF_START_LIST_ENABLED',1);
+		if(cfg_has('pdf.start_list_font'))
+			define('CA_PDF_START_LIST_FONT',cfg_val('pdf.START_LIST_font'));
+		else
+			define('CA_PDF_START_LIST_FONT','FreeSans.ttf');
+		if(!strlen(CA_PDF_START_LIST_FONT) or ! file_exists('../3dparty/fpdf/font/unifont/'.CA_PDF_START_LIST_FONT))
+			die('Не найден шрифт для печати списка допущенных участников (pdf.START_LIST_font) по пути /3dparty/fpdf/font/unifont/'.CA_PDF_START_LIST_FONT);
+	}
+
 	if(default_yes('pdf.results_comp_enabled')){
 		define('CA_PDF_RESULTS_COMP_ENABLED',1);
 		if(cfg_has('pdf.results_comp_font'))

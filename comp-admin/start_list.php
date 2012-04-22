@@ -205,6 +205,8 @@ if($f_category){
 	}
 	if($item_output){
 		$tpl_print_link=append_rnd("print/start_list.php?flag=1&cat_id=$f_category&comp_id=$comp_id");
+		if(defined('CA_PDF_START_LIST_ENABLED') and CA_PDF_START_LIST_ENABLED)
+			$tpl_pdf_link=append_rnd("print/start_list.php?flag=1&cat_id=$f_category&comp_id=$comp_id&pdf=1");
 		$tpl_clean_link=append_rnd("start_list.php?comp_id=$comp_id&flag=7&f_category=$f_category");
 		if($need_tk)
 			$tpl_tkproto_link=append_rnd("print/tk.php?comp_id=$comp_id&cat_id=$f_category");
