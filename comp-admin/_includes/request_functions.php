@@ -42,6 +42,8 @@ function get_full_request_data($comp_id,$request_id,$append_hash=array()){
 		$append_hash['pilot_email']=$append_hash['email'];
 	if(empty($append_hash['shturman_email']) and !empty($append_hash['email']))
 		$append_hash['shturman_email']=$append_hash['email'];
+	if(empty($append_hash['pilot_phone']) and !empty($append_hash['phone']))
+		$append_hash['pilot_phone']=$append_hash['phone'];
 
 	return $append_hash;
 }
