@@ -247,7 +247,7 @@ if(default_no('pdf.enabled')){
 		else
 			define('CA_PDF_START_LIST_FONT','FreeSans.ttf');
 		if(!strlen(CA_PDF_START_LIST_FONT) or ! file_exists('../3dparty/fpdf/font/unifont/'.CA_PDF_START_LIST_FONT))
-			die('Не найден шрифт для печати списка допущенных участников (pdf.START_LIST_font) по пути /3dparty/fpdf/font/unifont/'.CA_PDF_START_LIST_FONT);
+			die('Не найден шрифт для печати стартовой ведомости(pdf.START_LIST_font) по пути /3dparty/fpdf/font/unifont/'.CA_PDF_START_LIST_FONT);
 	}
 
 	if(default_yes('pdf.results_comp_enabled')){
@@ -257,7 +257,7 @@ if(default_no('pdf.enabled')){
 		else
 			define('CA_PDF_RESULTS_COMP_FONT','FreeSans.ttf');
 		if(!strlen(CA_PDF_RESULTS_COMP_FONT) or ! file_exists('../3dparty/fpdf/font/unifont/'.CA_PDF_RESULTS_COMP_FONT))
-			die('Не найден шрифт для печати списка допущенных участников (pdf.RESULTS_COMP_font) по пути /3dparty/fpdf/font/unifont/'.CA_PDF_RESULTS_COMP_FONT);
+			die('Не найден шрифт для печати результатов соревнования (pdf.RESULTS_COMP_font) по пути /3dparty/fpdf/font/unifont/'.CA_PDF_RESULTS_COMP_FONT);
 	}
 	if(default_yes('pdf.results_su_enabled')){
 		define('CA_PDF_RESULTS_SU_ENABLED',1);
@@ -266,7 +266,7 @@ if(default_no('pdf.enabled')){
 		else
 			define('CA_PDF_RESULTS_SU_FONT','FreeSans.ttf');
 		if(!strlen(CA_PDF_RESULTS_SU_FONT) or ! file_exists('../3dparty/fpdf/font/unifont/'.CA_PDF_RESULTS_SU_FONT))
-			die('Не найден шрифт для печати списка допущенных участников (pdf.RESULTS_SU_font) по пути /3dparty/fpdf/font/unifont/'.CA_PDF_RESULTS_SU_FONT);
+			die('Не найден шрифт для печати результатов СУ (pdf.RESULTS_SU_font) по пути /3dparty/fpdf/font/unifont/'.CA_PDF_RESULTS_SU_FONT);
 	}
 	if(default_no('pdf.points_list_enabled')){
 		define('CA_PDF_POINTS_LIST_ENABLED',1);
@@ -275,7 +275,7 @@ if(default_no('pdf.enabled')){
 		else
 			define('CA_PDF_POINTS_LIST_FONT','FreeSans.ttf');
 		if(!strlen(CA_PDF_POINTS_LIST_FONT) or ! file_exists('../3dparty/fpdf/font/unifont/'.CA_PDF_POINTS_LIST_FONT))
-			die('Не найден шрифт для печати списка допущенных участников (pdf.POINTS_LIST_font) по пути /3dparty/fpdf/font/unifont/'.CA_PDF_POINTS_LIST_FONT);
+			die('Не найден шрифт для печати списка взятых точек по категории (pdf.POINTS_LIST_font) по пути /3dparty/fpdf/font/unifont/'.CA_PDF_POINTS_LIST_FONT);
 	}
 
 
