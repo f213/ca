@@ -226,7 +226,8 @@ if($f_category){
 	$categories_without_start_list=array();
 	for($i=1;$i<=_CATEGORIES;$i++)
 		if(get_type_by_cat_id($comp_id,$i)!='' and !$cat[$i])
-			$categories_without_start_list[$i]=get_type_by_cat_id($comp_id,$i);
+			if(!_cat_var($comp_id,$i,'parent_cat_id')) //генерация ведомости невозможна для подчиненных категорий
+				$categories_without_start_list[$i]=get_type_by_cat_id($comp_id,$i);
 		
 }
 $tpl_need_tk=$need_tk;
