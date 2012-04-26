@@ -41,7 +41,7 @@ while($row=mysql_fetch_row($res))
 $cat_id=(int)$_GET['f_category'];
 if($flag){ //если задан тип действия - сразу проверяем, задана ли категория
 	if(!$cat_id)
-		die('не заданна категория!');
+		die('не задана категория!');
 }
 //ну и заодно получим список уже добавленных точек
 $used_nums=array();
@@ -64,7 +64,7 @@ case 1: //массовое добавление точек
 		die('не задан конец диапазона!');
 	$cost=(int)$_GET['cost'];
 	if(!$cost)
-		die('не заданна стоимость!');
+		die('не задана стоимость!');
 	for ($i=$begin;$i<=$end;$i++){
 		if(in_array($i,$used_nums))
 			continue;
@@ -88,7 +88,7 @@ case 2: //добавление одной точки
 		die('точка с таким номером уже есть!');
 	$cost=(int)$_GET['cost'];
 	if(!$cost)
-		die('не заданна стоимость!');
+		die('не задана стоимость!');
 	$add_data=array(
 		'comp_id'=>$comp_id,
 		'cat_id'=>$cat_id,
@@ -178,7 +178,7 @@ if($_GET['f_category'] and in_array((int)$_GET['f_category'],$gps_cats)){
 
 
 
-if($f_category){ //дальше работаем, тока если заданна категория
+if($f_category){ //дальше работаем, тока если задана категория
 	$res=query_eval("SELECT * FROM $compgps_dbt WHERE comp_id=$comp_id $filters_sql ORDER BY `active` ASC, `name` ASC;");
 	while($row=mysql_fetch_assoc($res)){
 		$id=(int)$row['id'];
