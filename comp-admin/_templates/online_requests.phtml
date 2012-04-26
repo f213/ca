@@ -296,14 +296,14 @@ if($item_output) foreach($item_output as $key=>$value){
 			if($value['can_do_something']){?>
 				<div id="unreg_<?=$key?>"><a href = '#' onclick="if(confirm('Вы действительно хотите отменить регистрацию??')){unregister(<?=$comp_id?>,<?=$key?>);} return false;">Принято&nbsp;<span class="start_number"><b>(<?=$value['start_number']?>)</b></span></div>
 			<?}else{?>
-			Принято <b>(<?=$value['start_number']?>)</b>
+			Принято&nbsp;<b>(<?=$value['start_number']?>)</b>
 			<?}?>
 			<div id="reg_<?=$key?>" class="invisible"><a href = '#' onclick="register(<?=$comp_id?>,<?=$key?>); return false;">Зарегистрировать</a></div>
 <?
 		}else{
 			if($value['can_do_something']){?>
 				<div id="reg_<?=$key?>"><a href = '#' onclick="register(<?=$comp_id?>,<?=$key?>); return false;">Зарегистрировать</a></div>
-				<div class="invisible" id="unreg_<?=$key?>"><a href = '#' onclick="if(confirm('Вы действительно хотите отменить регистрацию??')){unregister(<?=$comp_id?>,<?=$key?>);} return false;">Принято<span class="start_number"></span></div>
+				<div class="invisible" id="unreg_<?=$key?>"><a href = '#' onclick="if(confirm('Вы действительно хотите отменить регистрацию??')){unregister(<?=$comp_id?>,<?=$key?>);} return false;">Принято&nbsp;<span class="start_number"></span></div>
 			<?}
 		}
 ?>
