@@ -247,11 +247,23 @@ $title="Управление заявками $comp_name";
 
 $unnec_count=0; //количество "ненужных" записей, то есть записей, неактуальных на момент начала гонки
 
-$res=query_eval("SELECT * FROM $compreq_dbt WHERE comp_id=$comp_id $filters_sql ORDER BY RegisterDate ASC;");
+$res=query_eval("SELECT * FROM $compreq_dbt WHERE comp_id=$comp_id $filters_sql ORDER BY IF(parent_id,parent_id,id);");
 while($row=mysql_fetch_assoc($res)){
 	$id=$row['id'];
 	$item_output[$id]['category']=(int)$row['category'];
 	$item_output[$id]['category_name']=$cat_name[(int)$row['category']];
+	$item_output[$id]['has_parents']=false;
+	if($row['parent_id']){
+		$item_output[$id]['parent_id']=(int)$row['parent_id'];
+		$item_output[$id]['has_parents']=true;
+	}
+	$item_output[$id]['has_children']=false;
+	$item_output[$id]['children']=get_request_children($comp_id,$id);
+	if(sizeof($item_output[$id]['children'])){
+		$item_output[$id]['has_children']=true;
+		$item_output[$id]['children_str']=get_valid_numbers_str(array_keys($item_output[$id]['children']));
+
+	}
 	if($row['payd']=='yes'){
 		$item_output[$id]['payd']=true;
 		$item_output[$id]['payd_author']=stripslashes($row['payed_author']);

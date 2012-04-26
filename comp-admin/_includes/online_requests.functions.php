@@ -197,3 +197,18 @@ function or_deregister($comp_id,$item_id){
 	query_eval("UNLOCK TABLES;");
 	return array('result'=>'ok');
 }
+
+function get_request_children($comp_id,$request_id){
+	global $compreq_dbt;
+
+	$res=query_eval("SELECT id FROM $compreq_dbt WHERE comp_id=$comp_id AND parent_id=$request_id AND category != (SELECT category FROM $compreq_dbt WHERE id=$request_id);");
+	if(!mysql_num_rows($res))
+		return array();
+	$ret=array();
+	while($row=mysql_fetch_row($res))
+		$ret[(int)$row[0]]=get_brief_request_data($comp_id,(int)$row[0]);
+	foreach($ret as $key=>$value)
+		if(req2num($comp_id,$key))
+			$ret[$key]['start_number']=req2num($comp_id,$key);
+	return $ret;
+}

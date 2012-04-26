@@ -119,6 +119,9 @@ input.input, textarea.input {
         color:#333333;
         font-size:11px;
 }
+.req_child {
+	background-color: #E0E0E0;
+}
 .red td {
         background-color:#FFCECE
 }

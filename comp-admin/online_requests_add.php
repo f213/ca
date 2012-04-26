@@ -248,7 +248,24 @@ case 7: //изменение категории после регистраци�
 	exit;
 
 	break;
-}	
+
+case 8: //копирование в другую категорию
+	if(!$item_id)
+		die("Не указан ID заявки");
+	$cat_id_to_copy=(int)_input_val('cat_id_to_copy');
+
+	if(!$cat_id_to_copy or $cat_id_to_copy<0 or $cat_id_to_copy>_CATEGORIES)
+		die("Выбрана неправильная категория");
+	//копируем данные участника
+	query_eval("INSERT INTO $compreq_dbt (parent_id,comp_id,category,PilotName,PilotNik,PilotSize,PilotPhone,PilotCity,NavigatorName,NavigatorNik,NavigatorSize,NavigatorPhone,NavigatorCity,AutoBrand,AutoNumber,phone,email,city,WheelSize,author,ApprovedBy,approved,source,RegisterDate) SELECT id,$comp_id,$cat_id_to_copy,PilotName,PilotNik,PilotSize,PilotPhone,PilotCity,NavigatorName,NavigatorNik,NavigatorSize,NavigatorPhone,NavigatorCity,AutoBrand,AutoNumber,phone,email,city,WheelSize,'$admin_user','$admin_user','yes','copy',".time()." FROM $compreq_dbt WHERE id=$item_id LIMIT 1;");
+	$new_item_id=mysql_insert_id();
+	//копируем доп. аттрибуты
+	query_eval("INSERT INTO $compreq_ext_dbt (comp_id,request_id,attr_name,attr_val) SELECT $comp_id,$new_item_id,attr_name,attr_val FROM $compreq_ext_dbt WHERE comp_id=$comp_id AND request_id=$item_id;");
+	//TODO: надо будет потом еще при копиировании списка участников менять поле parent_id
+	header("Location: ".append_rnd("online_requests_add.php?comp_id=$comp_id&item_id=$item_id&item_copied=$new_item_id"));
+	exit;
+	break;
+}
 
 
 
@@ -356,6 +373,27 @@ if($item_id){
 		$item_output['print_link'].='&pdf=1';
 
 	$item_output=fill_ext_attr($comp_id,$item_id,$item_output);
+	
+	$item_output['children']=get_request_children($comp_id,$item_id);
+	$item_output['children_data']='';
+	if(sizeof($item_output['children']))
+		foreach($item_output['children'] as $key=>$value){
+			$item_output['children_data'].="<a href = '".append_rnd("online_requests_add.php?comp_id=$comp_id&item_id=$key")."'><b>".$cat_name[$value['cat_id']]."</b></a>";
+			if($value['start_number'])
+				$item_output['children_data'].='('.$value['start_number'].')';
+			$item_output['children_data'].=',';
+		}
+	$item_output['children_data']=rtrim($item_output['children_data'],',');
+
+	if((int)$row['parent_id']){
+		$parent_id=(int)$row['parent_id'];
+		$parent=get_brief_request_data($comp_id,$parent_id);
+		$item_output['parent_data']="<a href = '".append_rnd("online_requests_add.php?comp_id=$comp_id&item_id=$parent_id")."'><b>".$cat_name[$parent['cat_id']]."</b>";
+		if(req2num($comp_id,$parent_id))
+			$item_output['parent_data'].='('.req2num($comp_id,$parent_id).')';
+
+	}
+
 }	
 if(!$item_output['register_date']) //default date
 	$item_output['register_date']=date('d.m.Y');

@@ -38,6 +38,7 @@ $from_array=array(
 	'email'=>'E-mail',
 	'admin'=>'Админ',
 	'import'=>'Импорт',
+	'copy'=>'Копирование',
 );
 $types_array=array(
 	'legend'=>'Линейная гонка',
