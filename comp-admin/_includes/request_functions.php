@@ -11,6 +11,7 @@
  * Append_hash следует использовать, если необходимо добавить какие-то данные к существующим, т.е. будет возвращен append_hash с данными о заявке. 
  * Возвращает хеш со следующими ключами
  * pilot_name, navigator_name - имена пилота и штурамана. Если есть ники, ставятся после скобочек.
+ * pilot_name_without_nik, navigator_name_without_nik - имена пилота и штурмана без ника.
  * pilot_name_official, navigator_name_official - имена пилота и штурмана без ников
  * pilot_name_f, pilot_name_i, pilot_name_o; navigator_name_f, navigator_name_i, navigator_name_o - отдельно фамилия, имя и отчество на каждого члена экипажа
  * pilot_city, pilot_city_capitalized - город пилота
