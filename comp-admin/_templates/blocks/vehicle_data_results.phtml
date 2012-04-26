@@ -93,7 +93,7 @@
 </script>
 <table width=50% border=0 cellpadding=1 cellspacing=0 class=filter>
 <tr>
-<td width=15>Категория:</td>
+<td width=35>Категория:</td>
 <td><b><?=$item['cat_name']?></b></td>
 </tr>
 <tr>
@@ -112,6 +112,22 @@
 <td>Экипаж:</td>
 <td><b><?=$item['crew']?></b></td>
 </tr>
+<?if(is_child($comp_id,$start_number)){?>
+	<tr>
+	<td nowrap>Основная заявка:</td>
+	<td><b><?=$item['parent_cat_name']?><?
+	if(req2num($comp_id,$item['parent_id']))
+		print ', номер '.req2num($comp_id,$item['parent_id']);
+	?></b>
+	</td>
+	</tr>
+<?}
+if(_strlen($children_req_str)){?>
+	<tr>
+	<td nowrap>Присутсвует также:</td>
+	<td><b><?=$children_req_str?></b></td>
+	</tr>
+<?}?>
 <tr>
 <td>Машина:</td>
 <td><b><?=$item['auto_brand']?> г\н <?=$item['auto_number']?></b></td>

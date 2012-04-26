@@ -12,6 +12,7 @@ require_once('_includes/auth.php');
 
 require_once('_includes/started_functions.php');
 require_once('_includes/request_functions.php');
+require_once('_includes/online_requests.functions.php');
 
 if(defined(RESULTS_KPS_PER_ROW) and RESULTS_KPS_PER_ROW>0)
 	$kps_per_row=RESULTS_KPS_PER_ROW;
@@ -75,8 +76,25 @@ if($start_number){
 	$item['gps_taken_ids']=$taken_ids;
 	$item['gps_all_cost']=$all_cost;
 	$taken_names_str=trim($taken_names_str,',');	
-}
 
+	//обрабатываем детей участника
+	$children=$children_req=array();
+	$children_str=$children_req_str='';
+	if(is_parent($comp_id,$start_number)){
+		$children_req=get_request_children($comp_id,num2req($comp_id,$start_number));
+		foreach($children_req as $key=>$value){
+			$children_req_str.=$value['cat_name']; //для шаблона
+			if($value['start_number'])
+				$children_req_str.='('.$value['start_number'].')';
+
+			if($value['start_number'] and _cat_var($comp_id,$value['cat_id'],'parent_cat_id')==$cat_id){ //ежели дитенок зарегистрирован, и категории родителя и дитенка тоже связаны, тогда внизу мы будем рулить всеми ихними данными
+				$children[]=$value['start_number'];
+				$children_req_str.='(упр.)';
+			}
+		}
+	}
+	
+}
 $flag=(int)$_GET['flag'];
 if($flag and !$start_number)
 	die('указан номер действия, но не указан стартовый номер!');
@@ -86,6 +104,9 @@ case 1: //указание времени финиша
 	list($h,$m,$s)=parse_user_time($_GET['finish_time']);
 	$finish_time=$h*3600+$m*60+$s;
 	update_finish_time($comp_id,$finish_time,$start_number);
+	if(sizeof($children))
+		foreach($children as $child)
+			update_finish_time($comp_id,$finish_time,$child);
 	header("Location: ".append_rnd("gps-results.php?comp_id=$comp_id&start_number=$start_number"));
 	die();
 	break;
@@ -103,18 +124,35 @@ case 2: //добавление одной точки
 	if(!mysql_num_rows($res))
 		die('указана несущствующаяя точка (SQL)');
 	$row=mysql_fetch_row($res);
-	$id=(int)$row[0];
+	$parent_point_id=$id=(int)$row[0];
 	add_item($compgpsres_dbt,array(
 		'comp_id'=>$comp_id,
 		'start_number'=>$start_number,
 		'point_id'=>$id,
 		'author'=>$admin_user,
 	));
+	
+	//теперь для каждого дитенка ищем точку, которая принадлежит к его категории, но наследуется от взятой
+	foreach($children as $child){
+		$child_cat_id=get_cat($comp_id,$child);
+		$res=query_eval("SELECT id FROM $compgps_dbt WHERE `comp_id`=$comp_id AND `cat_id`=$child_cat_id AND parent_id=$parent_point_id;");
+		if(mysql_num_rows($res)){ //если такая точка есть - добавляем запись
+			$row=mysql_fetch_row($res);
+			$child_point_id=(int)$row[0];
+			add_item($compgpsres_dbt,array(
+				'comp_id'=>$comp_id,
+				'start_number'=>$child,
+				'point_id'=>$child_point_id,
+				'author'=>$admin_user.'(auto)',
+			));
+			
+		}
+	}
 	header("Location: ".append_rnd("gps-results.php?comp_id=$comp_id&start_number=$start_number"));
 	die();
 	break;
 case 3: //клик на точку из таблицы
-	$item_id=(int)$_GET['item_id'];
+	$parent_point_id=$item_id=(int)$_GET['item_id'];
 	if(!$item_id)
 		die('не указан id точки!');
 	if(!in_array($item_id,$valid_ids))
@@ -124,15 +162,43 @@ case 3: //клик на точку из таблицы
 		$taken=true;
 	if($taken and in_array($item_id,$taken_ids))
 		die('Точка уже взята!');
-	if($taken)
+	if($taken){
 		add_item($compgpsres_dbt,array(
-		'comp_id'=>$comp_id,
-		'start_number'=>$start_number,
-		'point_id'=>$item_id,
-		'author'=>$admin_user,
-	));
-	else
+			'comp_id'=>$comp_id,
+			'start_number'=>$start_number,
+			'point_id'=>$item_id,
+			'author'=>$admin_user,
+		));
+		//тоже самое, что и в добавлении точки
+		foreach($children as $child){
+			$child_cat_id=get_cat($comp_id,$child);
+			$res=query_eval("SELECT id FROM $compgps_dbt WHERE `comp_id`=$comp_id AND `cat_id`=$child_cat_id AND parent_id=$parent_point_id;");
+			if(mysql_num_rows($res)){ //если такая точка есть - добавляем запись
+				$row=mysql_fetch_row($res);
+				$child_point_id=(int)$row[0];
+				add_item($compgpsres_dbt,array(
+					'comp_id'=>$comp_id,
+					'start_number'=>$child,
+					'point_id'=>$child_point_id,
+					'author'=>$admin_user.'(auto)',
+				));
+			
+			}
+		}
+	}else{
 		query_eval("DELETE FROM $compgpsres_dbt WHERE comp_id=$comp_id AND start_number=$start_number AND point_id=$item_id LIMIT 1;");
+		//для каждого дитенка ищем точки, которые совпадают по категории
+		foreach($children as $child){
+			$child_cat_id=get_cat($comp_id,$child);
+			$res=query_eval("SELECT id FROM $compgps_dbt WHERE `comp_id`=$comp_id AND `cat_id`=$child_cat_id AND parent_id=$parent_point_id;");
+			if(mysql_num_rows($res)){ //и, если точки есть, то удаляем их
+				$row=mysql_fetch_row($res);
+				$child_point_id=(int)$row[0];
+				query_eval("DELETE FROM $compgpsres_dbt WHERE comp_id=$comp_id AND start_number=$child AND point_id=$child_point_id LIMIT 1;");
+
+			}
+		}
+	}
 	header("Location: ".append_rnd("gps-results.php?comp_id=$comp_id&start_number=$start_number"));
 	die();
 	break;
@@ -140,6 +206,8 @@ case 4: //изменение времени старта
 	list($h,$m,$s)=parse_user_time($_GET['start_time']);
 	$time=$h*3600+$m*60+$s;
 	update_start_time($comp_id,$time,$start_number);
+	foreach($children as $child)
+		update_start_time($comp_id,$time,$child);
 	header("Location: ".append_rnd("gps-results.php?comp_id=$comp_id&start_number=$start_number"));
 	die();
 	break;
