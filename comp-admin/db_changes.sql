@@ -19,3 +19,4 @@ ALTER TABLE  `CA_CompCatVar` ADD  `parent_cat_id` INT NOT NULL;
 
 ALTER TABLE `CA_CompRequests` ADD `parent_id` INT UNSIGNED NOT NULL AFTER `id`;
 ALTER TABLE `CA_CompRequests` CHANGE `source` `source` ENUM( 'online', 'site', 'admin', 'forum', 'import', 'copy' ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;
+ALTER TABLE `CA_CompGPS` ADD `parent_id` INT UNSIGNED NOT NULL AFTER `id` ;
