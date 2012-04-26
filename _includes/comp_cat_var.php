@@ -19,6 +19,7 @@ $_allowed_category_variable_names=array( //существующие параме
 	'max_kp'=>'int',
 	'need_tk'=>'bool',
 	'parent_cat_id'=>'int',
+	'is_official'=>'bool',
 );
 
 function _cat_var($comp_id,$cat_id,$name,$value=null){

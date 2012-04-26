@@ -155,6 +155,7 @@ CREATE TABLE `CA_CompCatVar` (
   `max_time` bigint(20) NOT NULL,
   `max_kp` int(11) NOT NULL,
   `need_tk` enum('yes','no') NOT NULL DEFAULT 'no',
+  `is_official` enum('yes','no') NOT NULL,
   PRIMARY KEY (`comp_id`,`cat_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -658,4 +659,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2012-04-07  0:25:02
+-- Dump completed on 2012-04-23 23:06:28

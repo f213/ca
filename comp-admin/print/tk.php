@@ -6,7 +6,7 @@
 //The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 //
 //THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
+chdir('../');
 require_once('../_includes/core.php');
 require_once('_includes/request_functions.php');
 require_once('_includes/started_functions.php');
@@ -126,5 +126,5 @@ if($_GET['xls']){
 }
 $title="Протокол техкомиссии";
 $page_title=$title."\n".strtoupper($cat_name[$cat_id]);
-require('_templates/print_header.phtml');
-require('_templates/print_tk.phtml');
+require('print/header.php');
+require('_templates/print/tk.phtml');

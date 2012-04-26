@@ -17,11 +17,17 @@
 	else
 		print "<option value = $key>{$value['name']}({$value['num_started']})</option>\r\n";
 ?></select>
+<?if($tpl_print_allowed_requests_link){?>
+	&nbsp;<input type = button title="Печать списка допущенных участников" value = "Список допущенных участников" onclick="window.open('<?=$tpl_print_allowed_requests_link?>');">
+<?}?>
 <?if($tpl_print_link){?>
 	&nbsp;<input type = button title="Печать стартовой ведомости (на стенд)" value = "Печать" onclick="print_with_title('<?=$tpl_print_link?>',$('#change_start_list_title'),'Стартовая ведомость');"> <input type = checkbox id = change_start_list_title title="Изменить заголовок"><label for="change_start_list_title" title="Изменить заголовок">title</label>
 	<?if(function_exists('can_export_xls') and can_export_xls()){?>
 		&nbsp;<input type = button title="Экспорт в excel" value = "Экспорт" onclick="window.open('<?=$tpl_print_link.'&xls=1'?>');">
 	<?}?>
+<?}?>
+<?if($tpl_pdf_link){?>
+	&nbsp;<input type = button title="Печать официальной стартовой ведомости" value = "Печать РАФ" onclick="window.location.href='<?=$tpl_pdf_link?>';">
 <?}?>
 <?if($tpl_tkproto_link){?>
 	<b>|</b>&nbsp;<input type = button title="Печать протокола техкомиссии (на стенд)" value = "Протокол техкомиссии" onclick="window.open('<?=$tpl_tkproto_link?>');" <?if($tpl_tkproto_disabled) print " disabled ";?>>

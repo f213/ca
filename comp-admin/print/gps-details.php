@@ -6,7 +6,7 @@
 //The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 //
 //THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
+chdir('../');
 require_once('../_includes/core.php');
 require_once('_includes/auth.php');
 
@@ -195,6 +195,6 @@ $item_output['req_data']=get_brief_request_data($comp_id,num2req($comp_id,$start
 if($item_output['need_tk'])
 	$item_output['req_data']['tk_is_passed']=tk_is_passed($comp_id,$start_number);
 $page_title=$title=comp_name($comp_id)."\nКарта подсчета участника №$start_number";
-require('_templates/print_header.phtml');
-require('_templates/gps-details.phtml');
+require('print/header.php');
+require('_templates/print/gps-details.phtml');
 

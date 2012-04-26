@@ -12,7 +12,6 @@ require('dbd/'.DB_TYPE.'.php'); //драйвер авторизационной 
 require('dbt.php'); //имена таблиц
 
 require('current_comp.php'); //узнаем ID текущего соревнования, дальше оно везде фигурирует как константа CURRENT_COMP
-require('comp_data.php'); //"официальные" данные гонки
 require('people_names.php'); //библиотека для именования членов экипажа, на разных гонках бывают разные
 require('req_ext_data.php'); //библиотека для дополнительных, легко переключаемых данных заявки
 require('comp_cat_var.php'); //библиотека для хранения параметров гонки по каждой категории
@@ -171,4 +170,14 @@ function _input_val($flagname){ //для одновременной провер
 		return $_GET[$flagname];
 	if(array_key_exists($flagname,$_POST))
 		return $_POST[$flagname];
+}
+function get_base(){ //получить значение тега base для вложенных папок
+	global $_SERVER;
+	$path=dirname($_SERVER['REQUEST_URI']);
+	if(basename($path)!='comp-admin')
+		$path=dirname($path);
+	$path=trim($path,'/');
+	$host=$_SERVER['HTTP_HOST'];
+	$base="http://$host/$path/";
+	return $base;
 }

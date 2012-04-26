@@ -1,6 +1,7 @@
 <html><head>
+<base href="<?=get_base()?>">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<title>Заявка - <?=$comp_title?></title>
+<title>Заявка - <?=$comp_name?></title>
 		<style type="text/css">
 			td.brd {
 				border: 1px solid black;
@@ -30,10 +31,10 @@
 					<table width=100% border=0>
 						<tr>
 							<td>
-								<img src=i/orr.gif height=71 width=84>
+								<img src=i/gr.gif height=71 width=84>
 							</td>
 							<td align=center>
-							<h5><?=$comp_title?></h5>
+							<h5><?=$comp_name?></h5>
 								<h5>ЗАЯВКА НА УЧАСТИЕ</h5>
 							</td>
 						</tr>
@@ -42,20 +43,19 @@
 			</tr>
 
 			<tr><td colspan=2 align=center><b>Экипаж<?
-			if($output['start_number'])
-				print " № <b>{$output['start_number']}</b>";
+			if($item_output['start_number'])
+				print " № <b>{$item_output['start_number']}</b>";
 ?></b></td></tr>
 
 			<tr><td colspan=2 align=left><b><?=$_people_names['pilot']['request']?></b></td></tr>
-			<tr><td class=brd align=right width=30%><p>ФИО, Ник:</p></td><td class=brd>&nbsp;<strong><?=$output['pilot_name']?></strong></td></tr>
+			<tr><td class=brd align=right width=30%><p>ФИО, Ник:</p></td><td class=brd>&nbsp;<strong><?=$item_output['pilot_name']?></strong></td></tr>
 			<tr><td class=brd align=right width=30%><p>Документ, дата рождения:</p></td><td class=brd>&nbsp;</td></tr>
 			<?if(defined('USE_SIZE') and USE_SIZE){?>
 				<tr><td class=brd align=right width=30%><p>Размер одежды:</p></td><td class=brd><strong>&nbsp;&nbsp;S / M / L / XL / XXL (подчеркнуть)</strong></td></tr>
 			<?}?>
-			<?if(check_name('shturman','print')){?>
-
-				<tr><td colspan=2 align=left><b><?=$_people_names['shturman']['request']?></b></td></tr>
-				<tr><td class=brd align=right width=30%><p>ФИО, Ник:</p></td><td class=brd>&nbsp;<strong><?=$output['navigator_name']?></strong></td></tr>
+			<?if(check_name('shturman','request')){?>
+				<tr><td colspan=2 align=left><b><?=$_people_names['shturman']['ca']?></b></td></tr>
+				<tr><td class=brd align=right width=30%><p>ФИО, Ник:</p></td><td class=brd>&nbsp;<strong><?=$item_output['navigator_name']?></strong></td></tr>
 				<tr><td class=brd align=right width=30%><p>Документ, дата рождения:</p></td><td class=brd>&nbsp;</td></tr>
 				<?if(defined('USE_SIZE') and USE_SIZE){?>
 					<tr><td class=brd align=right width=30%><p>Размер одежды:</p></td><td class=brd><strong>&nbsp;&nbsp;S / M / L / XL / XXL (подчеркнуть)</strong></td></tr>
@@ -63,17 +63,17 @@
 			<?}?>
 			<tr><td colspan=2><img src=i/sp.gif height=10></td></tr>
 			<tr><td colspan=2 align=left><b>Контактные данные</b></td></tr>
-			<tr><td class=brd align=right width=30%><p>Телефон(ы):</p></td><td class=brd>&nbsp;<strong><?=$output['phone']?></strong></td></tr>
-			<tr><td class=brd align=right width=30%><p>E-Mail:</p></td><td class=brd>&nbsp;<strong><?=$output['email']?></strong></td></tr>
+			<tr><td class=brd align=right width=30%><p>Телефон(ы):</p></td><td class=brd>&nbsp;<strong><?=$item_output['phone']?></strong></td></tr>
+			<tr><td class=brd align=right width=30%><p>E-Mail:</p></td><td class=brd>&nbsp;<strong><?=$item_output['email']?></strong></td></tr>
 
 			<tr><td colspan=2><img src=i/sp.gif height=10></td></tr>
 			<tr><td colspan=2 align=center><b>Автомобиль</b></td></tr>
-			<tr><td class=brd align=right width=30%><p>Марка и модель:</p></td><td class=brd>&nbsp;<strong><?=$output['auto_brand']?></strong></td></tr>
-			<tr><td class=brd align=right width=30%><p>Гос. номер:</p></td><td class=brd>&nbsp;<strong><?=$output['auto_number']?></strong></td></tr>
+			<tr><td class=brd align=right width=30%><p>Марка и модель:</p></td><td class=brd>&nbsp;<strong><?=$item_output['auto_brand']?></strong></td></tr>
+			<tr><td class=brd align=right width=30%><p>Гос. номер:</p></td><td class=brd>&nbsp;<strong><?=$item_output['auto_number']?></strong></td></tr>
 <?if(defined('CA_WHEEL_SIZE') and CA_WHEEL_SIZE){?>
-			<tr><td class=brd align=right width=30%><p>Размер резины:</p></td><td class=brd>&nbsp;<strong><?=$output['wheel_size']?></strong></td></tr>
+			<tr><td class=brd align=right width=30%><p>Размер резины:</p></td><td class=brd>&nbsp;<strong><?=$item_output['wheel_size']?></strong></td></tr>
 <?}?>
-			<tr><td class=brd align=right width=30%><p>Класс (тех. ком.):</p></td><td class=brd>&nbsp;<strong><?=$output['class']?></strong></td></tr>
+			<tr><td class=brd align=right width=30%><p>Класс (тех. ком.):</p></td><td class=brd>&nbsp;<strong><?=$item_output['class']?></strong></td></tr>
 
 			<tr><td colspan=2><img src=i/sp.gif height=10></td></tr>
 			<tr><td colspan=2>

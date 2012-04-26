@@ -32,6 +32,7 @@ require_once('_includes/started_functions.php');
 require_once('_includes/disq.php');
 require_once('_includes/request_functions.php');
 require_once('_includes/export_results.php');
+require_once('_includes/raf_score_system.php');
 
 $finish_types=array(
 	0=>'Все',
@@ -359,6 +360,8 @@ $anyone_taked_required=false;
 $need_tk=false;
 if(_cat_var($comp_id,$cat_id,'need_tk'))
 	$need_tk=true;
+if(mysql_num_rows($res)) //всего стартовавших
+	$num_started=sizeof(get_started_numbers($comp_id,$f_category));
 
 while($row=mysql_fetch_assoc($res)){
 	$req_id=$item_output[$p]['request_id']=(int)$row['request_id'];
@@ -367,6 +370,7 @@ while($row=mysql_fetch_assoc($res)){
 	if((int)$row['finish_time']){
 		$item_output[$p]['total_time']=format_hms_time((int)$row['total_time'],$_null_sec_bool);
 		$item_output[$p]['finish_time']=format_user_hms_time((int)$row['finish_time'],$_null_sec_bool);
+		$item_output[$p]['finish_time_hms']=format_hms_time((int)$row['finish_time'],true);
 		if($type=='gr-gps'){
 			$final_time=(int)$row['final_time']+((int)$row['all_cat_cost']*GR_POINTS_MULT*60-(int)$row['total_cost']*GR_POINTS_MULT*60)-(int)$row['bonus_cost']*GR_POINTS_MULT*60;
 			/* 
@@ -377,6 +381,7 @@ while($row=mysql_fetch_assoc($res)){
 			$item_output[$p]['final_time']=format_big_time($final_time); //атавизм нах! ебаные сутки!
 			$item_output[$p]['gps_untaken_cost']=(int)$row['all_cat_cost']-(int)$row['total_cost']; //это значение может получится отрицательным из-за того, что участник в базе "взял" точки другой категории. Такой глюк был на ЗЛ осень 2010, сейчас я его вроде исправил
 			$item_output[$p]['gps_untaken_sum']=(int)$row['all_cat_sum']-(int)$row['points_sum'];;
+			$item_output[$p]['gps_untaken_time']=format_hms_time($item_output[$p]['gps_untaken_cost']*GR_POINTS_MULT*60,$_null_sec_bool);
 		}else{
 			$final_time=(int)$row['final_time'];
 			$item_output[$p]['final_time_hm']=format_hm_time($final_time); 
@@ -451,11 +456,14 @@ while($row=mysql_fetch_assoc($res)){
 		$item_output[$p]['res']='СХОД';
 		$item_output[$p]['dontfix']=true;
 	}elseif($type=='gr-gps')
-		$item_output[$p]['details_link']=append_rnd("gps-details.php?start_number=$start_number&comp_id=$comp_id");
+		$item_output[$p]['details_link']=append_rnd("print/gps-details.php?start_number=$start_number&comp_id=$comp_id");
 	elseif($type=='legend')
-		$item_output[$p]['details_link']=append_rnd("legend-details.php?start_number=$start_number&comp_id=$comp_id");
+		$item_output[$p]['details_link']=append_rnd("print/legend-details.php?start_number=$start_number&comp_id=$comp_id");
 
-
+	if(!$item_output[$p]['dontfix']) //если идет в зачет, то начисляем рафовские очки
+		$item_output[$p]['raf_score']=raf_score($item_output[$p]['place'],$num_started);
+	else
+		$item_output[$p]['raf_score']='н\з';
 	//проверка на снятие
 	if($row['taked_off']=='1'){
 		$item_output[$p]['res']='СНЯТ';
@@ -483,7 +491,6 @@ while($row=mysql_fetch_assoc($res)){
 		
 
 
-
 	$p++;
 }
 
@@ -495,6 +502,14 @@ $active_categories=get_started_categories($comp_id);
 
 $tpl_print_results_link=append_rnd("results.php?comp_id=$comp_id&print_results=1&f_category=$f_category&f_finished=$f_finished&f_result=$f_result");
 $tpl_fix_results_link=append_rnd("results.php?comp_id=$comp_id&fix_results=1&f_category=$f_category&f_finished=$f_finished&f_result=$f_result");
+if(defined('CA_PDF_RESULTS_COMP_ENABLED') and CA_PDF_RESULTS_COMP_ENABLED)
+	$tpl_pdf_link=append_rnd("results.php?comp_id=$comp_id&pdf=1&f_category=$f_category&f_finished=$f_finished&f_result=$f_result");
+if(defined('CA_PDF_RESULTS_SU_ENABLED') and CA_PDF_RESULTS_SU_ENABLED)
+	$tpl_pdf_su_link=append_rnd("results.php?comp_id=$comp_id&pdf_su=1&f_category=$f_category&f_finished=$f_finished&f_result=$f_result");
+if(defined('CA_PDF_POINTS_LIST_ENABLED') and CA_PDF_POINTS_LIST_ENABLED)
+	$tpl_points_list_link=append_rnd("print/cat_taken_points.php?comp_id=$comp_id&cat_id=$f_category");
+
+
 if(can_export_xls()){
 	$tpl_export_xls_link=append_rnd("results.php?comp_id=$comp_id&export_results=xls&f_category=$f_category&f_finished=$f_finished&f_result=$f_result");
 }
@@ -532,12 +547,7 @@ if($_GET['fix_results']){
 }
 
 $tpl_need_tk=$need_tk;
-if(!$_GET['print_results']){
-	$title='Просмотр результатов';
-	$tpl_onload_function="results_onload()";
-	require('admin_header.php');
-	require('_templates/results.phtml');
-}else{
+if($_GET['print_results']){	
 	$results_title="Результаты\n{$cat_name[$f_category]}";
 	if($_GET['prelim'])
 		$results_title="Предварительные результаты\n{$cat_name[$f_category]}";
@@ -547,6 +557,22 @@ if(!$_GET['print_results']){
 	$page_title=$title=$results_title;
 	//TODO сделать отдельные шаблоны для разных видов соревнований, а так же в зависимости от template_path
 	include('_includes/nocache.php');
-	require('_templates/print_header.phtml');
-	require('_templates/results_print.phtml');	
+	require('print/header.php');
+	require('_templates/print/results.phtml');	
+	exit;
 }	
+
+if($_GET['pdf']){
+	require_once('pdf/results_comp.php');
+	print_pdf_results_comp($item_output,$cat_name[$f_category]);
+	exit;
+}
+if($_GET['pdf_su']){
+	require_once('pdf/results_su.php');
+	print_pdf_results_su($item_output,$cat_name[$f_category],'СУ1',$anyone_taked_required);
+	exit;
+}
+$title='Просмотр результатов';
+$tpl_onload_function="results_onload()";
+require('admin_header.php');
+require('_templates/results.phtml');

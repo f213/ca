@@ -204,10 +204,12 @@ if($f_category){
 		$total_cnt++;
 	}
 	if($item_output){
-		$tpl_print_link=append_rnd("print_start_list.php?flag=1&cat_id=$f_category&comp_id=$comp_id");
+		$tpl_print_link=append_rnd("print/start_list.php?flag=1&cat_id=$f_category&comp_id=$comp_id");
+		if(defined('CA_PDF_START_LIST_ENABLED') and CA_PDF_START_LIST_ENABLED)
+			$tpl_pdf_link=append_rnd("print/start_list.php?flag=1&cat_id=$f_category&comp_id=$comp_id&pdf=1");
 		$tpl_clean_link=append_rnd("start_list.php?comp_id=$comp_id&flag=7&f_category=$f_category");
 		if($need_tk)
-			$tpl_tkproto_link=append_rnd("print_tk.php?comp_id=$comp_id&cat_id=$f_category");
+			$tpl_tkproto_link=append_rnd("print/tk.php?comp_id=$comp_id&cat_id=$f_category");
 	}
 	//проверяем, есть ли хоть кто-то, кто прошел техкомиссию. нужно вдруг она не нужна..
 	$tpl_tkproto_disabled=true;
@@ -231,6 +233,11 @@ $tpl_need_tk=$need_tk;
 $just_edited=0;
 if($_GET['just_edited'])
 	$just_edited=(int)$_GET['just_edited'];
+
+if(!sizeof($item_output)){ //если нифига нет, то мы на первой странице - давай печатать список допущенных участников
+	$tpl_print_allowed_requests_link=append_rnd("print/allowed_requests.php?comp_id=$comp_id");
+}
+
 $title="Стартовая ведомость";
 require('admin_header.php');
 require('_templates/start_list.phtml');

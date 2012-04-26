@@ -28,9 +28,11 @@
 //
 
 define('CONFIG_PATH_ACCEPT_REGEX','/^[\_\-\/\\\:\.a-z\d]+$/i');
+define('MAGIC_MAX_RAF_RACE_TYPES',10);
 
 $_ca_ini=array('conf/ca.ini','../conf/ca.ini','../../conf/ca.ini','/etc/ca/ca.ini','/usr/local/etc/ca/ca.ini');
 $_cat_ini=array('conf/categories.ini','../conf/categories.ini','../../conf/categories.ini','/etc/ca/categories.ini','/usr/local/etc/ca/categories.ini');
+$_official_ini=array('conf/official.ini','../conf/official.ini','../../conf/official.ini','/etc/ca/official.ini','/usr/local/etc/ca/official.ini');
 
 if(defined('CA_INI_SEARCH_PATH'))
 	$_ca_ini=array_merge(array(CA_INI_SEARCH_PATH),$_ca_ini);
@@ -40,6 +42,7 @@ if(defined('CATEGORIES_INI_SEARCH_PATH'))
 
 $_raw_ca_conf=parse_ini_file(_get_ini($_ca_ini),true);
 $_raw_cat_conf=parse_ini_file(_get_ini($_cat_ini),true);
+$_raw_official_conf=parse_ini_file(_get_ini($_official_ini),true);
 
 //
 //разбираем настройки БД
@@ -107,6 +110,11 @@ $detailed_legend_cat=get_detailed_legend_cat(); //список категори�
 $winch_cat=get_winch_cat(); //список категорий, у которых следует особо отмечать наличие лебедки
 
 //
+//Получаем "официальные" данные гонки
+//
+$OFFICIAL_DATA=get_official_data();
+
+//
 //секция MAIN 
 //
 if(cfg_val('main.custom_auth'))
@@ -170,6 +178,10 @@ if(default_no('requests.can_change_cat_id_after_start_list_generation'))
 else
 	define('CAN_CHANGE_CAT_ID_AFTER_START_LIST',false);
 
+if(default_no('requests.dummy_declarant_pilot_equal'))
+	define('CA_DECLARANT_PILOT_EQUAL',1); //заглушка - заявитель всегда равен имени пилота
+if(cfg_has('requests.dummy_single_country'))
+	define('CA_DUMMY_SINGLE_COUNTRY',cfg_val('requests.dummy_single_country')); //заглушка - единая страна для всех участников
 //
 //секция INTERFACE
 //
@@ -200,10 +212,74 @@ else
 
 if(default_yes('interface.time_input_helper'))
 	define('USE_TIME_INPUT_HELPER',true); //включить ли автоматическую расставлялку знаков ':' при вводе времени
+if(default_no('interface.show_raf_score'))
+	define('CA_SHOW_RAF_SCORE',true);
+
+if(default_no('pdf.enabled')){
+	define('CA_PDF_ENABLED',1); //включена генерация pdf
+	if(!cfg_has('pdf.tfpdf_table_path'))
+		die('ca.ini: включен режим регенации pdf, но не задан путь к классам tfpdf <a href="http://www.interpid.eu/fpdf-table">http://www.interpid.eu/fpdf-table</a>!');
+	define('CA_PDF_TFPDF_TABLE_PATH',rtrim(cfg_val('pdf.tfpdf_table_path'),'\/\\'));
+	if(!file_exists(CA_PDF_TFPDF_TABLE_PATH.'/myfpdf-table.php'))
+		die('ca.ini: не найден класс tfpdf по указанному пути: '.CA_PDF_TFPDF_TABLE_PATH);
+	if(default_yes('pdf.request_enabled')){
+		define('CA_PDF_REQUEST_ENABLED',1);
+		if(cfg_has('pdf.request_font'))
+			define('CA_PDF_REQUEST_FONT',cfg_val('pdf.request_font'));
+		else
+			define('CA_PDF_REQUEST_FONT','FreeSans.ttf');
+		if(!strlen(CA_PDF_REQUEST_FONT) or !file_exists('../3dparty/fpdf/font/unifont/'.CA_PDF_REQUEST_FONT))
+			die('Не найден шрифт для печати заявок (pdf.request_font) по пути 3dparty/fpdf/font/unifont/'.CA_PDF_REQUEST_FONT);
+	}
+	if(default_yes('pdf.allowed_requests_enabled')){
+		define('CA_PDF_ALLOWED_REQUESTS_ENABLED',1);
+		if(cfg_has('pdf.allowed_requests_font'))
+			define('CA_PDF_ALLOWED_REQUESTS_FONT',cfg_val('pdf.allowed_requests_font'));
+		else
+			define('CA_PDF_ALLOWED_REQUESTS_FONT','FreeSans.ttf');
+		if(!strlen(CA_PDF_ALLOWED_REQUESTS_FONT) or ! file_exists('../3dparty/fpdf/font/unifont/'.CA_PDF_ALLOWED_REQUESTS_FONT))
+			die('Не найден шрифт для печати списка допущенных участников (pdf.allowed_requests_font) по пути /3dparty/fpdf/font/unifont/'.CA_PDF_ALLOWED_REQUESTS_FONT);
+	}
+	if(default_yes('pdf.start_list_enabled')){
+		define('CA_PDF_START_LIST_ENABLED',1);
+		if(cfg_has('pdf.start_list_font'))
+			define('CA_PDF_START_LIST_FONT',cfg_val('pdf.START_LIST_font'));
+		else
+			define('CA_PDF_START_LIST_FONT','FreeSans.ttf');
+		if(!strlen(CA_PDF_START_LIST_FONT) or ! file_exists('../3dparty/fpdf/font/unifont/'.CA_PDF_START_LIST_FONT))
+			die('Не найден шрифт для печати стартовой ведомости(pdf.START_LIST_font) по пути /3dparty/fpdf/font/unifont/'.CA_PDF_START_LIST_FONT);
+	}
+
+	if(default_yes('pdf.results_comp_enabled')){
+		define('CA_PDF_RESULTS_COMP_ENABLED',1);
+		if(cfg_has('pdf.results_comp_font'))
+			define('CA_PDF_RESULTS_COMP_FONT',cfg_val('pdf.RESULTS_COMP_font'));
+		else
+			define('CA_PDF_RESULTS_COMP_FONT','FreeSans.ttf');
+		if(!strlen(CA_PDF_RESULTS_COMP_FONT) or ! file_exists('../3dparty/fpdf/font/unifont/'.CA_PDF_RESULTS_COMP_FONT))
+			die('Не найден шрифт для печати результатов соревнования (pdf.RESULTS_COMP_font) по пути /3dparty/fpdf/font/unifont/'.CA_PDF_RESULTS_COMP_FONT);
+	}
+	if(default_yes('pdf.results_su_enabled')){
+		define('CA_PDF_RESULTS_SU_ENABLED',1);
+		if(cfg_has('pdf.results_su_font'))
+			define('CA_PDF_RESULTS_SU_FONT',cfg_val('pdf.RESULTS_SU_font'));
+		else
+			define('CA_PDF_RESULTS_SU_FONT','FreeSans.ttf');
+		if(!strlen(CA_PDF_RESULTS_SU_FONT) or ! file_exists('../3dparty/fpdf/font/unifont/'.CA_PDF_RESULTS_SU_FONT))
+			die('Не найден шрифт для печати результатов СУ (pdf.RESULTS_SU_font) по пути /3dparty/fpdf/font/unifont/'.CA_PDF_RESULTS_SU_FONT);
+	}
+	if(default_no('pdf.points_list_enabled')){
+		define('CA_PDF_POINTS_LIST_ENABLED',1);
+		if(cfg_has('pdf.points_list_font'))
+			define('CA_PDF_POINTS_LIST_FONT',cfg_val('pdf.POINTS_LIST_font'));
+		else
+			define('CA_PDF_POINTS_LIST_FONT','FreeSans.ttf');
+		if(!strlen(CA_PDF_POINTS_LIST_FONT) or ! file_exists('../3dparty/fpdf/font/unifont/'.CA_PDF_POINTS_LIST_FONT))
+			die('Не найден шрифт для печати списка взятых точек по категории (pdf.POINTS_LIST_font) по пути /3dparty/fpdf/font/unifont/'.CA_PDF_POINTS_LIST_FONT);
+	}
 
 
-
-
+}
 function get_categories_list(){
 	global $_raw_cat_conf;
 	$cfg=$_raw_cat_conf;
@@ -246,6 +322,28 @@ function get_winch_cat(){
 			$ret[]=$id;
 	return $ret;
 }
+function get_official_data(){
+	global $_raw_official_conf;
+	$cfg=$_raw_official_conf;
+	$ret=array();
+	$ret['name']=$cfg['official']['name'];
+	$ret['comp_type']=$cfg['official']['comp_type'];
+	$ret['rukogon']=$cfg['official']['rukogon'];
+	$ret['secretary']=$cfg['official']['secretary'];
+	$ret['tech_commissar']=$cfg['official']['tech_commissar'];
+	$ret['date']=$cfg['official']['date'];
+	$ret['place']=$cfg['official']['place'];
+	$ret['ksk']=array();
+	if(sizeof($cfg['ksk']))
+		foreach($cfg['ksk'] as $key=>$value)
+			$ret['ksk'][]=$value;
+	$ret['raf_race_types']=array();
+	for($i=1;$i<=MAGIC_MAX_RAF_RACE_TYPES;$i++)
+		if($cfg['raf_race_types'][$i])
+			$ret['raf_race_types'][$i]=$cfg['raf_race_types'][$i];
+	return $ret;
+}
+
 function cfg_val($val){
 	global $_raw_ca_conf;
 	$cfg=$_raw_ca_conf;

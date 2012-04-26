@@ -14,5 +14,5 @@ CREATE TABLE IF NOT EXISTS `CA_Requests_ExtAttr` (
 	  UNIQUE KEY `main` (`comp_id`,`request_id`,`attr_name`(32))
 	) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+ALTER TABLE `CA_CompCatVar` ADD `is_official` ENUM( 'yes', 'no' ) NOT NULL;
 ALTER TABLE  `CA_CompCatVar` ADD  `parent_cat_id` INT NOT NULL;
-

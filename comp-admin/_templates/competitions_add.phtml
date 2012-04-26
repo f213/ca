@@ -38,6 +38,7 @@ foreach($item_output['allowed_parent_categories'] as $key=>$value){
 КП(легенда): <input type = text name = cat<?=$i?>_cp value = "<?=$item_output["cat$i"]['cp']?>" size=2 maxlength=2> 
 <?}?>
 <input type = checkbox name = cat<?=$i?>_need_tk id = cat<?=$i?>_need_tk <?if($item_output["cat$i"]['need_tk']) print " checked "?>> <label for="cat<?=$i?>_need_tk">Техкомиссия проводится</label>
+<input type = checkbox name = cat<?=$i?>_is_official id = cat<?=$i?>_is_official <?if($item_output["cat$i"]['is_official']) print " checked "?>> <label for="cat<?=$i?>_is_official">Присутсвует в док. РАФ</label>
 </tr>
 <?}?>
 </table>

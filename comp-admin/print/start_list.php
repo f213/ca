@@ -7,6 +7,7 @@
 //
 //THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+chdir ('../');
 require_once('../_includes/core.php');
 require_once('_includes/request_functions.php');
 require_once('_includes/started_functions.php');
@@ -34,7 +35,7 @@ if($type=='legend'){
 		$item_output[$c]['start_number']=(int)$row['start_number'];
 		$item_output[$c]['start_time']=format_user_hms_time((int)$row['start_time'],$_null_sec_bool);
 		$item_output[$c]['wheel_size']=(int)$row['WheelSize'];
-		$item_output[$c]=get_brief_request_data($comp_id,(int)$row['request_id'],$item_output[$c]);
+		$item_output[$c]=get_full_request_data($comp_id,(int)$row['request_id'],$item_output[$c]);
 		$item_output[$c]['auto_number']=stripslashes($row['AutoNumber']);
 		if(defined('CA_TRACK_PORTAL') and CA_TRACK_PORTAL){
 			$item_output[$c]['have_portal']=false;
@@ -64,7 +65,7 @@ if($type=='gps' or $type=='gr-gps'){
 		$item_output[$c]['start_number']=$start_number;
 		$item_output[$c]['start_time']=format_hms_time($row['start_time'],$_null_sec_bool);
 		$item_output[$c]['request_id']=$request_id=num2req($comp_id,$start_number);
-		$item_output[$c]=get_brief_request_data($comp_id,$request_id,$item_output[$c]);
+		$item_output[$c]=get_full_request_data($comp_id,$request_id,$item_output[$c]);
 		if(defined('CA_TRACK_PORTAL') and CA_TRACK_PORTAL){
 			$item_output[$c]['have_portal']=false;
 			if($row['portal']=='yes'){
@@ -85,7 +86,12 @@ if($type=='gps' or $type=='gr-gps'){
 	}
 }	
 
+if($_GET['pdf']){
 
+	require_once('pdf/start_list.php');
+	print_pdf_start_list($item_output,$cat_name[$cat_id],'СУ1');
+	exit;
+}
 if($_GET['xls']){
 	$my_cat_name=_export_results_translit($cat_name[$cat_id]);
 	error_reporting(0); 
@@ -157,7 +163,7 @@ if($_GET['print_title'])
 	$title=$_GET['print_title'];
 
 $page_title="$title \n ".strtoupper($cat_name[$cat_id]);
-require('_templates/print_header.phtml');
+require('print/header.php');
 if($flag==1){ //краткая ведомость
 	require('_templates/start_lists/brief_legend.phtml');
 	die();
