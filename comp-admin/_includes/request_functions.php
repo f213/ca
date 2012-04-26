@@ -11,6 +11,7 @@
  * Append_hash следует использовать, если необходимо добавить какие-то данные к существующим, т.е. будет возвращен append_hash с данными о заявке. 
  * Возвращает хеш со следующими ключами
  * pilot_name, navigator_name - имена пилота и штурамана. Если есть ники, ставятся после скобочек.
+ * pilot_name_without_nik, navigator_name_without_nik - имена пилота и штурмана без ника.
  * pilot_name_official, navigator_name_official - имена пилота и штурмана без ников
  * pilot_name_f, pilot_name_i, pilot_name_o; navigator_name_f, navigator_name_i, navigator_name_o - отдельно фамилия, имя и отчество на каждого члена экипажа
  * pilot_city, pilot_city_capitalized - город пилота
@@ -24,6 +25,9 @@
  * city_capitalized - город, первая буква всегда большая
  * cat_id - id категории участника
  * cat_name (если есть) - название категории участника
+ * parent_id - id родительской заявки
+ * parent_cat_id - id категории родительской заявки
+ * parent_cat_name - название категории родительской заявки
  * crew - экипаж, пилот и штурман, если есть.
 
  get_full_request_data($comp_id,$request_id,$append_hash=array()) - Более полный список данных. пока отличается только наличием "спортивных аттрибутов". Список атрибутов см. в соответсвующих файлах req_ext_data.php и people_names.php/
@@ -56,27 +60,37 @@ function get_brief_request_data($comp_id,$request_id,$append_hash=array()){
 	$request_id=(int)$request_id;
 	if(!$request_id or !$comp_id)
 		return null;
-	$res=query_eval("SELECT category,PilotName,PilotNik,PilotCity,NavigatorName,NavigatorNik,NavigatorCity,city,AutoBrand,AutoNumber,WheelSize,phone,email FROM $compreq_dbt WHERE comp_id=$comp_id AND id=$request_id;");
+	$res=query_eval("SELECT category,parent_id, parent_id AS par3nt_id,IF(parent_id,(SELECT category FROM $compreq_dbt WHERE id=par3nt_id),0) AS parent_category, PilotName,PilotNik,PilotCity,NavigatorName,NavigatorNik,NavigatorCity,city,AutoBrand,AutoNumber,WheelSize,phone,email FROM $compreq_dbt WHERE comp_id=$comp_id AND id=$request_id;");
 	if(!mysql_num_rows($res))
 		return null;
 	$ret=$append_hash;
 	$row=mysql_fetch_assoc($res);
-	$ret['pilot_name']=stripslashes($row['PilotName']);
+	if($row['parent_id']!='0'){ //работа с родительскими заявками
+		$ret['parent_id']=(int)$row['parent_id'];
+		$ret['parent_cat_id']=(int)$row['parent_category'];
+		if($ret['parent_cat_id'])
+			$ret['parent_cat_name']=$cat_name[$ret['parent_cat_id']];
+	}
+	$ret['pilot_name_without_nik']=$ret['pilot_name']=stripslashes($row['PilotName']);
 	$ret['pilot_name_official']=name2official($ret['pilot_name']);
 	list($ret['pilot_name_f'],$ret['pilot_name_i'],$ret['pilot_name_o'])=get_fio($ret['pilot_name']);
-	if($row['PilotNik'])
+	if($row['PilotNik']){
 		$ret['pilot_name'].=' ('.stripslashes($row['PilotNik']).')';
+		$ret['pilot_nik']=stripslashes($row['PilotNik']);
+	}
 	$ret['pilot_city']=stripslashes($row['PilotCity']);
-
+	
 	if(!_strlen($ret['pilot_city'])) //если нет города чувака - ставим город заявки
 		$ret['pilot_city']=stripslashes($row['city']);
 	$ret['pilot_city_capitalized']=_ucfirst($ret['pilot_city']);
 
-	$ret['navigator_name']=stripslashes($row['NavigatorName']);
+	$ret['navigator_name_without_nik']=$ret['navigator_name']=stripslashes($row['NavigatorName']);
 	$ret['navigator_name_official']=name2official($ret['navigator_name']);
 	list($ret['navigator_name_f'],$ret['navigator_name_i'], $ret['navigator_name_o'])=get_fio($ret['navigator_name']);
-	if($row['NavigatorNik'])
+	if($row['NavigatorNik']){
 		$ret['navigator_name'].=' ('.stripslashes($row['NavigatorNik']).')';
+		$ret['navigator_nik']=stripslashes($row['NavigatorNik']);
+	}
 	$ret['navigator_city']=stripslashes($row['NavigatorCity']);
 
 	if(!_strlen($ret['navigator_city']))

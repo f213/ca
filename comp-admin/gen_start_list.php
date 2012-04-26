@@ -21,7 +21,7 @@ $interval=(int)_input_val('interval');
 $sort_type=_input_val('sort_type');
 list($h,$m,$s)=parse_user_time(_input_val('time_begin'));
 
-$time=$h*3600+$m*60+$s;
+$begin_time=$time=$h*3600+$m*60+$s;
 
 if(!$comp_id)
 	die('Не указан id соревнования');
@@ -41,6 +41,11 @@ $type=get_type_by_cat_id($comp_id,$cat_id);
 if($type=='legend' and !$interval)
 	die("Не задан интервал!");
 
+$children=array();
+$res=query_eval("SELECT cat_id FROM $compcatvar_dbt WHERE comp_id=$comp_id AND parent_cat_id=$cat_id");
+while($row=mysql_fetch_row($res))
+	$children[]=(int)$row[0];
+
 //строим критерии сортировки
 $o=array(
 	'start_number'=>'a.start_number ASC',
@@ -56,19 +61,24 @@ if(!strlen($o[$sort_type]))
 	die("Внутренняя ошибка - невозможно определить тип сортировки, обратитесь к разработчику");
 
 init_category($comp_id,$cat_id); //инициализация таблиц результатов для категории
+foreach($children as $child)
+	init_category($comp_id,$child);
 
 $start_numbers=array();
+foreach(array_merge(array($cat_id),$children) as $category){
+	$time=$begin_time; //для каждой новой категории время начинается с начала
+	$start_numbers=array();
+	$res=query_eval("SELECT a.start_number FROM $compres_dbt a, $compreq_dbt b WHERE a.cat_id=$category AND a.request_id=b.id AND a.comp_id=$comp_id AND b.comp_id=$comp_id ORDER BY {$o[$sort_type]}");
 
-$res=query_eval("SELECT a.start_number FROM $compres_dbt a, $compreq_dbt b WHERE a.cat_id=$cat_id AND a.request_id=b.id AND a.comp_id=$comp_id AND b.comp_id=$comp_id ORDER BY {$o[$sort_type]}");
-
-while($row=mysql_fetch_row($res))
-	$start_numbers[]=(int)$row[0];
+	while($row=mysql_fetch_row($res))
+		$start_numbers[]=(int)$row[0];
 
 
-foreach($start_numbers as $start_number){
-	update_start_time($comp_id,$time,$start_number);
-	if($type=='legend')
-		$time+=$interval*60;
+	foreach($start_numbers as $start_number){
+		update_start_time($comp_id,$time,$start_number);
+		if($type=='legend')
+			$time+=$interval*60;
+	}
 }
 header("Location: ".append_rnd("start_list.php?comp_id=$comp_id&start_list_generated=$cat_id&last_sort_type=$sort_type"));
 

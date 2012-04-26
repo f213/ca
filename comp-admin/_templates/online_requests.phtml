@@ -87,6 +87,13 @@ $(document).ready(function(){
 			return false;
 		}
 	});	
+	//проставляем всем полям, у которых есть родители другой цвет
+<?
+	if(sizeof($item_output))
+		foreach($item_output as $key=>$value)
+			if($value['has_parents'])
+				print "	$('#req$key').children('td').removeClass('body') .removeClass('data') .addClass('req_child');\r\n";
+?>
 });
 function unhl_edit(item_id){
 	var td=$('#registered_'+item_id);

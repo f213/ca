@@ -375,7 +375,7 @@ function recheck_all(){
 		else
 			print "<option value = $i>{$cat_name[$i]}</option>\r\n";
 	}?>
-		</select>  <span id=cat_name class="invisible"><b><?=$cat_name[$item_output['category']]?></b></span> <a id=cat_change href = "#" class="invisible">Измеинть</a> <span id=cat_change_div class="invisible">
+		</select>  <span id=cat_name class="invisible"><b><?=$cat_name[$item_output['category']]?></b></span> <a id=cat_change href = "#" class="invisible">Измеинть.</a></span> <span id=cat_change_div class="invisible">
 	<select name = new_cat_id id=new_cat_id onchange="if(confirm('Точно изменить категорию?')){$('#flag').val(7); this.form.submit();}">
 		<option>(выберите новую категорию)</option>
 <?
@@ -384,7 +384,14 @@ function recheck_all(){
 				print "<option value = $i>{$cat_name[$i]}</option>\r\n";
 	?></select>
 
-</form><img id=cat_err src=i/err.gif>
+</form></span><img id=cat_err src=i/err.gif>
+<?
+	if(_strlen($item_output['children_data']))
+		print "Заявка так же находится в категориях: {$item_output['children_data']}.";
+	if(_strlen($item_output['parent_data']))
+		print "Эта заявка имеет родительскую заявку в категории {$item_output['parent_data']}.";
+?>
+</td>
 </tr>
 <tr>
 	<td align=left><b>Доп. атрибуты:</b></td>

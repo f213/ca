@@ -18,6 +18,7 @@ $_allowed_category_variable_names=array( //существующие параме
 	'max_time'=>'int',
 	'max_kp'=>'int',
 	'need_tk'=>'bool',
+	'parent_cat_id'=>'int',
 	'is_official'=>'bool',
 );
 

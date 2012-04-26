@@ -46,6 +46,7 @@ case 1:
 		if($_POST['cat'.$i.'_need_tk'])
 			$need_tk=true;
 		_cat_var($item_id,$i,'need_tk',$need_tk);
+		_cat_var($item_id,$i,'parent_cat_id',(int)$_POST['cat'.$i.'parent_cat_id']);
 		$is_official=false;
 		if($_POST['cat'.$i.'_is_official'])
 			$is_official=true;
@@ -73,8 +74,14 @@ if($item_id){
 		if($item_output['cat'.$i]['type']=='legend')
 			$item_output['cat'.$i]['cp']=_cat_var($item_id,$i,'max_kp');
 		$item_output['cat'.$i]['need_tk']=_cat_var($item_id,$i,'need_tk');
+		$item_output['cat'.$i]['parent_cat_id']=_cat_var($item_id,$i,'parent_cat_id');
+		$item_output['cat'.$i]['parent_cat_name']=$cat_name[$item_output['cat'.$i]['parent_cat_id']];
 		$item_output['cat'.$i]['is_official']=_cat_var($item_id,$i,'is_official');
 	}
+	//все возможные родительские категории
+	$res=query_eval("SELECT cat_id FROM $compcatvar_dbt WHERE comp_id='$item_id' AND parent_cat_id=0;");
+	while($row=mysql_fetch_row($res))
+		$item_output['allowed_parent_categories'][(int)$row[0]]=$cat_name[(int)$row[0]];
 }	
 $form_submit_url='competitions_add.php';
 $return_url='competitions.php';

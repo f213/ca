@@ -34,6 +34,8 @@
 //	* tk_is_relative($comp_id,$start_number) - нихрена не возвращает, если техкомиссия не пройдена, вовзращает хоть-что-нибудь, если техкомиссия и пройдена, но стоит флаг "условный допуск". Хоть-что-нибудь может являться причиной условного допуска, указанной техкомиссаром.
 //	* has_portal($comp_id,$start_number) - стоит ли флаг "портальные мосты"
 //	* has_winch($comp_id,$start_number) - стоит ли флаг "лебедка"
+//	* is_child($comp_id,$start_number) - является ли стартовый номер "вторым" на машине. Возвращает истину, если у заявки экипажа есть родительская заявка	
+//	* is_parent($comp_id,$start_number) - является ли стартовый номер родителем какого-то другого, "первым" на машине.
 //
 //
 //	Функции, которые писались как служебные, но все равно светятся и их можно использовать.
@@ -401,5 +403,28 @@ function max_time_by_cat_id($comp_id,$cat_id){ //максимальное вре
 function legend_max_kps($comp_id,$cat_id){ //максимальное количество КП для категории, работает только для legend
 	return _cat_var($comp_id,$cat_id,'max_kp');
 }
-
+function is_child($comp_id,$start_number){ //узнать, является ли стартовый номер потомком какого-то другого
+	global $compreq_dbt;
+	if(!$comp_id or !$start_number)
+		return false;
+	$req_id=num2req($comp_id,$start_number);
+	if(!$req_id)
+		return false;
+	$res=query_eval("SELECT * FROM $compreq_dbt WHERE comp_id=$comp_id AND id=$req_id AND parent_id!=0;");
+	if(mysql_num_rows($res))
+		return true;
+	return false;
+}
+function is_parent($comp_id,$start_number){ //узнать, является ли стартовый номер родителем какого-то другого
+	global $compreq_dbt;
+	if(!$comp_id or !$start_number)
+		return false;
+	$req_id=num2req($comp_id,$start_number);
+	if(!$req_id)
+		return false;
+	$res=query_eval("SELECT * FROM $compreq_dbt WHERE comp_id=$comp_id AND parent_id=$req_id;");
+	if(mysql_num_rows($res))
+		return true;
+	return false;
+}
 //так получилось, что часть функций, получающих какие-то данные категории, являются оберткой над _cat_var(). Это сделано для обратной совместимости, да и читаемость кода навернео повысит.

@@ -6,13 +6,19 @@
 <td><b>Категория:</b>&nbsp;&nbsp;
 <select name = f_category id = f_category OnChange="this.form.submit();">
 <option value = (-1)>(Выберите категорию)</option>
-<?foreach($gps_cats as $category){
-	if($category==$f_category)
-		print "<option value = $category selected>{$cat_name[$category]}</option>\r\n";
+<?foreach($categories as $key=>$value){
+	if($key==$f_category)
+		print "<option value = $key selected>{$value['name']}</option>\r\n";
+	elseif(!$value['disabled'])
+		print "<option value = $key>{$value['name']}</option>\r\n";
 	else
-		print "<option value = $category>{$cat_name[$category]}</option>\r\n";
+		print "<option value = $key disabled>{$value['name']}</option>\r\n";
+
 }?></select>
-&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;<?
+	if(_strlen($cat_children_names))
+		print "<b>Внимание!</b> Управляя точками этой категории, вы так же управляете точками категорий: $cat_children_names!";
+?>
 </td>
 </tr></table>
 </form>
