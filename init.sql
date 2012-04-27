@@ -156,6 +156,7 @@ CREATE TABLE `CA_CompCatVar` (
   `max_kp` int(11) NOT NULL,
   `need_tk` enum('yes','no') NOT NULL DEFAULT 'no',
   `is_official` enum('yes','no') NOT NULL,
+  `parent_cat_id` int(11) NOT NULL,
   PRIMARY KEY (`comp_id`,`cat_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -204,6 +205,7 @@ DROP TABLE IF EXISTS `CA_CompGPS`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `CA_CompGPS` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `parent_id` int(10) unsigned NOT NULL,
   `comp_id` int(10) unsigned NOT NULL,
   `cat_id` int(10) unsigned NOT NULL,
   `name` int(11) NOT NULL,
@@ -341,6 +343,7 @@ DROP TABLE IF EXISTS `CA_CompRequests`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `CA_CompRequests` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `parent_id` int(10) unsigned NOT NULL,
   `comp_id` int(10) unsigned NOT NULL,
   `category` int(11) NOT NULL,
   `request_cabine_number` int(11) NOT NULL,
@@ -365,7 +368,7 @@ CREATE TABLE `CA_CompRequests` (
   `WheelSize` int(11) NOT NULL,
   `RegisterDate` bigint(20) NOT NULL,
   `ip` text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-  `source` enum('online','site','admin','forum','import') NOT NULL,
+  `source` enum('online','site','admin','forum','import','copy') NOT NULL,
   `author` text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `ApprovedBy` text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `comments` text NOT NULL,
@@ -659,4 +662,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2012-04-23 23:06:28
+-- Dump completed on 2012-04-26 21:26:15
