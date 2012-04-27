@@ -310,6 +310,9 @@ function recheck_all(){
 		<?if($item_id){?><input type = button value = Распечатать OnClick="window.open('<?=$item_output['print_link']?>','print-req');">
 		<img src='i/sp.gif' width=10>
 		<?}?>
+		<?if($item_output['remove_link']){?><input type = button value = Удалить onclick="if(confirm('Совсем?')){window.location.href='<?=$item_output['remove_link']?>';}"><img src='i/sp.gif' width=10>
+		<?}?>
+
 		<input type = button value = "Вернуться к списку заявок" OnClick="window.location.href='<?=$form_return_url?>';">
 	</td>
 	<td width=1%>&nbsp;</td>
@@ -608,6 +611,8 @@ if($need_sp1){?>
 		<img src='i/sp.gif' width=10>
 		<?if($item_id){?><input type = button value = Распечатать OnClick="window.open('<?=$item_output['print_link']?>',null,'status=no,toolbar=no,location=no');">
 		<img src='i/sp.gif' width=10>
+		<?}?>
+		<?if($item_output['remove_link']){?><input type = button value = Удалить onclick="if(confirm('Совсем?')){window.location.href='<?=$item_output['remove_link']?>';}"><img src='i/sp.gif' width=10>
 		<?}?>
 		<input type = button value = "Вернуться к списку заявок" OnClick="window.location.href='<?=$form_return_url?>';">
 	</td>

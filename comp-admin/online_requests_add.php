@@ -265,6 +265,14 @@ case 8: //копирование в другую категорию
 	header("Location: ".append_rnd("online_requests_add.php?comp_id=$comp_id&item_id=$item_id&item_copied=$new_item_id"));
 	exit;
 	break;
+case 9: //удаление заявки
+	if(!$item_id)
+		die('Не указан ID заявки');
+	remove_request($item_id);
+	header("Location: ".append_rnd("online_requests.php?comp_id=$comp_id&&$filters_str"));
+	exit;
+	break;
+
 }
 
 
@@ -367,7 +375,8 @@ if($item_id){
 			}
 		}
 	}
-
+	if(!$start_number)
+		$item_output['remove_link']=append_rnd("online_requests_add.php?flag=9&comp_id=$comp_id&item_id=$item_id&$filters_str");
 	$item_output['print_link']=append_rnd("print/request.php?comp_id=$comp_id&request_id=$item_id");
 	if(defined('CA_PDF_REQUEST_ENABLED') and CA_PDF_REQUEST_ENABLED)
 		$item_output['print_link'].='&pdf=1';
