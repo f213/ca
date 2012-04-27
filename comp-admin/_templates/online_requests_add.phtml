@@ -198,6 +198,16 @@ $(document).ready(function(){
 			$(this).addClass('invisible');
 			return false;
 		});
+		$('#cat_copy').removeClass('invisible')
+		.click(function(){
+			$('#cat_copy_div').removeClass('invisible');
+			$(document).bind('keyup','esc',function(){
+				$('#cat_copy_div').addClass('invisible') .val('');
+				$('#cat_copy').removeClass('invisible');
+			});
+			$(this).addClass('invisible');
+			return false;
+		});
 <?}?>
 
 	//снятие с соревнований
@@ -383,13 +393,22 @@ function recheck_all(){
 				print "<option value = $i>{$cat_name[$i]}</option>\r\n";
 	?></select>
 
-</form></span><img id=cat_err src=i/err.gif>
+</span><img id=cat_err src=i/err.gif>
 <?
 	if(_strlen($item_output['children_data']))
-		print "Заявка так же находится в категориях: {$item_output['children_data']}.";
+		print "Заявка так же находится в категориях: {$item_output['children_data']}.&nbsp;";
 	if(_strlen($item_output['parent_data']))
-		print "Эта заявка имеет родительскую заявку в категории {$item_output['parent_data']}.";
+		print "Эта заявка имеет родительскую заявку в категории {$item_output['parent_data']}.&nbsp;";
 ?>
+<a id = cat_copy href = '#' class="invisible">Копировать</a><span class="invisible" id=cat_copy_div><select name = cat_id_to_copy onchange="if(confirm('Точно копировать?')){$('#flag').val(8); this.form.submit();}">
+		<option>(выберите новую категорию</option>
+<?
+		foreach($tpl_categories_to_change as $i=>$q)
+			if($i!=$item_output['category'])
+				print "<option value = $i>{$cat_name[$i]}</option>\r\n";
+	?></select>	
+</span>
+</form>
 </td>
 </tr>
 <tr>
