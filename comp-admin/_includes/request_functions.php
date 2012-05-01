@@ -60,7 +60,7 @@ function get_brief_request_data($comp_id,$request_id,$append_hash=array()){
 	$request_id=(int)$request_id;
 	if(!$request_id or !$comp_id)
 		return null;
-	$res=query_eval("SELECT category,parent_id, parent_id AS par3nt_id,IF(parent_id,(SELECT category FROM $compreq_dbt WHERE id=par3nt_id),0) AS parent_category, PilotName,PilotNik,PilotCity,NavigatorName,NavigatorNik,NavigatorCity,city,AutoBrand,AutoNumber,WheelSize,phone,email FROM $compreq_dbt WHERE comp_id=$comp_id AND id=$request_id;");
+	$res=query_eval("SELECT category,parent_id, parent_id AS par3nt_id,IF(parent_id,(SELECT category FROM $compreq_dbt WHERE id=par3nt_id),0) AS parent_category, PilotName,PilotNik,PilotCity,PilotPhone,NavigatorName,NavigatorNik,NavigatorCity,NavigatorPhone,city,AutoBrand,AutoNumber,WheelSize,phone,email FROM $compreq_dbt WHERE comp_id=$comp_id AND id=$request_id;");
 	if(!mysql_num_rows($res))
 		return null;
 	$ret=$append_hash;
@@ -83,6 +83,7 @@ function get_brief_request_data($comp_id,$request_id,$append_hash=array()){
 	if(!_strlen($ret['pilot_city'])) //если нет города чувака - ставим город заявки
 		$ret['pilot_city']=stripslashes($row['city']);
 	$ret['pilot_city_capitalized']=_ucfirst($ret['pilot_city']);
+	$ret['pilot_phone']=stripslashes($row['PilotPhone']);
 
 	$ret['navigator_name_without_nik']=$ret['navigator_name']=stripslashes($row['NavigatorName']);
 	$ret['navigator_name_official']=name2official($ret['navigator_name']);
@@ -97,6 +98,7 @@ function get_brief_request_data($comp_id,$request_id,$append_hash=array()){
 		$ret['navigator_city']=stripslashes($row['city']);
 
 	$ret['navigator_city_capitalized']=_ucfirst($ret['navigator_city']);
+	$ret['navigator_phone']=stripslashes($row['NavigatorPhone']);
 	$ret['phone']=stripslashes($row['phone']);
 	$ret['email']=stripslashes($row['email']);
 	$ret['auto_brand']=stripslashes($row['AutoBrand']);

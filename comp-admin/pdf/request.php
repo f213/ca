@@ -177,7 +177,7 @@ function print_pdf_request($item_output){
 	_reqpdf_add_request_row($table,'ИМЯ',$item_output['pilot_name_i'],$item_output['navigator_name_i']);
 	_reqpdf_add_request_row($table,'ОТЧЕСТВО',$item_output['pilot_name_o'],$item_output['navigator_name_o']);
 	_reqpdf_add_request_row($table,'ЛИЦО ДЛЯ КОНТАКТОВ');
-	_reqpdf_add_request_row($table,'КОНТАКТНЫЙ ТЕЛЕФОН',$item_output['pilot_phone'],$item_output['shturman_phone']);
+	_reqpdf_add_request_row($table,'КОНТАКТНЫЙ ТЕЛЕФОН',$item_output['pilot_phone'],$item_output['navigator_phone']);
 	_reqpdf_add_request_row($table,'E-MAIL',$item_output['pilot_email'],$item_output['shturman_email']);
 	_reqpdf_add_request_row($table,'ГОРОД',$item_output['pilot_city_capitalized'],$item_output['navigator_city_capitalized']);
 	_reqpdf_add_request_row($table,"СПОРТИВНОЕ ЗВАНИЕ, \r\nРАЗРЯД",$item_output['pilot_rank'],$item_output['shturman_rank']);
