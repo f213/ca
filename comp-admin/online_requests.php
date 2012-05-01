@@ -247,7 +247,7 @@ $title="Управление заявками $comp_name";
 
 $unnec_count=0; //количество "ненужных" записей, то есть записей, неактуальных на момент начала гонки
 
-$res=query_eval("SELECT * FROM $compreq_dbt WHERE comp_id=$comp_id $filters_sql ORDER BY IF(parent_id,parent_id,id);");
+$res=query_eval("SELECT * FROM $compreq_dbt WHERE comp_id=$comp_id $filters_sql ORDER BY PilotName,NavigatorName,parent_id ASC;");
 while($row=mysql_fetch_assoc($res)){
 	$id=$row['id'];
 	$item_output[$id]['category']=(int)$row['category'];
