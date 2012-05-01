@@ -15,6 +15,8 @@ if(defined('CUSTOM_AUTH') and strlen(CUSTOM_AUTH) and (file_exists(dirname($_SER
 	else
 		$custom_auth_file=dirname($_SERVER['SCRIPT_FILENAME']).'/'.CUSTOM_AUTH;
 }
+
+define (HTP_LINE_REGEX,'/\$apr1\$([a-z0-9]{8})/i');
 //
 //http://php.net/manual/en/function.crypt.php
 //mikey_nich (at) hotmР“РЋil . com 04-Mar-2007 03:47
@@ -56,7 +58,7 @@ function check_htpasswd($file,$login,$pass,$login_is_hash=false){
 		return null;
 	while($line=chop(fgets($fh))){
 		list($user,$file_pass)=preg_split('/\:/',$line);
-		if(!preg_match('/\$apr1\$[a-zA-z]{8}/',$file_pass))
+		if(!preg_match(HTP_LINE_REGEX,$file_pass))
 			continue;
 
 		if($login_is_hash){
@@ -64,7 +66,7 @@ function check_htpasswd($file,$login,$pass,$login_is_hash=false){
 				return true;
 		}else{
 			$q=array();
-			preg_match('/\$apr1\$([a-zA-z]{8})/',$file_pass,$q);
+			preg_match(HTP_LINE_REGEX,$file_pass,$q);
 			$salt=$q[1];
 			$hash=crypt_apr1_md5($pass,$salt);	
 			if($login==$user and $file_pass==$hash)
@@ -80,10 +82,11 @@ function get_htpasswd_pw($file,$user){
 	if(!$fh)
 		return null;
 	while($line=chop(fgets($fh))){
-		list($user,$pass)=preg_split('/\:/',$line);
-		if(!preg_match('/\$apr1\$[a-zA-z]{8}/',$pass))
+		list($htp_user,$pass)=preg_split('/\:/',$line);
+		if(!preg_match(HTP_LINE_REGEX,$pass))
 			continue;
-		return $pass;
+		if($htp_user==$user)
+			return $pass;
 	}
 	return null;
 }
@@ -95,7 +98,7 @@ function get_htpasswd_login($file,$userhash){
 		return null;
 	while($line=chop(fgets($fh))){
 		list($user,$pass)=preg_split('/\:/',$line);
-		if(!preg_match('/\$apr1\$[a-zA-z]{8}/',$pass))
+		if(!preg_match(HTP_LINE_REGEX,$pass))
 			continue;
 		if(sha1($user)==$userhash)
 			return $user;
