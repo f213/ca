@@ -59,6 +59,7 @@ if($start_number and $tpl_have_finish)
 
 <script type="text/javascript">
 	$(document).ready(function(){
+		$(':input').attr('autocomplete','off');
 		$('#finish_form').submit(function(){
 			if(!check_time($('#finish_time').val())){
 				alert('Неправильно указано время!');
