@@ -16,9 +16,11 @@ $FIRST_PLACE_SCORE_EXCEPTIONS=array(
 	6=>60,
 	5=>50,
 );
-
+define(MIN_PLACE_SCORE,5);
 function raf_score($place,$num_started){
 	global $FIRST_PLACE_SCORE_EXCEPTIONS;
+	if($num_started<MIN_PLACE_SCORE)
+		return 0;
 	$first_place_score=100;
 	if($place>$num_started)
 		return null;
