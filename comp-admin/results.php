@@ -518,7 +518,7 @@ if($type=='legend')
 	$tpl_print_results_link.="&f_kp=$f_kp";
 
 if($_GET['json']){
-	print json_encode($json_output);
+	print json_encode($item_output);
 	exit;
 }
 	
