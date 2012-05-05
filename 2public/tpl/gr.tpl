@@ -3,13 +3,13 @@
 <table width="100%" border="1" cellspacing="0">
 <tbody><tr>
 	<td width="1%"><b>#</b></td>
-	<td width="1%" align="center"><b>Р‘РѕСЂС‚</b></td>
-	<td><b>Р­РєРёРїР°Р¶</b></td>
-	<td><b>РњР°С€РёРЅР°</b></td>
-	<td><b>РўРѕС‡РєРё</b></td>
-	<td><b>РџСЂРёРёСЃРє</b></td>
-	<td><b>РўСЂР°СЃСЃР°</b></td>
-	<td><b>Р’СЂРµРјСЏ</b></td>
+	<td width="1%" align="center"><b>Борт</b></td>
+	<td><b>Экипаж</b></td>
+	<td><b>Машина</b></td>
+	<td><b>Точки</b></td>
+	<td><b>Прииск</b></td>
+	<td><b>Трасса</b></td>
+	<td><b>Время</b></td>
 </tr>
 <tmpl_loop name = main>
 <tr>

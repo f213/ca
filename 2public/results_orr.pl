@@ -8,12 +8,11 @@ use WWW::Curl::Easy;
 use Digest::MD5 qw (md5_hex);
 use Time::Format qw(%time);
 use JSON::XS;
-use Encode;
 use HTML::Template;
 use Getopt::Long;
 
 my $cat_id=3;
-my $cat_name='РљСЂР°СЃРЅРѕРєРѕР¶РёРµ';
+my $cat_name='Краснокожие';
 my $tpl_file='tpl/orr.tpl';
 my $url="http://localhost/ca/comp-admin/results.php?comp_id=1&f_category=%cat_id%&noauth=%no_auth%&json=1";
 my $no_auth_key='chaeX6ohG2AhNg5he';
@@ -41,12 +40,9 @@ my $data=$dec->decode(join '',@body);
 
 my @tpl_data;
 foreach my $k (sort {$a <=>$b} keys %{$data}){
-	my %d=map {$_=encode('utf8',$_)} %{$data->{$k}}; #РїРѕ СЂСѓСЃСЃРєРё
-
 	$d{pilot_name}=name($d{pilot_name},$d{pilot_nik});
 	$d{navigator_name}=name($d{navigator_name},$d{navigator_nik});
 	$d{place}=$d{res} if $d{res} and length $d{res};
-	next if $d{place} eq 'РЎРќРЇРў';
 	push @tpl_data,\%d;
 
 }
@@ -62,7 +58,7 @@ sub name
 	local $_=shift;
 	my $nick=shift;
 
-	s/\ +([^\ ]+)\ +[^\ ]+$/\ $1/; #СѓР±РёСЂР°РµРј РѕС‚С‡РµСЃС‚РІРѕ
+	s/\ +([^\ ]+)\ +[^\ ]+$/\ $1/; #убираем отчество
 	$_.=" ($nick)" if $nick and length $nick;
 	$_;
 
