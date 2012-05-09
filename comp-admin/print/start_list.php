@@ -53,7 +53,7 @@ if($type=='legend'){
 		}
 		$c++;
 	}
-	$item['cat_name']=strtoupper($cat_name[$cat_id]);
+	$item['cat_name']=_strtoupper($cat_name[$cat_id]);
 	
 }	
 if($type=='gps' or $type=='gr-gps'){
@@ -162,7 +162,7 @@ else
 if($_GET['print_title'])
 	$title=$_GET['print_title'];
 
-$page_title="$title \n ".strtoupper($cat_name[$cat_id]);
+$page_title="$title \n "._strtoupper($cat_name[$cat_id]);
 require('print/header.php');
 if($flag==1){ //краткая ведомость
 	require('_templates/start_lists/brief_legend.phtml');
