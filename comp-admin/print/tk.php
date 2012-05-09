@@ -125,6 +125,6 @@ if($_GET['xls']){
 	exit;
 }
 $title="Протокол техкомиссии";
-$page_title=$title."\n".strtoupper($cat_name[$cat_id]);
+$page_title=$title."\n"._strtoupper($cat_name[$cat_id]);
 require('print/header.php');
 require('_templates/print/tk.phtml');
