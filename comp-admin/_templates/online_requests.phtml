@@ -63,7 +63,7 @@ $(document).ready(function(){
 		hl_just_edited(1);
 	}else{
 		<? //если мы в данный момент работаем с таблицой забракованных номеров - перематываем на нее.
-		if($_GET['bad_number_edited']){?>
+		if(!empty($_GET['bad_number_edited'])){?>
 			$.scrollTo('#block_num_table');
 		<?}else
 			print "	$('#qs_name').focus();\n";
@@ -191,7 +191,7 @@ function update_next_start_number(){
 	<option value = 0>Все(<?=tpl_total_register_count()?>)</option>
 <?
 for($i=1;$i<=_CATEGORIES;$i++)
-	if($i==$f_category)
+	if(!empty($f_category) and $i==$f_category)
 		print "<option value = $i selected>".tpl_append_registered_count($cat_name[$i],$i)."</option>\r\n";
 	else
 		print "<option value = $i>".tpl_append_registered_count($cat_name[$i],$i)."</option>\r\n";
@@ -203,7 +203,7 @@ for($i=1;$i<=_CATEGORIES;$i++)
 <select name = f_approved id = f_approved OnChange="this.form.submit();">
 <?
 foreach($approve_types as $key=>$value)
-	if($key==$f_approved)
+	if(!empty($f_approved) and $key==$f_approved)
 		print "<option value = $key selected>$value</option>\r\n";
 	else
 		print "<option value = $key>$value</option>\r\n";
@@ -213,7 +213,7 @@ foreach($approve_types as $key=>$value)
 <select name = f_payed id = f_payd OnChange="this.form.submit();">
 <?
 foreach($pay_types as $key=>$value)
-	if($key==$f_payed)
+	if(!empty($f_payd) and $key==$f_payed)
 		print "<option value = $key selected>$value</option>\r\n";
 	else
 		print "<option value = $key>$value</option>\r\n";
@@ -223,7 +223,7 @@ foreach($pay_types as $key=>$value)
 <b>Зарегистрированные:</b>&nbsp;&nbsp;
 <select name = f_registered id = f_registered OnChange="this.form.submit();">
 <?foreach($register_types as $key=>$value)
-	if($key==$f_registered)
+	if(!empty($f_registered) and $key==$f_registered)
 		print "<option value = $key selected>$value</option>\r\n";
 	else
 		print "<option value = $key>$value</option>\r\n";
@@ -235,9 +235,9 @@ foreach($pay_types as $key=>$value)
 </td>
 </tr></table>
 </form>
-<?if($_GET['sl_generated'])
+<?if(!empty($_GET['sl_generated']))
 	print "<h1>Успешно сгенерирована стартовая ведомость в категории ".$cat_name[(int)$_GET['sl_generated']]."!</h1>";
-if($_GET['imported_count'])
+if(!empty($_GET['imported_count']))
 	print "<h1>Импортировано заявок: {$_GET['imported_count']}</h1>";
 ?>
 <?if(sizeof($item_output)){?>
@@ -278,7 +278,7 @@ if($item_output) foreach($item_output as $key=>$value){
 	<td class=start_number><a href = "<?=$value['edit_link']?>"><?=$value['start_number']?></a> <?if($value['start_number_with_zeros']) print "<div class='invisible'>".$value['start_number_with_zeros']."</div>";?></td>
 	<td class=request_start_number><a href = "<?=$value['edit_link']?>"><?=$value['cabine_number']?></a></td>
 	<td class=ekipaj id=ekipaj<?=$key?>><a href = "<?=$value['edit_link']?>"><?
-		if($value['disq'])
+		if(array_key_exists('disq',$value))
 			print "<b>[СНЯТ]</b> ";
 		print $value['crew'];
 ?></a></td>
@@ -399,7 +399,7 @@ if(!$f_category and $item_comp_list){ //копирование пока рабо
 </table>
 
 <?
-if(sizeof($item_output) and !$f_category){?>
+if(sizeof($item_output) and empty($f_category)){?>
 	<br />
 	<form name = remove_unnecessary_form method = get action = online_requests.php onsubmit="return confirm('Точно? Аккуратнее с этим...');">
 	<input type = hidden name = comp_id value = <?=$comp_id?>>

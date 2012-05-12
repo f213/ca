@@ -9,7 +9,7 @@
 
 require_once('_includes/custom_auth.php');
 $message="admin";
-if(!$_GET['noauth'] or !strlen($_GET['noauth']) or !test_noauth($_GET['noauth'])){
+if(empty($_GET['noauth']) or !$_GET['noauth'] or !strlen($_GET['noauth']) or !test_noauth($_GET['noauth'])){
 	if(!$_COOKIE['login'] or !$_COOKIE['pass']){
 		header("Location: login.php?back=".urlencode($_SERVER['REQUEST_URI']));
 		die('hooj');

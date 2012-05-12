@@ -8,7 +8,7 @@
 //THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 require('_includes/nocache.php');
-if(!$comp_id)
+if(empty($comp_id) or !$comp_id)
 	$comp_id=CURRENT_COMP;
 
 $active_comp_types=array();
@@ -26,7 +26,7 @@ if(!$registered_uch_kol or !mysql_num_rows($res))
 	$__admin_header_show_tk=false;
 
 $draw_detailed_legend=false;
-if($active_comp_types['legend'] and $detailed_legend_cat and sizeof($detailed_legend_cat))
+if(array_key_exists('legend',$active_comp_types) and $detailed_legend_cat and sizeof($detailed_legend_cat))
 	$draw_detailed_legend=_adm_header_check_draw_legend($comp_id);
 	
 $__admin_header_current_comp_name=comp_name(CURRENT_COMP);
@@ -40,10 +40,7 @@ $__admin_header_current_comp_name=comp_name(CURRENT_COMP);
 <link href="i/main_style.css" rel="stylesheet" type="text/css">
 <title><?=$title?></title>
 </head>
-<body <?
-if($tpl_onload_function)
-	print "OnLoad=\"$tpl_onload_function;\"";
-?>>
+<body>
 <table cellpadding="0" cellspacing="0" border="0" width="100%">
 <tr>
 <td colspan=2><img src='i/sp.gif' height=3 width=1 alt=""></td>
@@ -57,7 +54,7 @@ if($tpl_onload_function)
 		<div class=top_menu<?=check_sel('tk.php')?>><a href = "tk.php?comp_id=<?=CURRENT_COMP?>">Техкомиссия</a></div>
 	<?}?>
 	<div class=top_menu<?=check_sel('start_list.php')?>><a href = "start_list.php?comp_id=<?=CURRENT_COMP?>">Стартовая ведомость</a></div>
-	<?if($active_comp_types['gps'] or $active_comp_types['gr-gps']){?>
+	<?if(array_key_exists('gps',$active_comp_types) or array_key_exists('gr-gps',$active_comp_types)){?>
 		<div class=top_menu<?=check_sel('gps-kp.php')?>><a href = "gps-kp.php?comp_id=<?=CURRENT_COMP?>">Точки GPS</a></div>
 	<?}?>
 	<?if($draw_detailed_legend){?>
@@ -65,13 +62,13 @@ if($tpl_onload_function)
 	<?}?>
 	<div class=top_menu<?=check_sel('penalize.php')?>><a href = "penalize.php?comp_id=<?=CURRENT_COMP?>">Пенализация</a></div>
 	<div class=top_menu<?=check_sel('bonus.php')?>><a href = "bonus.php?comp_id=<?=CURRENT_COMP?>">Бонусы</a></div>
-	<?if($active_comp_types['legend']){?>
+	<?if(array_key_exists('legend',$active_comp_types)){?>
 		<div class=top_menu<?=check_sel('legend-results.php')?>><a href="legend-results.php?comp_id=<?=CURRENT_COMP?>">Ввод данных: линейка</a></div>
 	<?}?>
-	<?if($active_comp_types['gps'] or $active_comp_types['gr-gps']){?>
+	<?if(array_key_exists('gps',$active_comp_types) or array_key_exists('gr-gps',$active_comp_types)){?>
 		<div class=top_menu<?=check_sel('gps-results.php')?>><a href = "gps-results.php?comp_id=<?=CURRENT_COMP?>">Ввод данных: ориентирование</a></div>
 	<?}?>
-	<?if($active_comp_types['gr-gps'] and defined('GR_ENABLE_DRSU') and GR_ENABLE_DRSU){?>
+	<?if(array_key_exists('gr-gps',$active_comp_types) and defined('GR_ENABLE_DRSU') and GR_ENABLE_DRSU){?>
 		<div class=top_menu<?=check_sel('grdsu.php')?>><a href = "grdsu.php?comp_id=<?=CURRENT_COMP?>">ЗЛ: площадь</a></div>
 	<?}?>
 	<div class=top_menu<?=check_sel('results.php')?>><a href = "results.php?comp_id=<?=CURRENT_COMP?>">Результаты</a></div>

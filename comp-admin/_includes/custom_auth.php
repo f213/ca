@@ -16,7 +16,7 @@ if(defined('CUSTOM_AUTH') and strlen(CUSTOM_AUTH) and (file_exists(dirname($_SER
 		$custom_auth_file=dirname($_SERVER['SCRIPT_FILENAME']).'/'.CUSTOM_AUTH;
 }
 
-define (HTP_LINE_REGEX,'/\$apr1\$([a-z0-9]{8})/i');
+define ('HTP_LINE_REGEX','/\$apr1\$([a-z0-9]{8})/i');
 //
 //http://php.net/manual/en/function.crypt.php
 //mikey_nich (at) hotmР“РЋil . com 04-Mar-2007 03:47

@@ -40,6 +40,7 @@ if(!$comp_id)
 
 //flags
 $flag=_input_val('flag');
+$filters_str='';
 if($flag){//тута обработка фильтров
 	$filters_str="comp_id=$comp_id";
 	if(_input_val('f_category'))
@@ -180,12 +181,12 @@ case 13: //импорт списка участников
 //filters
 $filters_sql="AND 1 ";
 $filters_str="filters=1";
-if($_GET['f_category'] and (int)$_GET['f_category']<=_CATEGORIES and (int)$_GET['f_category']>=1){
+if(!empty($_GET['f_category']) and (int)$_GET['f_category']<=_CATEGORIES and (int)$_GET['f_category']>=1){
 	$f_category=(int)$_GET['f_category'];
 	$filters_sql.=" AND `category`=$f_category ";
 	$filters_str.="&f_category=$f_category";
 }	
-if($_GET['f_approved'] and strlen($approve_types[(int)$_GET['f_approved']])){
+if(!empty($_GET['f_approved']) and strlen($approve_types[(int)$_GET['f_approved']])){
 	$f_approved=(int)$_GET['f_approved'];
 	switch($f_approved){
 	case 1:
@@ -197,7 +198,7 @@ if($_GET['f_approved'] and strlen($approve_types[(int)$_GET['f_approved']])){
 	}
 	$filters_str.="&f_approved=$f_approved";
 }	
-if($_GET['f_payed'] and strlen($pay_types[(int)$_GET['f_payed']])){
+if(!empty($_GET['f_payed']) and strlen($pay_types[(int)$_GET['f_payed']])){
 	$f_payed=(int)$_GET['f_payed'];
 	switch($f_payed){
 	case 1:
@@ -209,7 +210,7 @@ if($_GET['f_payed'] and strlen($pay_types[(int)$_GET['f_payed']])){
 	}
 	$filters_str.="&f_payed=$f_payed";
 }	
-if($_GET['f_registered'] and strlen($register_types[(int)$_GET['f_registered']])){
+if(!empty($_GET['f_registered']) and strlen($register_types[(int)$_GET['f_registered']])){
 	$f_registered=(int)$_GET['f_registered'];
 	switch($f_registered){
 	case 1:
@@ -223,7 +224,7 @@ if($_GET['f_registered'] and strlen($register_types[(int)$_GET['f_registered']])
 }	
 //end filters
 $just_edited=0;
-if($_GET['just_edited'])
+if(!empty($_GET['just_edited']))
 	$just_edited=(int)$_GET['just_edited'];
 
 $res=query_eval("SELECT Name FROM $comp_dbt WHERE ID=$comp_id;");
@@ -330,6 +331,7 @@ while($row=mysql_fetch_assoc($res)){
 }		
 if(sizeof($item_output)){ //добавим нолики к стартовым номерам для поиска
 	foreach($item_output as $key=>$value){
+		$item_output[$key]['start_number_with_zeros']=$value['start_number'];
 		$zero_sn='(';
 		if($value['start_number']<10)
 			$zero_sn.="00{$value['start_number']},";
@@ -355,7 +357,7 @@ if(!sizeof($item_output)){ //если никого нет - формируем �
 			$item_comp_list[$row[0]]=stripslashes($row[1]);
 	}
 }
-if($f_category)
+if(!empty($f_category))
 	$tpl_tkproto_link=append_rnd("print/tk.php?comp_id=$comp_id&cat_id=$f_category");
 
 require('admin_header.php');

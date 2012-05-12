@@ -573,6 +573,5 @@ if($_GET['pdf_su']){
 	exit;
 }
 $title='Просмотр результатов';
-$tpl_onload_function="results_onload()";
 require('admin_header.php');
 require('_templates/results.phtml');

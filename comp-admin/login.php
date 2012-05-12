@@ -10,12 +10,8 @@
 require_once('../_includes/core.php');
 require_once('_includes/custom_auth.php');
 
-if($_POST['back'])
-	$back=$_POST['back'];
-if($_GET['back'])
-	$back=urldecode($_GET['back']);
-
-if($_POST['login'] and $_POST['pass']){ //если заполнили форму, проверяем авторизацию
+$back=_input_val('back');
+if(!empty($_POST['login']) and !empty($_POST['pass'])){ //если заполнили форму, проверяем авторизацию
 	$tt=test_authEX(addslashes($_POST['login']),addslashes($_POST['pass']));
 	if($tt){ //если заебись, кладем куку
 		if($custom_auth_enabled and strstr($tt,'{custom}')){

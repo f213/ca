@@ -14,7 +14,7 @@ $title='Управление списком Соревнований';
 $add_url='competitions_add.php';
 
 
-$flag=(int)$_GET['flag'];
+$flag=_input_val('flag');
 if($flag)
 	switch($flag){
 		case 1: //сделать активным
