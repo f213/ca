@@ -339,7 +339,7 @@ function get_official_data(){
 			$ret['ksk'][]=$value;
 	$ret['raf_race_types']=array();
 	for($i=1;$i<=MAGIC_MAX_RAF_RACE_TYPES;$i++)
-		if($cfg['raf_race_types'][$i])
+		if(!empty($cfg['raf_race_types'][$i]))
 			$ret['raf_race_types'][$i]=$cfg['raf_race_types'][$i];
 	return $ret;
 }
