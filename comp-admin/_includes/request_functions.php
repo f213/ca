@@ -175,7 +175,6 @@ function get_fi($name){
 	return array($f,$i);
 }
 function get_fio($name){
-	$name=preg_replace('/([^\ ]+)\ +([^\ ]+)\ +([^\ ]+)/u','$1 $2',$name);
 	list($f,$i,$o)=preg_split('/\ +/',$name);
 	$f=_ucfirst($f); $i=_ucfirst($i); $o=_ucfirst($o);
 	return array($f,$i,$o);
