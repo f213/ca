@@ -175,7 +175,13 @@ function get_fi($name){
 	return array($f,$i);
 }
 function get_fio($name){
-	list($f,$i,$o)=preg_split('/\ +/',$name);
+	$f=$i=$o='';
+	if(_stristr($name,' ')>2)
+		list($f,$i,$o)=preg_split('/\ +/',$name);
+	elseif(_stristr($name,' '>1))
+		list($f,$i)=preg_split('/\ +/',$name);
+	else
+		$f=$name;
 	$f=_ucfirst($f); $i=_ucfirst($i); $o=_ucfirst($o);
 	return array($f,$i,$o);
 }
